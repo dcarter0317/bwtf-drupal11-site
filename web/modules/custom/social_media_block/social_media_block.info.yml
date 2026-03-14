@@ -1,0 +1,6 @@
+name: 'Social Media Block'
+type: module
+description: 'Registers the social_media_block plugin for the BWTF theme.'
+core_version_requirement: '^10 || ^11'
+package: Custom
+version: '1.0.0'

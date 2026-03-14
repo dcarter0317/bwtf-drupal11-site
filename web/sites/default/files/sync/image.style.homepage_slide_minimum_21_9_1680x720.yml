@@ -1,0 +1,20 @@
+uuid: 53011dab-e2c7-481e-965e-2081c0b362a3
+langcode: en
+status: true
+dependencies: {  }
+name: homepage_slide_minimum_21_9_1680x720
+label: 'Homepage Slide Minimum 21:9(1680x720)'
+effects:
+  ebfe254e-6624-4728-9a6b-63ae567c0853:
+    uuid: ebfe254e-6624-4728-9a6b-63ae567c0853
+    id: image_resize
+    weight: 1
+    data:
+      width: 1680
+      height: 720
+  b49d9250-d58e-4180-8256-12defceaf3ba:
+    uuid: b49d9250-d58e-4180-8256-12defceaf3ba
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

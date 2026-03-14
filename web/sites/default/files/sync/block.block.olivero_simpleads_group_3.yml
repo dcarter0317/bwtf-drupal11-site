@@ -1,0 +1,33 @@
+uuid: f3282119-b555-40f6-8aba-fcc98140083c
+langcode: en
+status: true
+dependencies:
+  module:
+    - simpleads
+  theme:
+    - olivero
+id: olivero_simpleads_group_3
+theme: olivero
+region: content_above
+weight: -10
+provider: null
+plugin: simpleads
+settings:
+  id: simpleads
+  label: 'Header Ads (Top Banner)'
+  label_display: '0'
+  provider: simpleads
+  group: '6'
+  rotation_impressions: true
+  rotation: loop
+  rotation_speed: 3000
+  rotation_pauseonhover: true
+  multiple_random_limit: 3
+  show_in_modal: false
+  modal_delay_type: page_visits
+  modal_delay: 10
+  modal_page_visits: 5
+  modal_visits_timeout: 2
+  node_ref_field: ''
+  simpleads_ref_field: ''
+visibility: {  }

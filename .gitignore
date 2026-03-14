@@ -1,0 +1,2 @@
+# Ignore Windows zone identifier metadata files.
+*:Zone.Identifier

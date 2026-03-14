@@ -1,0 +1,27 @@
+administer media gallery:
+  title: 'Administer media gallery settings'
+  restrict access: true
+
+access media gallery overview:
+  title: 'Access media gallery overview page'
+
+add media gallery entities:
+  title: 'Create new media gallery entities'
+
+edit own media gallery entities:
+  title: 'Edit own media gallery entities'
+
+edit any media gallery entities:
+  title: 'Edit any media gallery entities'
+
+delete own media gallery entities:
+  title: 'Delete own media gallery entities'
+
+delete any media gallery entities:
+  title: 'Delete any media gallery entities'
+
+view published media gallery entities:
+  title: 'View published media gallery entities'
+
+view unpublished media gallery entities:
+  title: 'View unpublished media gallery entities'

@@ -1,0 +1,20 @@
+uuid: ccedad7c-19b5-44d2-bb6b-328c489495a1
+langcode: en
+status: true
+dependencies: {  }
+name: homepage_slide
+label: 'Homepage Slide (940 x 320) '
+effects:
+  d7ff4b4d-caa4-42fe-b8ae-d935f5424671:
+    uuid: d7ff4b4d-caa4-42fe-b8ae-d935f5424671
+    id: image_resize
+    weight: 1
+    data:
+      width: 940
+      height: 320
+  e80d6602-bb59-45fe-8950-6ad85a298b40:
+    uuid: e80d6602-bb59-45fe-8950-6ad85a298b40
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

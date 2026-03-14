@@ -1,0 +1,11 @@
+name: 'PhotoSwipe Library Test'
+description: 'Ensure PhotoSwipe can be tested properly with the downloaded library.'
+type: module
+hidden: true
+package: Testing
+core_version_requirement: ^10 || ^11
+
+# Information added by Drupal.org packaging script on 2025-12-02
+version: '1.0.2'
+project: 'photoswipe_inline'
+datestamp: 1764672313

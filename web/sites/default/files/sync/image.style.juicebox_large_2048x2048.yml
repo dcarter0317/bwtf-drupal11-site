@@ -1,0 +1,21 @@
+uuid: 1dcc862c-a6be-4acf-8a7f-904ea9e36925
+langcode: en
+status: true
+dependencies: {  }
+name: juicebox_large_2048x2048
+label: 'Juicebox large (2048x2048)'
+effects:
+  9bf4e868-8bb6-43d0-a94f-516b77f3af0e:
+    uuid: 9bf4e868-8bb6-43d0-a94f-516b77f3af0e
+    id: image_scale
+    weight: 1
+    data:
+      width: 2048
+      height: 2048
+      upscale: false
+  e624232f-039a-40f1-8b5b-4645b6a0fbf4:
+    uuid: e624232f-039a-40f1-8b5b-4645b6a0fbf4
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

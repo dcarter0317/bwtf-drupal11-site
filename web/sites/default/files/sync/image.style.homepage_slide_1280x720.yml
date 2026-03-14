@@ -1,0 +1,20 @@
+uuid: fe65b257-0b67-484d-9ec1-6605b50f564a
+langcode: en
+status: true
+dependencies: {  }
+name: homepage_slide_1280x720
+label: 'Homepage Slide (1280x720)'
+effects:
+  28cadb7a-9bdd-4907-bddf-7e74e74558a1:
+    uuid: 28cadb7a-9bdd-4907-bddf-7e74e74558a1
+    id: image_resize
+    weight: 1
+    data:
+      width: 1280
+      height: 720
+  530a9dee-18bf-4ff6-a6a8-86a9b8f3df07:
+    uuid: 530a9dee-18bf-4ff6-a6a8-86a9b8f3df07
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

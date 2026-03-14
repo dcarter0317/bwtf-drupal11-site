@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Provides a media gallery entity type.
+ */
+
+use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\media_gallery\MediaGalleryUtilities;
+
+/**
+ * Implements hook_help().
+ */
+function media_gallery_help(string $route_name, RouteMatchInterface $route_match) {
+  if ($route_name === 'help.page.media_gallery') {
+    $output = '<h3>' . t('About') . '</h3>';
+    $output .= '<p>' . t('The Media Gallery module allows you to create and manage galleries of media items on your Drupal site.') . '</p>';
+    return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function media_gallery_theme(): array {
+  return [
+    'media_gallery' => [
+      'render element' => 'elements',
+    ],
+    'views_view_unformatted__media_galleries' => [
+      'base hook' => 'view',
+    ],
+    'block__media_gallery_latest_items_all_galleries' => [
+      'render element' => 'elements',
+      'base hook' => 'block',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for media gallery templates.
+ */
+function media_gallery_preprocess_media_gallery(array &$variables): void {
+  $variables['media_gallery'] = $variables['elements']['#media_gallery'];
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+
+  $isLayoutBuilder = isset($variables['content']['_layout_builder']) &&
+     !empty(Element::children($variables['content']['_layout_builder']));
+  if ($isLayoutBuilder) {
+    $layoutBuilderContent =& $variables['content']['_layout_builder'];
+    $imagesField =& MediaGalleryUtilities::getLayoutBuilderImagesField($layoutBuilderContent);
+
+    // User may want to use Layout Builder to display a media gallery without
+    // the images. We'll just log it as an anomaly in case they didn't mean to.
+    if ($imagesField == NULL) {
+      \Drupal::logger('media_gallery')
+        ->notice("Media gallery displayed in layout builder without images field in layout");
+      return;
+    }
+  }
+  else {
+    $imagesField =& $variables['content']['images'];
+  }
+
+  $entity = $variables['elements']['#media_gallery'];
+  $use_pager = $entity->get('use_pager')->value;
+  $reverse = $entity->get('reverse')->value;
+
+  if ($use_pager) {
+    $variables['use_pager'] = TRUE;
+    $itemsPerPage = $entity->get('items_per_page')->value ?: 12;
+
+    if (isset($imagesField['#items'])) {
+      $imagesField = MediaGalleryUtilities::paginateMediaGallery($imagesField, $itemsPerPage, $reverse);
+      $variables['pager'] = ['#type' => 'pager'];
+    }
+  }
+  else {
+    $variables['use_pager'] = FALSE;
+    if ($reverse) {
+      $images = $imagesField;
+      $images = array_intersect_key($images, array_flip(array_filter(array_keys($images), 'is_numeric')));
+      $images = array_reverse($images);
+      $imagesField = array_filter($imagesField, 'is_string', ARRAY_FILTER_USE_KEY);
+      $imagesField += $images;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function media_gallery_theme_suggestions_media_gallery(array $variables): array {
+  $suggestions = [];
+  $media_gallery = $variables['elements']['#media_gallery'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'media_gallery__' . $sanitized_view_mode;
+  $suggestions[] = 'media_gallery__' . $media_gallery->bundle();
+  $suggestions[] = 'media_gallery__' . $media_gallery->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'media_gallery__' . $media_gallery->id();
+  $suggestions[] = 'media_gallery__' . $media_gallery->id() . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function media_gallery_preprocess_field(array &$variables): void {
+  if (isset($variables['field_name']) && $variables['field_name'] === 'field_media_image' &&
+    isset($variables['element']['#view_mode']) && $variables['element']['#view_mode'] === 'photoswipe'
+  ) {
+    if (isset($variables['attributes']['class'])) {
+      // Remove photoswipe-gallery class from every image.
+      $variables['attributes']['class'] = array_diff($variables['attributes']['class'], ['photoswipe-gallery']);
+    }
+  }
+
+  // Add photoswipe class to gallery without pager.
+  if (isset($variables['field_name']) && $variables['field_name'] === 'images' &&
+  isset($variables['element']['#entity_type']) && $variables['element']['#entity_type'] === 'media_gallery') {
+    $variables['attributes']['class'][] = 'photoswipe-gallery';
+    MediaGalleryUtilities::alterNonImageMediaRendering($variables);
+  }
+}

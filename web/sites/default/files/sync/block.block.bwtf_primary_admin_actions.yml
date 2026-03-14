@@ -1,0 +1,20 @@
+uuid: e72c97e9-d3d4-47a8-ba8d-6e9269ccef08
+langcode: en
+status: false
+dependencies:
+  theme:
+    - bwtf
+_core:
+  default_config_hash: Q9_2whdOj1YIomfvsIfopROW4FT_X5pY0DjdOiOaQ5U
+id: bwtf_primary_admin_actions
+theme: bwtf
+region: header
+weight: -6
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }

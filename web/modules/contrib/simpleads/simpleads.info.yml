@@ -1,0 +1,15 @@
+name: SimpleAds
+description: 'Advertisement module'
+type: module
+package: Advertisement
+configure: simpleads.advertisement
+dependencies:
+  - drupal:rest
+  - drupal:views
+  - js_cookie:js_cookie
+core_version_requirement: ^9 || ^10 || ^11
+
+# Information added by Drupal.org packaging script on 2025-06-16
+version: '2.0.12'
+project: 'simpleads'
+datestamp: 1750032670

@@ -1,0 +1,15 @@
+uuid: 29850b1a-dc61-4bb1-a500-5902aee296a2
+langcode: en
+status: true
+dependencies: {  }
+name: homepage_slider_default_16x9
+label: 'Homepage Slider Default (1920x1080)'
+effects:
+  fdac9247-e77a-4790-ac6d-9b12a02d29a2:
+    uuid: fdac9247-e77a-4790-ac6d-9b12a02d29a2
+    id: image_scale
+    weight: 1
+    data:
+      width: 1920
+      height: 1080
+      upscale: false

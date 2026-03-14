@@ -1,0 +1,954 @@
+body {
+  color: $clr-text-color-primary;
+  overflow-x: hidden;
+}
+
+section {
+  margin-bottom: 20px;
+}
+
+/* Menu */
+.menu-container { position: relative; }
+
+.menu-btn {
+  padding: 10px 20px;
+  position: fixed;
+  top: 160px;
+  right: 20px;
+  z-index: 1000;
+
+  .bar {
+    width: 35px;
+    height: 3px;
+    margin: 0 0 5px;
+    background-color: $clr-primary;
+    transition: all 0.4s ease;
+  }
+
+  &.open {
+    .bar-1 { transform: rotate(40deg); }
+    .bar-2 { opacity: 0; }
+    .bar-3 { transform: rotate(-40deg); margin-top: -16px; }
+  }
+
+  @include breakpoint-min($bp-lg) { display: none; }
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,.5);
+
+  /* support both -- and __ variants */
+  &.btn--primary,
+  &.btn__primary {
+    color: $clr-white;
+    border: 1px solid $clr-white;
+    background: rgba(255,255,255,.3);
+
+    &:hover {
+      background: $clr-primary;
+      border: 0;
+    }
+  }
+
+  &.btn-secondary {
+    color: $clr-link;
+    border: 1px solid $clr-link;
+
+    &:hover {
+      background: $clr-link;
+      color: $clr-white;
+    }
+  }
+}
+
+i {
+  font-size: 1.6rem;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Nav */
+.nav-container { 
+  position: relative; 
+  margin: 0; 
+  padding: 5px 0;
+  
+  @include breakpoint-min($bp-lg) {
+    padding: 5px 0;
+  }
+}
+
+.nav {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  min-height: 100vh;
+  text-align: center;
+  list-style: none;
+  text-transform: uppercase;
+  padding: 80px 20px 20px;
+  background: rgba(0,0,0,.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+
+  @include breakpoint-min($bp-lg) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    opacity: 1;
+    z-index: 10;
+    width: 100%;
+    text-transform: capitalize;
+    background: initial;
+    min-height: auto;
+    position: relative;
+    inset: auto;
+    padding: 0;
+    pointer-events: auto;
+  }
+
+  li {
+    padding: 10px 0;
+
+    @include breakpoint-min($bp-med) { padding: 5px 10px; }
+  }
+
+  li:not(:last-child) {
+    border-bottom: 1px solid $clr-white;
+
+    @include breakpoint-min($bp-med) { border: none; }
+  }
+
+  li a {
+    display: block;
+    color: $clr-white;
+    letter-spacing: 5px;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {    
+      border-bottom: 4px solid $clr-secondary;
+      padding-bottom: 6px;
+    }
+
+    @include breakpoint-min($bp-lg) {
+      letter-spacing: initial;
+      color: initial;
+      
+      &:hover,
+      &:focus {
+        border-bottom: 4px solid $clr-secondary;
+        padding-bottom: 6px;
+      }
+    }
+  }
+
+  /* Active menu item - Drupal adds this class to current page link */
+  li.is-active a,
+  li a.is-active,
+  li a[aria-current="page"] {
+    color: white;
+    background: $clr-secondary;
+    padding: 10px;
+    border-radius: 8px;
+    
+    @include breakpoint-min($bp-lg) {
+      background: $clr-secondary;
+      color: white;
+    }
+  }
+
+  &.nav-open { 
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Layout */
+.content {
+  @include breakpoint-min($bp-med) {
+    display: grid;
+    grid-template-columns: 68% 28%;
+    margin-top: 20px;
+    gap: 2%;
+  }
+}
+
+.simple-ads { 
+  margin-bottom: 20px;
+  width: 100%;
+  display: block;
+  
+  .block-simpleads {
+    width: 100%;
+    display: block;
+  }
+  
+  /* Slick carousel overrides */
+  .slick-slider {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    user-select: none;
+    touch-action: pan-y;
+  }
+
+  .slick-list {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .slick-track {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .slick-slide {
+    display: none;
+    float: left;
+    height: 100%;
+    min-height: 1px;
+    
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+
+  .slick-initialized .slick-slide {
+    display: block;
+  }
+
+  /* Arrows */
+  .slick-prev,
+  .slick-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    font-size: 0;
+    line-height: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.5);
+    color: transparent;
+    outline: none;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    &:before {
+      color: $clr-white;
+      font-size: 30px;
+      line-height: 1;
+      opacity: 0.75;
+    }
+  }
+
+  .slick-prev {
+    left: 10px;
+    
+    &:before {
+      content: '‹';
+    }
+  }
+
+  .slick-next {
+    right: 10px;
+    
+    &:before {
+      content: '›';
+    }
+  }
+
+  /* Dots */
+  .slick-dots {
+    position: absolute;
+    bottom: 10px;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-align: center;
+
+    li {
+      position: relative;
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin: 0 5px;
+      padding: 0;
+      cursor: pointer;
+
+      button {
+        font-size: 0;
+        line-height: 0;
+        display: block;
+        width: 20px;
+        height: 20px;
+        padding: 5px;
+        cursor: pointer;
+        color: transparent;
+        border: 0;
+        outline: none;
+        background: transparent;
+
+        &:before {
+          content: '•';
+          font-size: 30px;
+          line-height: 20px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 20px;
+          height: 20px;
+          text-align: center;
+          opacity: 0.5;
+          color: $clr-white;
+        }
+      }
+
+      &.slick-active button:before {
+        opacity: 1;
+        color: $clr-primary;
+      }
+    }
+  }
+
+  /* Ensure ads display properly */
+  .simpleads {
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    iframe {
+      width: 100%;
+      border: 0;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    li {
+      display: block;
+      
+      a {
+        display: block;
+        
+        img {
+          width: 100%;
+          height: auto;
+        }
+      }
+    }
+  }
+}
+
+
+.article-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+
+  @include breakpoint-min($bp-med){
+    grid-template-columns: 1fr;
+  }
+}
+
+.article-card {
+  border: 1px solid $clr-grey-light;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: 1fr;
+
+  @include breakpoint-min($bp-med){
+    grid-template-columns: 40% 60%;
+  }
+
+  &__media {
+      margin-top: 0;
+      padding-left: 0;
+  
+      img {
+        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+
+        // @include breakpoint-min($bp-med){
+        //   border-radius: 8px 0 0 8px;
+        // }
+      }
+    }
+
+    &__text {
+      padding: 20px 25px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+
+      small {
+       font-size: .9rem;
+       letter-spacing: 1px;
+      }
+    }
+
+    &__eyebrow {
+      color: $clr-light-blue;
+    }
+    &__date {
+      color: $clr-grey-light;
+    }
+
+    &__body {
+      color: darken($clr-grey-light, 30%);
+      padding: 20px 0;
+      border-bottom: 1px solid $clr-border-light;
+    }
+
+    &__title {
+      font-size: 1.8rem;
+      font-weight: 100;
+      margin-block: 10px;
+
+      a {
+        color: $clr-deep-gray;
+        text-decoration: none;
+      }
+    }
+
+    &__description {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      line-clamp: 5;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+    }
+
+    &__footer {
+      margin-top: 20px;
+      text-align: center;
+      a {
+        text-decoration: none;
+        color: $clr-link;
+        font-weight: 100;
+        border: 1px solid $clr-link;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: $clr-link;
+          color: $clr-white;
+        }
+      }
+    }
+}
+
+// Site Tags
+
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+/* Tags as Pills */
+.tag-pill {
+  a {
+    background: $clr-grey-light;
+    color: $clr-deep-gray;
+    padding: 8px 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      background-color: $clr-deep-gray;
+      color: darken($clr-white, 20%);
+    }
+  }
+}
+
+/* Sidebar */
+aside {
+  text-align: center;
+
+  @include breakpoint-min($bp-med) { text-align: initial; }
+
+  /* Mobile-specific centering */
+  @media (max-width: 640px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    
+    .block,
+    .region-sidebar {
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      margin: 0 auto;
+    }
+    
+    h2, h3, h4 {
+      text-align: center;
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    
+    img {
+      margin: 0 auto;
+      display: block;
+    }
+  }
+
+  .social-sponsor {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    place-items: center;
+    gap: 20px;
+
+    @include breakpoint-min($bp-med) { grid-template-columns: 1fr; }
+    
+    @media (max-width: 640px) {
+      width: 100%;
+      justify-items: center;
+      padding: 0;
+      margin: 0 auto;
+    }
+  }
+  
+  .social,
+  .sponsor {
+    @media (max-width: 640px) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+      margin: 0 auto;
+    }
+  }
+
+  .social {
+    ul {
+      display: flex;
+      flex-direction: row;
+      list-style: none;
+       justify-content: start;
+       gap: 16px;
+      
+      @media (max-width: 640px) {
+        justify-content: center;
+        padding: 0;
+        margin: 0 auto;
+        width: 100%;
+      }
+    }
+  }
+
+  .sponsor a { 
+    display: grid; 
+    place-items: center;
+    
+    @media (max-width: 640px) {
+      width: 100%;
+      justify-content: center;
+      margin-right: 20px;
+    }
+    
+    img {
+      @media (max-width: 640px) {
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .amazon-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    place-items: center;
+    gap: 10px;
+
+    @include breakpoint-min($bp-med) {
+      grid-template-columns: repeat(2, 37%);
+    }
+    
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      margin-right: 10px;
+    }
+
+    .amazon-card iframe {
+      height: 240px;
+      width: 120px;
+    }
+  }
+
+  
+  /* Simple Ads in sidebar */
+.block-simpleads.block {
+       
+      h2 {
+       font-weight: 100;
+       font-size: 1.2rem;
+      }
+    }
+
+  .simple-ads,
+  .block-simpleads {
+    margin-bottom: 20px;
+    width: 100%;
+    display: block;
+    position: relative;
+    
+    @media (max-width: 640px) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .block-simpleads {
+      width: 100%;
+      display: block;
+    }
+    
+    /* Custom carousel styles */
+    .simpleads-custom-carousel {
+      position: relative;
+      width: 50%;
+      overflow: hidden;
+      
+      @media (max-width: 640px) {
+        width: 90%;
+      }
+      
+      .carousel-slides {
+        position: relative;
+        width: 100%;
+        
+        .carousel-slide {
+          display: none;
+          width: 100%;
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
+          
+          &.active {
+            display: block;
+            opacity: 1;
+          }
+          
+          a {
+            display: block;
+            
+            img {
+              width: 100%;
+              height: auto;
+              display: block;
+              border-radius: 8px;
+            }
+          }
+        }
+      }
+      
+      .carousel-dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+        
+        .carousel-dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: 2px solid $clr-white;
+          background: rgba(255, 255, 255, 0.3);
+          cursor: pointer;
+          padding: 0;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(1.2);
+          }
+          
+          &.active {
+            background: $clr-primary;
+            border-color: $clr-primary;
+          }
+        }
+      }
+    }
+    
+    /* Ensure ads display properly */
+    .simpleads {
+      width: 100%;
+      margin: 0 auto;
+      display: block;
+      position: relative;
+      
+      img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      iframe {
+        width: 100%;
+        border: 0;
+      }
+    }
+  }
+}
+
+
+/* Search */
+.search-form{
+  position: relative;
+
+
+  input[type="search"] {
+    width: 100%;
+    height: 3rem;
+    background: none;
+    border: 1px solid $clr-border-light;
+    border-radius: 4px;
+    color: $clr-deep-gray;
+    /* leave left padding for text, increase right padding for icon */
+    padding: 8px 3rem 8px 10px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    outline: none;
+
+    &::placeholder { color: $clr-grey-light; }
+  }
+
+  /* wrapper around the input so icons can be positioned reliably */
+  .search-field-wrapper {
+    position: relative;
+  }
+
+  .search-icon {
+    /* Legacy image sprite kept for fallback; hide by default when using Font Awesome */
+    background: none;
+    height: 0;
+    width: 0;
+    display: none;
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    transform: translate(-5%, -50%);
+    pointer-events: none;
+  }
+}
+
+/* Icon-only search button (Font Awesome) */
+.search-form .search-btn {
+  position: absolute;
+  top: 50%;
+  /* place visually inside the input on the far right */
+  right: 10px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  /* match the site's primary text color */
+  color: $clr-text-color-primary;
+  padding: 0.15rem 0.25rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 3; /* ensure it sits above the input border */
+}
+
+.search-form .search-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($clr-primary, 0.15);
+  border-radius: 4px;
+}
+
+.search-form .search-btn i {
+  color: $clr-text-color-primary;
+}
+
+/* Fallback: if the submit button is rendered outside the input, position it
+   into the input area so it visually appears inside the field. This covers
+   variations in markup from different block placements. */
+.search-form .form-actions {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.search-form .form-actions input[type="submit"],
+.search-form .form-actions button,
+.search-form .form-submit,
+.search-form .button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: $clr-text-color-primary;
+  cursor: pointer;
+}
+
+/* Ensure the form wrapper provides the positioning context */
+.search-form { position: relative; }
+
+
+.form-search {
+  position: relative;
+  width: 100%;
+  height: 2rem;
+
+  &::placeholder { color: $clr-grey-light; }
+}
+.js-form-submit.form-submit {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+}
+
+
+// Social Links Component Sidebar
+.social {
+  margin-bottom: 40px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  h2, h3, h4 {
+    font-size: 1.2rem;
+    font-weight: 100;
+    
+    @media (max-width: 640px) {
+      width: 100%;
+      text-align: center;
+      margin: 0 auto 1rem;
+    }
+  }
+  
+  ul {
+    @media (max-width: 640px) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+      margin: 0 auto;
+    }
+  }
+}
+/* Footer */
+footer {
+  background: $clr-primary;
+  color: $clr-border-light;
+  text-align: center;
+  padding: 20px 10px;
+  width: 100%;
+  
+  @media (max-width: 640px) {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .footer-social {
+    padding: 20px;
+    list-style: none;
+    display: flex;
+    place-items: center;
+    justify-content: center;
+    gap: 15px;
+    cursor: pointer;
+
+    @include breakpoint-min($bp-med) {
+      justify-content: start;
+      // padding-left: 0;
+    }
+  }
+
+  p {
+    font-size: .8rem;
+    font-weight: 300;
+
+
+  }
+
+  a, a:visited { color: $clr-link; }
+
+  @include breakpoint-min($bp-med) { text-align: left; }
+}
+
+/* Slider styles have been centralized in assets/css/_slider.scss */

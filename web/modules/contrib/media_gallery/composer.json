@@ -1,0 +1,25 @@
+{
+    "name": "drupal/media_gallery",
+    "description": "A simple gallery of media.",
+    "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/media_gallery",
+    "authors": [
+        {
+            "name": "Andrei Ivnitskii",
+            "homepage": "https://www.drupal.org/u/ivnish",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/media_gallery",
+        "source": "https://git.drupalcode.org/project/media_gallery"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "drupal/photoswipe": "^5.0"
+    },
+    "require-dev": {
+        "drupal/swiper_formatter": "^2.0",
+        "drupal/pathauto": "^1.11"
+    }
+}

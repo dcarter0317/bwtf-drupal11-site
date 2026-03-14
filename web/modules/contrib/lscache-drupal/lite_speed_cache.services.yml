@@ -1,0 +1,13 @@
+services:
+
+  http_response_headers:
+    class: '\Drupal\lite_speed_cache\EventSubscriber\LSCacheSubscriber'
+    tags:
+      - { name: 'event_subscriber' }
+
+
+  lsc_commands:
+    class: \Drupal\lite_speed_cache\Commands\LSCacheCommand
+    tags:
+      - { name: drush.command }
+    arguments: ['@entity_type.manager', '@logger.factory']

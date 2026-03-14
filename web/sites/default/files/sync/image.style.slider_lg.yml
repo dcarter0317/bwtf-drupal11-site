@@ -1,0 +1,21 @@
+uuid: 4549b148-affc-4321-a246-c4c62513dfcd
+langcode: en
+status: true
+dependencies: {  }
+name: slider_lg
+label: slider_lg
+effects:
+  c1b1002b-7e72-4376-937a-dba1f0bdee74:
+    uuid: c1b1002b-7e72-4376-937a-dba1f0bdee74
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 1200
+      height: 675
+      anchor: center-center
+  d5978ecc-672f-438b-b501-42c1adc7ff53:
+    uuid: d5978ecc-672f-438b-b501-42c1adc7ff53
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

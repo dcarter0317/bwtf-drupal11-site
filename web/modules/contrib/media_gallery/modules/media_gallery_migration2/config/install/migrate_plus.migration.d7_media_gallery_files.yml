@@ -1,0 +1,39 @@
+id: d7_media_gallery_files
+label: 'Media Gallery Files'
+migration_group: media_gallery
+migration_dependencies: { }
+migration_tags:
+  - Drupal 7
+  - Content
+dependencies:
+  enforced:
+    module:
+      - media_gallery_migration2
+source:
+  plugin: d7_media_gallery_file
+  scheme: public
+  constants:
+    source_base_path: 'http://d7media.docksal.site'
+process:
+  filename: filename
+  source_full_path:
+    -
+      plugin: concat
+      delimiter: /
+      source:
+        - constants/source_base_path
+        - filepath
+    -
+      plugin: urlencode
+  uri:
+    plugin: file_copy
+    source:
+      - '@source_full_path'
+      - uri
+  filemime: filemime
+  status: status
+  created: timestamp
+  changed: timestamp
+  uid: uid
+destination:
+  plugin: entity:file

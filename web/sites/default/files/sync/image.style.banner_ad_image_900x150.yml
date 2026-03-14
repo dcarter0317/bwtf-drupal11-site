@@ -1,0 +1,21 @@
+uuid: 38865cf0-1505-48bd-9e31-e8822b27af08
+langcode: en
+status: true
+dependencies: {  }
+name: banner_ad_image_900x150
+label: 'Banner Ad Image (900x150)'
+effects:
+  9b04cf7b-6e76-4e03-83a0-421bd55ff651:
+    uuid: 9b04cf7b-6e76-4e03-83a0-421bd55ff651
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 950
+      height: 150
+      anchor: center-center
+  df94cc18-7c6b-4cc8-b925-3dadb89865d6:
+    uuid: df94cc18-7c6b-4cc8-b925-3dadb89865d6
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

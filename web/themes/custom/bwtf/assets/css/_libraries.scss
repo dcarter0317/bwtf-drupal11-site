@@ -1,0 +1,56 @@
+/* Base font stack: prefer Tahoma, then close matches, then system */
+$font-sans: Tahoma, "Segoe UI", Geneva, Verdana, system-ui, -apple-system,
+            "Helvetica Neue", Arial, sans-serif;
+
+$font-primary: 'Poppins', sans-serif;
+
+/* Apply globally */
+html, body {
+  font-family: $font-primary;
+  /* optional polish */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+body {
+  color: $clr-text-color-primary;
+}
+
+/* Utility class if you need it */
+.font-primary { font-family: $font-primary; }
+
+/* Ensure headings/buttons inherit unless you override elsewhere */
+h1, h2, h3, h4, h5, h6,
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+// Responsive Swiper (Hero) — SCSS
+// --------------------------------
+// Modes on .hero:
+//  - .ratio-16x9 or .ratio-21x9  → aspect-ratio mode (default)
+//  - .use-fixed-height           → fixed responsive height via clamp()
+
+// === Tunables (compile-time) ===
+$hero-min:   320px;
+$hero-ideal: 60vh;
+$hero-max:   720px;
+
+$aspect-16x9: 16/9;
+$aspect-21x9: 21/9;
+
+// --------------------------------
+
+
+// Mobile tweaks
+@media (max-width: 640px) {
+}
+
+// Accessibility: reduced motion
+@media (prefers-reduced-motion: reduce) {
+}
+
+/* ------------------------------
+   Optional global Swiper helpers
+   (kept minimal and syntactically valid)
+   ------------------------------ */

@@ -1,0 +1,419 @@
+<?php
+
+/**
+ * @file
+ * Theme helper functions for the bwtf theme.
+ */
+
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+use Drupal\file\FileInterface;
+use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Render\Markup;
+
+/**
+ * Implements hook_theme().
+ */
+function bwtf_theme($existing, $type, $theme, $path) {
+  return [
+    'social' => [
+      'variables' => [
+        'social_links' => [],
+      ],
+      'template' => 'components/social',
+    ],
+  ];
+}
+
+/**
+ * Read a setting from custom config: bwtf.settings.
+ *
+ * The theme settings form writes to "bwtf.settings".
+ */
+function bwtf_get_theme_setting(string $key) {
+  return \Drupal::config('bwtf.settings')->get($key);
+}
+
+/**
+ * Turn a file ID into an absolute URL.
+ */
+function bwtf_get_image_url_from_fid(?int $fid): ?string {
+  if (!$fid) {
+    return NULL;
+  }
+  $file = File::load($fid);
+  if (!$file instanceof FileInterface) {
+    return NULL;
+  }
+  $uri = $file->getFileUri(); // e.g. public://bwtf/slider/foo.jpg
+  return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+}
+
+/**
+ * Normalize an image setting into an absolute URL.
+ *
+ * Accepts:
+ *  - Full http(s) URLs (returned as-is)
+ *  - Stream wrappers (public://, private://) → absolute URL
+ *  - Scalar fid (int) or array [fid] → via File entity
+ */
+function bwtf_normalize_image_value($value): ?string {
+  if (empty($value)) {
+    return NULL;
+  }
+
+  // A) Full web URL.
+  if (is_string($value) && preg_match('#^https?://#i', $value)) {
+    return $value;
+  }
+
+  // B) Stream wrapper URI.
+  if (is_string($value) && preg_match('#^[a-z0-9_]+://#i', $value)) {
+    return \Drupal::service('file_url_generator')->generateAbsoluteString($value);
+  }
+
+  // C) Array [fid].
+  if (is_array($value)) {
+    $fid = (int) (reset($value) ?: 0);
+    return bwtf_get_image_url_from_fid($fid);
+  }
+
+  // D) Numeric fid.
+  if (is_numeric($value)) {
+    return bwtf_get_image_url_from_fid((int) $value);
+  }
+
+  return NULL;
+}
+
+/**
+ * Optional: Get an image URL from a node's field_image as a last resort.
+ */
+function bwtf_get_image_url_from_node(?int $nid): ?string {
+  if (!$nid) {
+    return NULL;
+  }
+  $node = Node::load($nid);
+  if ($node instanceof NodeInterface && $node->hasField('field_image') && !$node->get('field_image')->isEmpty()) {
+    /** @var \Drupal\file\FileInterface $file */
+    $file = $node->get('field_image')->entity;
+    if ($file instanceof FileInterface) {
+      return \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+    }
+  }
+  return NULL;
+}
+
+/**
+ * Default fallback image URL (absolute).
+ */
+function bwtf_get_fallback_image_url(): string {
+  $theme_path = \Drupal::theme()->getActiveTheme()->getPath(); // themes/custom/bwtf
+  $base = \Drupal::request()->getBasePath();
+  $host = \Drupal::request()->getSchemeAndHttpHost();
+  return $host . $base . '/' . $theme_path . '/assets/imgs/default_slide.jpg';
+}
+
+/**
+ * Build a srcset string from image styles map.
+ *
+ * @param string $uri
+ *   The source file URI (e.g., public://... ).
+ * @param array $map
+ *   Associative array of image_style_machine_name => width_in_px.
+ */
+function bwtf_build_srcset(string $uri, array $map): ?string {
+  $out = [];
+  foreach ($map as $style => $w) {
+    if ($s = ImageStyle::load($style)) {
+      $out[] = $s->buildUrl($uri) . ' ' . (int) $w . 'w';
+    }
+  }
+  return $out ? implode(', ', $out) : NULL;
+}
+/**
+ * Helper function to get configured social media links.
+ *
+ * @return array
+ *   Array of social link data with platform, url, label, and icon keys.
+ */
+function bwtf_get_social_links(): array {
+  $cfg = \Drupal::config('bwtf.settings');
+  $social_links = [];
+
+  // Platform to Font Awesome icon class mapping.
+  $icon_map = [
+    'facebook' => 'fa-brands fa-facebook',
+    'x-twitter' => 'fa-brands fa-x-twitter',
+    'instagram' => 'fa-brands fa-instagram',
+    'youtube' => 'fa-brands fa-youtube',
+    'linkedin' => 'fa-brands fa-linkedin',
+    'tiktok' => 'fa-brands fa-tiktok',
+    'github' => 'fa-brands fa-github',
+    'patreon' => 'fa-brands fa-patreon',
+    'custom' => 'fa-solid fa-link',
+  ];
+
+  // Platform labels.
+  $label_map = [
+    'facebook' => 'Facebook',
+    'x-twitter' => 'X (Twitter)',
+    'instagram' => 'Instagram',
+    'youtube' => 'YouTube',
+    'linkedin' => 'LinkedIn',
+    'tiktok' => 'TikTok',
+    'github' => 'GitHub',
+    'patreon' => 'Patreon',
+    'custom' => 'Website',
+  ];
+
+  for ($i = 1; $i <= 8; $i++) {
+    $platform = (string) ($cfg->get("social{$i}_platform") ?? '');
+    $url = (string) ($cfg->get("social{$i}_url") ?? '');
+
+    // Only include if both platform and URL are provided.
+    if ($platform && $url) {
+      $social_links[] = [
+        'platform' => $platform,
+        'url' => $url,
+        'label' => $label_map[$platform] ?? ucfirst($platform),
+        'icon' => $icon_map[$platform] ?? 'fa-solid fa-link',
+      ];
+    }
+  }
+
+  return $social_links;
+}
+
+/**
+ * Promote slide images to permanent and register file usage.
+ */
+function bwtf_theme_settings_submit_promote_files(array &$form, FormStateInterface $form_state) {
+  $file_usage = \Drupal::service('file.usage');
+
+  for ($i = 1; $i <= 6; $i++) {
+    $value = $form_state->getValue("slide{$i}_image");
+    $fid = is_array($value) ? (int) (reset($value) ?: 0) : (int) ($value ?: 0);
+
+    if ($fid && ($file = File::load($fid))) {
+      if ($file->isTemporary()) {
+        $file->setPermanent();
+        $file->save();
+      }
+      // Register usage under config so file_cleanup won’t delete it.
+      // module = 'bwtf', type = 'config', id = 'bwtf.settings'.
+      $file_usage->add($file, 'bwtf', 'config', 'bwtf.settings');
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * - Exposes `bwtf_slides` with responsive sources (img16/img21).
+ * - Sets `slider_aspect` ('16:9' or '21:9') and `slider_display`.
+ * - Attaches the slider library only when there’s content to show.
+ */
+function bwtf_preprocess_page(array &$variables): void {
+
+  $cfg = \Drupal::config('bwtf.settings');
+
+  // Keep these flags for Twig.
+  $variables['is_front']        = \Drupal::service('path.matcher')->isFrontPage();
+  $variables['slider_display']  = (int) ($cfg->get('slider_display') ?? 1);
+  $variables['slider_aspect']   = $cfg->get('slider_aspect') ?: '16:9'; // choose '16:9' or '21:9'
+
+  $slides = [];
+
+  // Optional current node fallback (kept from your original).
+  $route_node = \Drupal::routeMatch()->getParameter('node');
+  $current_nid = $route_node instanceof \Drupal\node\NodeInterface ? (int) $route_node->id() : NULL;
+
+  for ($i = 1; $i <= 6; $i++) {
+    $title     = (string) ($cfg->get("slide{$i}_title") ?? '');
+    $desc      = (string) ($cfg->get("slide{$i}_desc") ?? '');
+    $href      = (string) ($cfg->get("slide{$i}_url") ?? '');
+    $link_text = (string) ($cfg->get("slide{$i}_link_text") ?? 'Learn more');
+
+    // Resolve fid from config (supports [fid] or fid).
+    $stored = $cfg->get("slide{$i}_image");
+    $fid = is_array($stored) ? (int) (reset($stored) ?: 0) : (int) ($stored ?: 0);
+
+    // Prepare defaults.
+    $image_url = '';
+    $img16 = ['src' => '', 'srcset' => NULL, 'is_svg' => FALSE];
+    $img21 = ['src' => '', 'srcset' => NULL, 'is_svg' => FALSE];
+
+    if ($fid && ($file = \Drupal\file\Entity\File::load($fid))) {
+      $uri = $file->getFileUri();                       // public://bwtf/slider/...
+      $ext = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
+      $is_svg = ($ext === 'svg');
+
+      $fg = \Drupal::service('file_url_generator');
+      // Use absolute URLs consistently (you can switch to generateString() if you prefer relative).
+      $base_src  = $fg->generateAbsoluteString($uri);
+      $image_url = $base_src;
+
+      $img16['is_svg'] = $is_svg;
+      $img21['is_svg'] = $is_svg;
+
+      if (!$is_svg) {
+        // Try to use image styles, fall back to original if not available
+        $style_16x9 = \Drupal\image\Entity\ImageStyle::load('homepage_slider_default_16x9');
+        $style_21x9 = \Drupal\image\Entity\ImageStyle::load('homepage_slider_default_21x9');
+
+        if ($style_16x9) {
+          $img16['src'] = $style_16x9->buildUrl($uri);
+        } else {
+          $img16['src'] = $base_src;
+        }
+
+        if ($style_21x9) {
+          $img21['src'] = $style_21x9->buildUrl($uri);
+        } else {
+          $img21['src'] = $base_src;
+        }
+
+        // Build srcsets for responsive display
+        $img16['srcset'] = bwtf_build_srcset($uri, [
+          'slider16_xl' => 1600,
+          'slider16_lg' => 1200,
+          'slider16_md' => 800,
+          'slider16_sm' => 480,
+        ]);
+        $img21['srcset'] = bwtf_build_srcset($uri, [
+          'slider21_xl' => 1600,
+          'slider21_lg' => 1200,
+          'slider21_md' => 800,
+          'slider21_sm' => 480,
+        ]);
+      } else {
+        // SVG files don't use image styles
+        $img16['src'] = $base_src;
+        $img21['src'] = $base_src;
+      }
+    }
+    else {
+      // No fid saved; fall back to your existing normalizer and defaults.
+      $raw_image = $cfg->get("slide{$i}_image");
+      $image_url = bwtf_normalize_image_value($raw_image)
+        ?? bwtf_get_image_url_from_node($current_nid)
+        ?? bwtf_get_fallback_image_url();
+      // When we don't have the file URI, we can't build srcsets—Twig will just use image_url.
+    }
+
+    $slides[] = [
+      'title'     => $title,
+      'desc'      => $desc,
+      'href'      => $href,
+      'link_text' => $link_text,
+      // Backward-compatible key used by your existing Twig:
+      'image_url' => $image_url,
+      // New responsive variants your updated Twig can use:
+      'img16'     => $img16,
+      'img21'     => $img21,
+    ];
+  }
+
+  // Keep only slides with essential fields populated (must have image AND title).
+  // Description and link are optional.
+  $slides = array_values(array_filter($slides, static function (array $s): bool {
+    return !empty($s['image_url']) && !empty($s['title']);
+  }));
+
+  $variables['bwtf_slides'] = $slides;
+
+  // Attach assets when there’s something to show.
+  if (!empty($variables['slider_display']) && !empty($variables['bwtf_slides'])) {
+    $variables['#attached']['library'][] = 'bwtf/slider';
+
+    // Expose JS settings for the slider (e.g., autoplay delay in ms).
+    $delay = (int) (\Drupal::config('bwtf.settings')->get('slider_autoplay_delay') ?? 5000);
+    if ($delay < 0) { $delay = 0; }
+    $variables['#attached']['drupalSettings']['bwtf']['slider'] = [
+      'autoplayDelay' => $delay,
+    ];
+  }
+  // Expose social media links to all pages.
+  $variables['social_links'] = bwtf_get_social_links();}
+
+/**
+ * Implements hook_preprocess_HOOK() for simpleads blocks.
+ */
+function bwtf_preprocess_simpleads(&$variables) {
+  // Fix rotation options to ensure proper slick initialization
+  if (isset($variables['rotation_options']['loop'])) {
+    // Decode if it's a JSON string
+    $options = $variables['rotation_options']['loop'];
+    if (is_string($options)) {
+      $options = json_decode($options, TRUE);
+    }
+    
+    // Ensure options are in the correct format for slick
+    if (is_array($options)) {
+      // Remove any responsive settings that might be causing issues
+      unset($options['responsive']);
+      
+      // Ensure all values are proper types
+      $clean_options = [
+        'draggable' => isset($options['draggable']) ? (bool) $options['draggable'] : false,
+        'arrows' => isset($options['arrows']) ? (bool) $options['arrows'] : false,
+        'dots' => isset($options['dots']) ? (bool) $options['dots'] : false,
+        'fade' => isset($options['fade']) ? (bool) $options['fade'] : true,
+        'autoplay' => isset($options['autoplay']) ? (bool) $options['autoplay'] : true,
+        'pauseOnFocus' => isset($options['pauseOnFocus']) ? (bool) $options['pauseOnFocus'] : false,
+        'pauseOnHover' => isset($options['pauseOnHover']) ? (bool) $options['pauseOnHover'] : false,
+        'speed' => isset($options['speed']) ? (int) $options['speed'] : 900,
+        'infinite' => isset($options['infinite']) ? (bool) $options['infinite'] : true,
+        'autoplaySpeed' => isset($options['autoplaySpeed']) ? (int) $options['autoplaySpeed'] : 3000,
+      ];
+      
+      // Re-encode as JSON string for JavaScript
+      $variables['rotation_options']['loop'] = json_encode($clean_options);
+    }
+  }
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the search block form.
+ */
+function bwtf_form_search_block_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  // Attach the Font Awesome library so the icon is available.
+  $form['#attached']['library'][] = 'bwtf/fontawesome';
+
+  // Ensure the form has the expected wrapper class for positioning.
+  $form['#attributes']['class'][] = 'search-form';
+
+  // Determine the input key used by the search form and add placeholder.
+  $input_key = NULL;
+  if (isset($form['keys'])) {
+    $input_key = 'keys';
+  }
+  elseif (isset($form['search_block_form'])) {
+    $input_key = 'search_block_form';
+  }
+
+  if ($input_key !== NULL) {
+    $form[$input_key]['#attributes']['placeholder'] = 'Search....';
+    $form[$input_key]['#attributes']['aria-label'] = 'Search';
+
+    // Wrap the input in a relatively-positioned wrapper so the absolute icon sits
+    // correctly inside the input's visual area. Use prefix/suffix around the
+    // input element to avoid relying on outer form markup.
+    $form[$input_key]['#prefix'] = '<div class="search-field-wrapper">';
+    $icon_button = '<button type="submit" class="search-btn" aria-label="Search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>';
+    $form[$input_key]['#suffix'] = Markup::create($icon_button . '</div>');
+
+    // Ensure the input is keyboard-focusable.
+    $form[$input_key]['#attributes']['tabindex'] = 0;
+  }
+
+  // Remove the original submit (if present) to avoid duplicate buttons.
+  if (isset($form['actions']['submit'])) {
+    unset($form['actions']['submit']);
+  }
+}

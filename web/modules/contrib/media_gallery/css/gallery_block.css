@@ -1,0 +1,160 @@
+/*
+ * The default styles for how gallery items are displayed.
+ * These styles mostly support the base of Vertical and Horizontal layouts
+ */
+.block-media-gallery-latest-items-all-galleries .photoswipe-gallery,
+.block-media-gallery-gallery .photoswipe-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/*
+ * Eliminate some unnecessary margins between rows when the flex container
+ * wraps.
+ */
+.photoswipe-gallery .field:not(:last-child) {
+  margin-block-end: 0;
+}
+
+/*
+ * Photoswipe formatter wraps images in a field. Field width should be exactly 
+ * the width of the image it contains. Do not stretch to fill empty space,
+ *  and do not shrink if things get crowded.
+ */
+.photoswipe-gallery .field,
+.media-gallery-layout--horizontal .field,
+.media-gallery-layout--swiper .field {
+  flex: 0 0 auto;
+  width: fit-content;
+}
+
+/*
+ * Update the flex direction from horizontal to vertical layout 
+ */
+.media-gallery-layout--vertical .photoswipe-gallery {
+  flex-direction: column;
+}
+
+/*
+ * Setup grid layout defaults
+ */
+.media-gallery-layout--grid .photoswipe-gallery {
+  display: inline-grid;
+  gap: 1rem;
+}
+
+/*
+ * Setup featured image grid layout
+ */
+.media-gallery-layout--featured_image_grid .photoswipe-gallery {
+  display: inline-grid;
+  gap: 1rem;
+}
+
+/*
+ * Controls the flex wrapper that is used to make the View All button be
+ * positioned to the left or right of the gallery
+ */
+.media-gallery-latest-items-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+/*
+ * Allow left/right View All button positions to wrap on smaller devices 
+ */
+@media (max-width: 767.98px) {
+  .media-gallery-latest-items-wrapper {
+    flex-wrap: wrap;
+  }
+}
+
+/*
+ * Set min-width to fit the content of the View All button
+ */
+.view-all-link-wrapper {
+  min-width: fit-content;
+}
+
+/*
+ * When positioning the View All button to the left or right, the markup always 
+ * has the View All button come after the gallery.
+ *
+ * We use order: -1 to position to the left.
+ */
+.view-all-position-left .media-gallery-latest-items-wrapper .view-all-link-wrapper {
+  order: -1;
+}
+
+/*
+ * Remove margins from swiper container
+ */
+.block-media-gallery-latest-items-all-galleries .swiper-container,
+.block-media-gallery-gallery .swiper-container {
+  display: block;
+  margin: 0;
+}
+
+/*
+ * To make the View All button appear under the block title and the gallery
+ * positioned to the right of the both, we make the block itself a flex display
+ */
+.block-media-gallery-latest-items-all-galleries.view-all-position-under_title,
+.block-media-gallery-gallery.view-all-position-under_title {
+  display: flex;
+  gap: 1rem;
+}
+
+/*
+ * Allow under_title View All button position to wrap on smaller devices 
+ */
+@media (max-width: 767.98px) {
+  .block-media-gallery-latest-items-all-galleries.view-all-position-under_title,
+  .block-media-gallery-gallery.view-all-position-under_title {
+    flex-wrap: wrap;
+  }
+}
+
+/*
+ * Forces the view all button onto its own line for top/bottom positions
+ */
+.block-media-gallery-latest-items-all-galleries.view-all-position-top .media-gallery-latest-items-view-all,
+.block-media-gallery-latest-items-all-galleries.view-all-position-bottom .media-gallery-latest-items-view-all,
+.block-media-gallery-gallery.view-all-position-top .media-gallery-latest-items-view-all,
+.block-media-gallery-gallery.view-all-position-bottom .media-gallery-latest-items-view-all {
+  display: block; /* puts it on its own line */
+  width: max-content; /* only as wide as needed */
+}
+
+/**
+ * Make sure the view all button always fits its content without soft wrapping
+ */
+.media-gallery-latest-items-view-all {
+  width: max-content; /* only as wide as needed */
+}
+
+/*
+ Make sure view all button aligns with top of gallery in left/right positions
+*/
+.view-all-position-left .media-gallery-latest-items-view-all,
+.view-all-position-right .media-gallery-latest-items-view-all {
+  margin-top: 0;
+}
+
+/*
+ * Prevents issues when in under_title positioning where swiper doesn't render.
+ */
+.block-media-gallery-latest-items-all-galleries.view-all-position-under_title .block__content,
+.block-media-gallery-gallery.view-all-position-under_title .block__content {
+  width: fit-content;
+  min-width: 0;
+}
+
+/*
+ * When View All button is under title, remove unnecessary margins
+ */
+.view-all-link-title-wrapper .media-gallery-latest-items-view-all,
+.view-all-link-title-wrapper .block__title {
+  margin: 0;
+}

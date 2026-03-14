@@ -1,0 +1,32 @@
+{{ title_prefix }}
+{{ title_suffix }}
+
+{% include '@bwtf/templates/layout/header.html.twig' %}
+
+<section class="nav-container">
+ {% if page.main_menu %}
+   {{ page.main_menu }} 
+  {% endif  %}
+</section>
+
+
+ {% include '@bwtf/templates/components/slider.html.twig' %}
+
+<div class="top-ad-section">
+    {% if page.simple_ads %}
+     {{ page.simple_ads }}
+    {% endif  %}
+</div>
+
+ <section class="content">
+  <main>
+    <section class="article-cards container">
+         {# Latest News Block #}
+         {{ drupal_view('blogs', 'latest_news') }}
+    </section>
+  </main>
+  
+  {% include '@bwtf/templates/layout/sidebar.html.twig' %}
+ </section>
+
+{% include '@bwtf/templates/layout/footer.html.twig' %}

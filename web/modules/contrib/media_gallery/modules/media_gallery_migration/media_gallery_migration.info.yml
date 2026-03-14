@@ -1,0 +1,16 @@
+name: Media Gallery Migration (Media 7.x-1.x)
+type: module
+description: Provides a migration for Media Gallery module.
+package: Migration
+core_version_requirement: ^10 || ^11
+dependencies:
+  - media_gallery:media_gallery
+  - drupal:migrate
+  - drupal:migrate_drupal
+  - migrate_plus:migrate_plus
+  - migrate_tools:migrate_tools
+
+# Information added by Drupal.org packaging script on 2025-11-12
+version: '3.2.3'
+project: 'media_gallery'
+datestamp: 1762943636

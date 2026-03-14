@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Install file for the photoswipe library test module.
+ */
+
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Site\Settings;
+
+/**
+ * Implements hook_install().
+ */
+function photoswipe_library_test_install() {
+  $library_folder = Settings::get('file_public_path') . '/libraries';
+  $zip_file = $library_folder . '/photoswipe.zip';
+  $photoswipe_folder = $library_folder . '/photoswipe';
+  if (file_exists($photoswipe_folder)) {
+    return;
+  }
+  \Drupal::service('file_system')->prepareDirectory($library_folder, FileSystemInterface::MODIFY_PERMISSIONS | FileSystemInterface::CREATE_DIRECTORY);
+  copy('https://github.com/dimsemenov/PhotoSwipe/archive/master.zip', $zip_file);
+  $zip = new \ZipArchive();
+  $zip->open($zip_file);
+  $zip->extractTo($library_folder);
+  rename($library_folder . '/PhotoSwipe-master', $photoswipe_folder);
+}

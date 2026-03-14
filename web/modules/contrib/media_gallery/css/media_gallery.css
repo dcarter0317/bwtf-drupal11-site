@@ -1,0 +1,32 @@
+.path-galleries .view-media-galleries .view-content,
+.path-media-gallery .field--name-images,
+.embedded-entity .field--name-images {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 4px;
+}
+
+@media (min-width: 576px) {
+  .path-galleries .view-media-galleries .view-content,
+  .path-media-gallery .field--name-images,
+  .embedded-entity .field--name-images {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .path-galleries .view-media-galleries .view-content,
+  .path-media-gallery .field--name-images,
+  .embedded-entity .field--name-images {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.path-galleries .view-media-galleries .view-content .views-field-title {
+  max-width: 300px;
+  text-align: center;
+}
+
+.path-galleries .view-media-galleries .view-content .views-row {
+  margin-bottom: 20px;
+}

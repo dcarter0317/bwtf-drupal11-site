@@ -1,0 +1,99 @@
+block.settings.media_gallery_latest_items_all_galleries:
+  type: block_settings
+  label: 'Latest gallery items from all galleries block settings'
+  mapping:
+    item_count:
+      type: integer
+      label: 'Item count'
+    thumbnail_image_style:
+      type: string
+      label: 'Thumbnail image style'
+    photoswipe_image_style:
+      type: string
+      label: 'Photoswipe image style'
+    layout:
+      type: string
+      label: 'Layout'
+    layout_configuration:
+      type: media_gallery.plugin.layout.[%parent.layout]
+      label: 'Layout plugin configuration'
+    view_all_show_link:
+      type: boolean
+      label: 'Show view all link'
+    view_all_text:
+      type: label
+      label: 'View all link text'
+    view_all_position:
+      type: string
+      label: 'View all link position'
+    view_all_link_classes:
+      type: string
+      label: 'View all link classes'
+
+media_gallery.plugin.layout.grid:
+  type: mapping
+  label: 'Grid layout'
+  mapping:
+    grid_columns:
+      type: integer
+      label: 'Grid columns'
+
+media_gallery.plugin.layout.featured_image_grid:
+  type: mapping
+  label: 'Featured image grid layout'
+  mapping:
+    grid_columns:
+      type: integer
+      label: 'Grid columns'
+    featured_image_column_span:
+      type: integer
+      label: 'Featured image column span'
+    featured_image_row_span:
+      type: integer
+      label: 'Featured image row span'
+    thumbnail_style_first:
+      type: string
+      label: 'Thumbnail style for the first item'
+
+media_gallery.plugin.layout.swiper:
+  type: mapping
+  label: 'Swiper layout'
+  mapping:
+    swiper_template:
+      type: string
+      label: 'Swiper template'
+
+block.settings.media_gallery_gallery:
+  type: block_settings
+  label: 'Media gallery block settings'
+  mapping:
+    gallery_id:
+      type: string
+      label: 'Media gallery'
+    item_count:
+      type: integer
+      label: 'Item count'
+    thumbnail_image_style:
+      type: string
+      label: 'Thumbnail image style'
+    photoswipe_image_style:
+      type: string
+      label: 'Photoswipe image style'
+    layout:
+      type: string
+      label: 'Layout'
+    layout_configuration:
+      type: media_gallery.plugin.layout.[%parent.layout]
+      label: 'Layout plugin configuration'
+    view_all_show_link:
+      type: boolean
+      label: 'Show view all link'
+    view_all_text:
+      type: label
+      label: 'View all link text'
+    view_all_position:
+      type: string
+      label: 'View all link position'
+    view_all_link_classes:
+      type: string
+      label: 'View all link classes'

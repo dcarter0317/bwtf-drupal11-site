@@ -1,0 +1,33 @@
+uuid: 7f9ce40a-0b05-4a3f-ae0f-e3650834c84e
+langcode: en
+status: true
+dependencies:
+  module:
+    - simpleads
+  theme:
+    - bwtf
+id: bwtf_simpleads
+theme: bwtf
+region: sidebar
+weight: -7
+provider: null
+plugin: simpleads
+settings:
+  id: simpleads
+  label: Affiliates
+  label_display: visible
+  provider: simpleads
+  group: '4'
+  rotation_impressions: 1
+  rotation: loop
+  rotation_speed: '900'
+  rotation_pauseonhover: 0
+  multiple_random_limit: '3'
+  show_in_modal: 0
+  modal_delay_type: page_visits
+  modal_delay: '10'
+  modal_page_visits: '5'
+  modal_visits_timeout: '2'
+  node_ref_field: '0'
+  simpleads_ref_field: '0'
+visibility: {  }

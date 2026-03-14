@@ -1,0 +1,20 @@
+uuid: ba4f169b-be0c-488c-849a-9b71199a6597
+langcode: en
+status: true
+dependencies: {  }
+name: homepage_slide_default_21_9_2520x1080
+label: 'Homepage Slide Default 21:9(2520x1080)'
+effects:
+  033039f9-2d33-450b-b83b-b84dc18b1e88:
+    uuid: 033039f9-2d33-450b-b83b-b84dc18b1e88
+    id: image_resize
+    weight: 1
+    data:
+      width: 2520
+      height: 1080
+  ef53044a-efc9-4b45-9541-25ae0a6732fc:
+    uuid: ef53044a-efc9-4b45-9541-25ae0a6732fc
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

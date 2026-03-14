@@ -1,0 +1,37 @@
+name: BWTF 2.0
+type: theme
+base theme: stable9
+version: VERSION
+description: A custom theme Drupal 10 and 11 for Ben's World of Transformers website..
+core_version_requirement: ^10 || ^11
+screenshot: screenshot.png
+
+# Favicon
+favicon: assets/imgs/icons/favicon.ico
+
+# REGIONS
+regions:
+  header: Header
+  main_menu: Main Menu
+  breadcrumbs: Breadcrumbs
+  simple_ads: Simple Ads
+  hero: Hero
+  sidebar: Sidebar
+  content: Content
+  footer: Footer
+  page_top: Page top
+  page_bottom: Page bottom
+
+# ASSETS
+libraries:
+  - bwtf/global-assets
+  - bwtf/slider
+  - bwtf/simpleads-debug
+  - bwtf/simpleads-fix
+
+# Disable the broken simpleads block.js library
+libraries-override:
+  simpleads/simpleads.block.js:
+    js:
+      js/simpleads.block.js: false
+  

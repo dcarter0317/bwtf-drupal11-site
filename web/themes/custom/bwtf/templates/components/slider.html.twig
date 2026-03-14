@@ -1,0 +1,87 @@
+{# Local vars with safe defaults #}
+{% set slides       = bwtf_slides|default([]) %}
+{% set show_slider  = slider_display|default(0) %}
+{% set on_front     = (is_front is defined) ? is_front : true %}
+{% set aspect       = slider_aspect|default('16:9') %}
+{% set ratio_class  = aspect == '21:9' ? 'ratio-21x9' : 'ratio-16x9' %}
+
+{# Overlay: pick a preset class; optionally pass CSS vars from PHP if you like #}
+{% set overlay_class = slider_overlay_preset|default('overlay-solid') %}
+{% set overlay_parts = [] %}
+{% if slider_overlay_from is defined and slider_overlay_from %}{% set _ = overlay_parts.append('--hero-overlay: ' ~ slider_overlay_from) %}{% endif %}
+{% if slider_overlay_to   is defined and slider_overlay_to   %}{% set _ = overlay_parts.append('--hero-overlay-to: ' ~ slider_overlay_to) %}{% endif %}
+{% set overlay_style = overlay_parts|length ? overlay_parts|join('; ') ~ ';' : null %}
+
+{% if on_front and show_slider and slides|length > 0 %}
+<section class="hero {{ ratio_class }} {{ overlay_class }}"
+         {% if overlay_style %}style="{{ overlay_style|e('html_attr') }}"{% endif %}
+         role="region" aria-label="Homepage slider">
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+
+      {% for s in slides %}
+        {# Prefer ratio-specific sources when available #}
+        {% set choice  = aspect == '21:9' ? s.img21|default({}) : s.img16|default({}) %}
+        {% set img_src = choice.src|default(s.image_url|default('')) %}
+
+        <div class="swiper-slide">
+          <div class="slide-media">
+            <div class="slide-overlay" aria-hidden="true"></div>
+
+            {% if img_src %}
+              {% if choice.is_svg|default(false) %}
+                <img
+                  src="{{ img_src|e('html_attr') }}"
+                  alt="{{ (s.title|default('Slide ' ~ loop.index))|e }}"
+                  {% if loop.first %}loading="eager" decoding="sync"{% else %}loading="lazy" decoding="async"{% endif %}>
+              {% else %}
+                <img
+                  src="{{ img_src|e('html_attr') }}"
+                  {% if choice.srcset|default('') %}srcset="{{ choice.srcset|e('html_attr') }}"{% endif %}
+                  sizes="100vw"
+                  alt="{{ (s.title|default('Slide ' ~ loop.index))|e }}"
+                  {% if loop.first %}loading="eager" decoding="sync"{% else %}loading="lazy" decoding="async"{% endif %}>
+              {% endif %}
+            {% endif %}
+          </div>
+
+          <div class="slide-text">
+            {% if s.title %}<h3 class="slide-text-title">{{ s.title }}</h3>{% endif %}
+
+            {% if s.desc is defined and s.desc %}
+              {% if s.desc is iterable %}
+                <div class="slide-text-description">{{ s.desc|render }}</div>
+              {% else %}
+                <p class="slide-text-description">{{ s.desc }}</p>
+              {% endif %}
+            {% endif %}
+
+            {% if s.href|default('') %}
+              <a href="{{ s.href|e('html_attr') }}" class="btn btn--primary">
+                {{ s.link_text|default('Learn more') }}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+
+    {% if slides|length > 1 %}
+      <div class="swiper-button-next" aria-label="Next slide"></div>
+      <div class="swiper-button-prev" aria-label="Previous slide"></div>
+      <div class="swiper-pagination"></div>
+    {% endif %}
+  </div>
+
+  <noscript>
+    <div class="swiper-fallback">
+      {% for s in slides %}
+        {% if s.image_url|default('') %}
+          <img src="{{ s.image_url|e('html_attr') }}" alt="{{ (s.title|default('Slide ' ~ loop.index))|e }}">
+        {% endif %}
+      {% endfor %}
+    </div>
+  </noscript>
+</section>
+{% endif %}

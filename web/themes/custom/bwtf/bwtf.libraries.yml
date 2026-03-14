@@ -1,0 +1,44 @@
+global-assets:
+  css:
+    theme:
+      assets/css/bwtf_v2.css: {}
+  js:
+    assets/js/bwtf_v2.js: {}
+
+slider:
+  css:
+    theme:
+      https://unpkg.com/swiper@10/swiper-bundle.min.css: { type: external }
+  js:
+    https://unpkg.com/swiper@10/swiper-bundle.min.js: { type: external, minified: true }
+    assets/js/slider.init.js: { attributes: { defer: true } }
+  dependencies:
+    - core/drupal
+    - core/once
+
+fontawesome:
+  css:
+    theme:
+      https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css: { type: external, minified: true }
+
+social-links:
+  dependencies:
+    - bwtf/fontawesome
+
+simpleads-debug:
+  js:
+    assets/js/simpleads-debug.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - simpleads/simpleads.block.js
+
+simpleads-fix:
+  js:
+    assets/js/simpleads-fix.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+    - simpleads/simpleads.lib.js
+    - simpleads/simpleads.slick

@@ -1,0 +1,46 @@
+id: d7_media_gallery_entity
+label: 'Media Gallery Entity'
+migration_group: media_gallery
+migration_dependencies:
+  optional:
+    - d7_media_gallery_media
+migration_tags:
+  - Drupal 7
+  - Content
+dependencies:
+  enforced:
+    module:
+      - media_gallery_migration
+source:
+  plugin: d7_node
+  node_type: media_gallery
+process:
+  type:
+    plugin: default_value
+    default_value: media_gallery
+  title: title
+  status: status
+  created: created
+  changed: changed
+  uid:
+    plugin: default_value
+    default_value: 1
+  description/value:
+    - plugin: get
+      source: media_gallery_description/0/value
+  description/format:
+    - plugin: default_value
+      default_value: basic_html
+  use_pager:
+    plugin: default_value
+    default_value: 1
+  images:
+    plugin: sub_process
+    source: media_gallery_media
+    process:
+      target_id:
+        plugin: migration_lookup
+        source: fid
+        migration: d7_media_gallery_media
+destination:
+  plugin: 'entity:media_gallery'

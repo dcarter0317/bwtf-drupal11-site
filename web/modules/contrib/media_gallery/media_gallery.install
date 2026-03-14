@@ -1,0 +1,184 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Media Gallery.
+ */
+
+use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_uninstall().
+ */
+function media_gallery_uninstall(): void {
+  \Drupal::configFactory()->getEditable('image.style.media_gallery_image')->delete();
+  \Drupal::configFactory()->getEditable('views.view.media_galleries')->delete();
+
+  $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo('media');
+  foreach ($bundles as $bundle => $value) {
+    \Drupal::configFactory()->getEditable("core.entity_view_display.media.{$bundle}.media_photoswipe")->delete();
+  }
+  \Drupal::configFactory()->getEditable('core.entity_view_mode.media.media_photoswipe')->delete();
+  \Drupal::configFactory()->getEditable('core.entity_view_mode.media_gallery.full_gallery')->delete();
+}
+
+/**
+ * Update config helper function.
+ *
+ * @param string $config_name
+ *   Config name.
+ */
+function _media_gallery_update_config(string $config_name): void {
+  $config_path = \Drupal::service('extension.list.module')->getPath('media_gallery') . '/config/install';
+  $source = new FileStorage($config_path);
+  $config_storage = \Drupal::service('config.storage');
+  if (file_exists("$config_path/$config_name.yml")) {
+    $config_storage->write($config_name, $source->read($config_name));
+  }
+}
+
+/**
+ * Update "All Galleries view".
+ */
+function media_gallery_update_8101(): void {
+  _media_gallery_update_config('views.view.media_galleries');
+}
+
+/**
+ * Make media_gallery entity translatable.
+ */
+function media_gallery_update_8102(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = $definition_update_manager->getEntityType('media_gallery');
+  if ($entity_type) {
+    $langcode = BaseFieldDefinition::create('language')
+      ->setLabel(t('Language code'))
+      ->setDescription(t('The language code.'))
+      ->setTranslatable(TRUE);
+    $definition_update_manager->installFieldStorageDefinition('langcode', $entity_type->id(), 'media_gallery', $langcode);
+
+    $keys = $entity_type->getKeys();
+    $keys['langcode'] = 'langcode';
+    $entity_type->set('entity_keys', $keys);
+    $entity_type->set('translatable', TRUE);
+    $definition_update_manager->updateFieldableEntityType($entity_type, \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('media_gallery'), $sandbox);
+  }
+}
+
+/**
+ * Add data_table to annotation for existing sites.
+ */
+function media_gallery_update_8103(&$sandbox) {
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = $manager->getEntityType('media_gallery');
+  if ($entity_type) {
+    $entity_type->set('data_table', 'media_gallery_field_data');
+    $manager->updateEntityType($entity_type);
+  }
+}
+
+/**
+ * Add new field for existing sites.
+ */
+function media_gallery_update_8104() {
+  $storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Use pager'))
+    ->setDefaultValue(1);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('use_pager', 'media_gallery', 'media_gallery', $storage_definition);
+
+  $entity_view_display = \Drupal::entityTypeManager()
+    ->getStorage('entity_view_display')
+    ->load('media_gallery.media_gallery.default');
+  if ($entity_view_display) {
+    $entity_view_display->setComponent('use_pager', [
+      'label' => 'hidden',
+      'region' => 'hidden',
+      'weight' => 10,
+    ]);
+    $entity_view_display->save();
+  }
+
+  $entity_form_display = \Drupal::entityTypeManager()
+    ->getStorage('entity_form_display')
+    ->load('media_gallery.media_gallery.default');
+  if ($entity_form_display) {
+    $entity_form_display->setComponent('use_pager', [
+      'settings' => ['display_label' => TRUE],
+      'weight' => 2,
+    ]);
+    $entity_form_display->save();
+  }
+}
+
+/**
+ * Add new field for existing sites.
+ */
+function media_gallery_update_8105() {
+  $storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Show photos in reverse order'))
+    ->setDefaultValue(0);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('reverse', 'media_gallery', 'media_gallery', $storage_definition);
+
+  $entity_form_display = \Drupal::entityTypeManager()
+    ->getStorage('entity_form_display')
+    ->load('media_gallery.media_gallery.default');
+  if ($entity_form_display) {
+    $entity_form_display->setComponent('reverse', [
+      'settings' => ['display_label' => TRUE],
+      'weight' => 3,
+    ]);
+    $entity_form_display->save();
+  }
+}
+
+/**
+ * Set photoswipe by default.
+ */
+function media_gallery_update_11001() {
+  _media_gallery_update_config('core.entity_view_display.media.image.media_photoswipe');
+  _media_gallery_update_config('core.entity_view_display.media_gallery.media_gallery.default');
+  _media_gallery_update_config('core.entity_view_mode.media.media_photoswipe');
+  \Drupal::configFactory()->getEditable('core.entity_view_display.media.image.media_colorbox')->delete();
+  \Drupal::configFactory()->getEditable('core.entity_view_mode.media.media_colorbox')->delete();
+  \Drupal::service('module_installer')->install(['photoswipe']);
+}
+
+/**
+ * Add gallery full view mode.
+ */
+function media_gallery_update_11002() {
+  _media_gallery_update_config('core.entity_view_mode.media_gallery.full_gallery');
+}
+
+/**
+ * Add items_per_page to existing sites.
+ */
+function media_gallery_update_11003() {
+  $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $storage_definition = $entity_update_manager->getFieldStorageDefinition('items_per_page', 'media_gallery');
+  if (!$storage_definition) {
+    $storage_definition = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Items per page'))
+      ->setName('items_per_page')
+      ->setDescription(t('The number of items to show per page.'))
+      ->setDefaultValue(12)
+      ->setSetting('unsigned', TRUE)
+      ->setSetting('min', 1);
+
+    $entity_update_manager->installFieldStorageDefinition('items_per_page', 'media_gallery', 'media_gallery', $storage_definition);
+
+    $form_display = EntityFormDisplay::load("media_gallery.media_gallery.default");
+    if ($form_display) {
+      $form_display->setComponent('items_per_page', [
+        'type' => 'number',
+        'weight' => 4,
+        'settings' => ['display_label' => TRUE],
+      ])->save();
+    }
+  }
+}

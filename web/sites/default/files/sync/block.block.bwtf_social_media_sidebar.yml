@@ -1,0 +1,21 @@
+uuid: ba7165de-2da5-4351-8742-b652f8195174
+langcode: en
+status: true
+dependencies:
+  module:
+    - test_social
+  theme:
+    - bwtf
+id: bwtf_social_media_sidebar
+theme: bwtf
+region: sidebar
+weight: -9
+provider: test_social
+plugin: test_social_block
+settings:
+  id: test_social_block
+  label: 'Social Media Links'
+  label_display: '0'
+  provider: test_social
+  page_id: null
+visibility: {  }

@@ -1,0 +1,12 @@
+/* bwtf_v2.scss (recommended order) */
+@import 'variables';
+@import 'mixins';
+
+/* Vendor/base helpers (no slider rules here) */
+@import 'libraries';
+
+/* Your components */
+@import 'components';
+
+/* Unified slider (single source of truth) */
+@import 'slider';

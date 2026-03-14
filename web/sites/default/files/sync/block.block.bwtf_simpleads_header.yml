@@ -1,0 +1,33 @@
+uuid: 643f8a25-7f47-46c5-b40f-a2f373d56085
+langcode: en
+status: true
+dependencies:
+  module:
+    - simpleads
+  theme:
+    - bwtf
+id: bwtf_simpleads_header
+theme: bwtf
+region: header
+weight: -10
+provider: null
+plugin: simpleads
+settings:
+  id: simpleads
+  label: 'Header Ads (Top Banner)'
+  label_display: visible
+  provider: simpleads
+  group: '6'
+  rotation_impressions: true
+  rotation: loop
+  rotation_speed: 3000
+  rotation_pauseonhover: true
+  multiple_random_limit: 3
+  show_in_modal: false
+  modal_delay_type: page_visits
+  modal_delay: 10
+  modal_page_visits: 5
+  modal_visits_timeout: 2
+  node_ref_field: ''
+  simpleads_ref_field: ''
+visibility: {  }

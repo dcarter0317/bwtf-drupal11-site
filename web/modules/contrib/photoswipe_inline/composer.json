@@ -1,0 +1,21 @@
+{
+    "name": "drupal/photoswipe_inline",
+    "description": "The module add text filter and your inline images will open with PhotoSwipe",
+    "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/photoswipe_inline",
+    "authors": [
+        {
+            "name": "Andrei Ivnitskii",
+            "homepage": "https://www.drupal.org/u/ivnish",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/photoswipe_inline",
+        "source": "https://git.drupalcode.org/project/photoswipe_inline"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "drupal/photoswipe": "^5.0"
+    }
+}

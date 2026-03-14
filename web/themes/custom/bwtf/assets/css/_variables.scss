@@ -1,0 +1,20 @@
+$clr-white: #FFF;
+$clr-link: #1DA1F2;
+$clr-primary: #2E1F64;
+$clr-secondary: #A30000;
+$clr-deep-gray: #494963;
+$clr-grey-light: #B8B8B8;
+$clr-light-blue: #40B2C9;
+$clr-border-light: #E3DEDE;
+$clr-text-light: $clr-border-light;
+$clr-text-color-dark: #040404;
+$clr-teritiary: #116153;
+$clr-text-color-primary: darken($clr-grey-light, 30%);
+
+
+$font-primary: 'Poppins', sans-serif;
+
+$bp-sm: 600px;
+$bp-med: 768px;
+$bp-lg: 1200px;
+$bp-xl: 1400px;

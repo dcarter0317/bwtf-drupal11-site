@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Enable the "PhotoSwipe Inline Text Filter" functionality.
+ */
+
+use Drupal\Component\Utility\Html;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function photoswipe_inline_page_attachments(array &$page) {
+  $page['#attached']['library'][] = 'photoswipe/photoswipe.init';
+}
+
+/**
+ * Implements hook_help().
+ */
+function photoswipe_inline_help($route_name) {
+  if ($route_name === 'help.page.photoswipe_inline') {
+    $text = file_get_contents(__DIR__ . '/README.md');
+    return '<pre>' . Html::escape($text) . '</pre>';
+  }
+  return '';
+}

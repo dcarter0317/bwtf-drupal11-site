@@ -1,0 +1,9 @@
+status: true
+dependencies:
+  module:
+    - media_gallery
+id: media_gallery.full_gallery
+label: 'Full gallery'
+description: ''
+targetEntityType: media_gallery
+cache: true

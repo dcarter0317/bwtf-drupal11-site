@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_page_alter().
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+
+/**
+ * Implements hook_help().
+ */
+function lite_speed_cache_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+        case 'help.page.lite_speed_cache':
+            $output = '<h3>' . t('About') . '</h3>';
+            $output .= '<dt>' . t('LSCache is used to cache your website on server end, it works similar to reverse proxy but its much more faster as there is no need to use a middleware proxy when everthing is being done by LiteSpeed Web Server. ') . '</dt>';
+
+            $output .= '<h3>' . t('Uses') . '</h3>';
+            $output .= '<dl>';
+            $output .= '<dt>' . t('Speeding up your site') . '</dt>';
+            $output .= '<dd>' . t('LiteSpeed Cache plugin for Drupal 8 uses same mechanism as their built in plugins to determine if page is cacheable or not. If page is cacheable it is requested from backend and served from LiteSpeed Cache the next time!   ') . '</dd>';
+            $output .= '<dd>' . t('Caching can be disabled and enabled from configurations page, you do not need to worry about invalidation since our plugin use tags based invalidation.') . '</dd>';
+            $output .= '</dl>';
+
+            return $output;
+    }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function lite_speed_cache_user_login($account) {
+    Drupal\lite_speed_cache\Cache\LSCacheHelper::setLoginVary();
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function lite_speed_cache_user_logout($account) {
+    Drupal\lite_speed_cache\Cache\LSCacheHelper::setLogoutVary();
+}

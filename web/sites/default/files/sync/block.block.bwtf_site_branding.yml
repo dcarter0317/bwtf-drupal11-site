@@ -1,0 +1,25 @@
+uuid: 5ef26bd5-408f-4b63-8c37-602b3012cb5e
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - bwtf
+_core:
+  default_config_hash: n_nlgjggHVfQt2H__zvLOKB2YtjPDbQ5tHijF9LE1aM
+id: bwtf_site_branding
+theme: bwtf
+region: header
+weight: 6
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  label_display: '0'
+  provider: system
+  use_site_logo: true
+  use_site_name: true
+  use_site_slogan: false
+visibility: {  }

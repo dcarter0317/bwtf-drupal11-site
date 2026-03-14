@@ -1,0 +1,22 @@
+{
+    "name": "drupal/media_entity_browser",
+    "type": "drupal-module",
+    "description": "This module provides an Entity Browser for Media.",
+    "keywords": [
+        "Drupal"
+    ],
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/media_entity_browser",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/media_entity_browser",
+        "source": "https://git.drupalcode.org/project/media_entity_browser"
+    },
+    "require": {
+      "drupal/inline_entity_form": "^3.0@RC",
+      "drupal/entity_browser": "^2.11"
+    },
+    "require-dev": {
+        "drupal/ctools": "^4.1"
+    }
+}

@@ -1,0 +1,46 @@
+id: d7_media_gallery_media
+label: 'Media Gallery Images'
+migration_group: media_gallery
+migration_tags:
+  - Drupal 7
+  - Content
+dependencies:
+  enforced:
+    module:
+      - media_gallery_migration
+source:
+  plugin: d7_media_gallery_file
+  scheme: public
+  constants:
+    source_base_path: 'http://d7media.docksal.site'
+process:
+  field_media_image/target_id:
+    -
+      plugin: migration_lookup
+      source: fid
+      migration: d7_file
+    -
+      plugin: migration_lookup
+      source: fid
+      migration: d7_media_gallery_files
+  field_media_image/alt: alt
+  thumbnail/target_id:
+    -
+      plugin: migration_lookup
+      source: fid
+      migration: d7_file
+    -
+      plugin: migration_lookup
+      source: fid
+      migration: d7_media_gallery_files
+  status: status
+  created: timestamp
+  changed: timestamp
+  uid: uid
+destination:
+  plugin: entity:media
+  default_bundle: image
+migration_dependencies:
+  optional:
+    - d7_file
+    - d7_media_gallery_files

@@ -1,0 +1,11 @@
+name: PhotoSwipe Inline Text Filter
+type: module
+description: The module add text filter and your inline images will open with PhotoSwipe
+core_version_requirement: ^10 || ^11
+dependencies:
+  - photoswipe:photoswipe (>= 5)
+
+# Information added by Drupal.org packaging script on 2025-12-02
+version: '1.0.2'
+project: 'photoswipe_inline'
+datestamp: 1764672313

@@ -1,0 +1,26 @@
+<footer>
+  <div class="container">
+    <p>BWTF.COM is copyright of Benson Yee since 1997. HASBRO, TRANSFORMERS and all related characters are trademarks of Hasbro. , Takara Ltd. and Tomy. Direct linking of images is not allowed.
+      If you wish to use any content from this site, <a href="https://www.bwtf.com/contact" target="_blank" rel="noopener">please request permission</a> before doing so.</p>
+    
+    {% if social_links is not empty %}
+      <ul class="footer-social">
+        {% for link in social_links %}
+          <li>
+            <a href="{{ link.url }}" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               aria-label="{{ link.label }}">
+              <i class="{{ link.icon }}" aria-hidden="true"></i>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    
+    <p>Theme by Dave Carter for <a href="https://www.dcartdevelopment.com" target="_blank" rel="noopener">https://www.dcartdevelopment.com</a></p>
+  </div>
+</footer>
+{{ attach_library('bwtf/social-links') }}
+<script src="{{ base_path ~ directory }}/assets/js/bwtf_v2.js"></script> 
+</body>

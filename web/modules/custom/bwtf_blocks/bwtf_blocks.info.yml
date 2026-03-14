@@ -1,0 +1,6 @@
+name: 'BWTF Blocks'
+type: module
+description: 'Auxiliary blocks for the BWTF theme (Social Media Links).'
+core_version_requirement: '^10 || ^11'
+package: Custom
+version: '1.0.0'
