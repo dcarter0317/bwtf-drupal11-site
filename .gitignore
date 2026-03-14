@@ -3,3 +3,10 @@
 
 # Composer dependencies are managed outside the repo.
 /vendor/
+
+# DDEV backups should not be committed.
+/.ddev/backups/
+
+# Drupal runtime files.
+/web/sites/default/files/
+/web/.htaccess
