@@ -1,7 +1,0 @@
-apply_markup_filter: true
-enable_cors: false
-translate_interface: false
-base_languagelist: 'Show Thumbnails|Hide Thumbnails|Expand Gallery|Close Gallery|Open Image in New Window|Images'
-juicebox_multisize_small: ''
-juicebox_multisize_medium: ''
-juicebox_multisize_large: ''

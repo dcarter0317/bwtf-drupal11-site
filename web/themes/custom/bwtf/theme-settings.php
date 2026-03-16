@@ -44,8 +44,7 @@ $form['bwtf_settings']['slider_overlay_preset'] = [
   '#title' => t('Overlay style'),
   '#options' => [
     'overlay-none'     => t('None'),
-    'overlay-
-    olid'    => t('Solid'),
+    'overlay-solid'    => t('Solid'),
     'overlay-gradient' => t('Gradient'),
     'overlay-multiply' => t('Multiply (blend)'),
   ],

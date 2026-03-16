@@ -7,6 +7,12 @@ section {
   margin-bottom: 20px;
 }
 
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
 /* Menu */
 .menu-container { position: relative; }
 
@@ -58,7 +64,9 @@ section {
     }
   }
 
-  &.btn-secondary {
+  &.btn-secondary,
+  &.btn--secondary,
+  &.btn__secondary {
     color: $clr-link;
     border: 1px solid $clr-link;
 
@@ -67,7 +75,18 @@ section {
       color: $clr-white;
     }
   }
+  &.btn--btn-link {
+    text-decoration: none;
+    color: #1DA1F2;
+    font-weight: 100;
+    border: 1px solid #1DA1F2;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
 }
+
+
 
 i {
   font-size: 1.6rem;
@@ -189,6 +208,22 @@ img {
     margin-top: 20px;
     gap: 2%;
   }
+}
+
+#block-bwtf-socials {
+  &.contextual-region {
+     div {
+       p {
+         display: flex;
+         gap: 16px;
+       }
+     }
+  }
+}
+
+.pager--links {
+  list-style: none;
+  text-align: center;
 }
 
 .simple-ads { 
@@ -932,6 +967,12 @@ footer {
     justify-content: center;
     gap: 15px;
     cursor: pointer;
+
+    i {
+      display: inline-block;
+      font-family: "Font Awesome 6 Brands", "Font Awesome 6 Free";
+      font-weight: 400;
+    }
 
     @include breakpoint-min($bp-med) {
       justify-content: start;
