@@ -161,6 +161,7 @@ img {
 
   li a {
     display: block;
+    font-weight: 200;
     color: $clr-white;
     letter-spacing: 5px;
     text-decoration: none;
@@ -174,7 +175,8 @@ img {
     @include breakpoint-min($bp-lg) {
       letter-spacing: initial;
       color: initial;
-      
+      font-weight: 200;
+
       &:hover,
       &:focus {
         border-bottom: 4px solid $clr-secondary;

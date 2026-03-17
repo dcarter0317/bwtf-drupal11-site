@@ -42,6 +42,10 @@ button, input, select, textarea {
    (kept minimal and syntactically valid)
    ------------------------------ */
 /* Your components */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: rgb(107.5, 107.5, 107.5);
   overflow-x: hidden;
@@ -207,26 +211,24 @@ img {
 }
 .nav li a {
   display: block;
+  font-weight: 200;
   color: #FFF;
   letter-spacing: 5px;
   text-decoration: none;
-  border-bottom: 4px solid transparent;
-  padding-bottom: 6px;
 }
 .nav li a:hover, .nav li a:focus {
   border-bottom: 4px solid #A30000;
-  /* padding-bottom remains unchanged to prevent shifting */
+  padding-bottom: 6px;
 }
 @media (min-width: 1200px) {
   .nav li a {
     letter-spacing: initial;
     color: initial;
-    border-bottom: 4px solid transparent;
-    padding-bottom: 6px;
+    font-weight: 200;
   }
   .nav li a:hover, .nav li a:focus {
     border-bottom: 4px solid #A30000;
-    /* padding-bottom remains unchanged to prevent shifting */
+    padding-bottom: 6px;
   }
 }
 .nav {
