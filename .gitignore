@@ -4,6 +4,9 @@
 # Composer dependencies are managed outside the repo.
 /vendor/
 
+# DDEV configuration should not be committed.
+.ddev 
+
 # DDEV backups should not be committed.
 /.ddev/backups/
 
