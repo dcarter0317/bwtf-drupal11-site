@@ -5,7 +5,7 @@
 /vendor/
 
 # DDEV configuration should not be committed.
-.ddev 
+/.ddev/
 
 # DDEV backups should not be committed.
 /.ddev/backups/
