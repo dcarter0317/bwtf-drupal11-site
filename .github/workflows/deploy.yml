@@ -1,0 +1,30 @@
+name: Deploy to NameHero Staging
+
+on:
+  push:
+    branches:
+      - main  # Change to your default branch if needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Pull latest code on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git pull'
+
+      - name: SCP files directory to server
+        run: |
+          scp -o StrictHostKeyChecking=no -r web/sites/default/files ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/web/sites/default/
+
+      - name: Clear Drupal cache (optional)
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com/web && php core/scripts/drupal cache:rebuild || true'
