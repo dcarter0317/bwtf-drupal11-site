@@ -19,7 +19,7 @@ jobs:
 
       - name: Pull latest code on server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git pull'
+          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git pull'
 
       - name: SCP files directory to server
         run: |
