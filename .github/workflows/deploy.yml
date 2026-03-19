@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACTIONS_STEP_DEBUG: true
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout code
@@ -20,9 +21,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.IDEAPAD_ACTIONS_FOR_DEPLOYMENT }}
 
+      - name: Debug Git Configuration
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git remote -v'
+
       - name: Pull latest code on server
         run: |
           ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git pull'
+
+      - name: Ensure destination directory exists
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files'
 
       - name: SCP files directory to server
         run: |
@@ -30,4 +39,4 @@ jobs:
 
       - name: Clear Drupal cache (optional)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com/web && php core/scripts/drupal cache:rebuild || true'
+          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com/web && php core/scripts/drupal cache:rebuild || true'
