@@ -13,60 +13,45 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      # 1. Checkout repo (Node 24 compatible)
       - name: Checkout code
         uses: actions/checkout@v5
 
-      # 2. Load SSH key
-      - name: Setup SSH agent
+      - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.IDEAPAD_ACTIONS_FOR_DEPLOYMENT }}
 
-      # 3. Add NameHero to known_hosts (secure)
-      - name: Add server to known_hosts
+      - name: Add NameHero host to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p 37980 ${{ secrets.NAMEHERO_HOST }} >> ~/.ssh/known_hosts
 
-      # 4. Test SSH connection (fail fast if broken)
       - name: Test SSH connection
         run: |
-          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} "echo ✅ SSH connected"
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} "echo SSH connected"
 
-      # 5. Debug remote repo (helps diagnose exit code 128 issues)
-      - name: Debug Git configuration on server
+      - name: Ensure remote deploy path exists
         run: |
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            cd /home/bwtfcom/stage.bwtf.com &&
-            echo "---- GIT REMOTE ----" &&
-            git remote -v &&
-            echo "---- GIT STATUS ----" &&
-            git status
+            mkdir -p /home/bwtfcom/stage.bwtf.com
           '
 
-      # 6. Pull latest code on server
-      - name: Deploy (git pull on server)
+      - name: Upload code to server
         run: |
-          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            cd /home/bwtfcom/stage.bwtf.com &&
-            git pull origin main
-          '
+          rsync -az --delete \
+            --exclude=".git" \
+            --exclude=".github" \
+            --exclude="node_modules" \
+            --exclude="web/sites/default/files" \
+            -e "ssh -p 37980" \
+            ./ ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/
 
-      # 7. Ensure Drupal files directory exists
-      - name: Ensure files directory exists
+      - name: Fix permissions for files directory
         run: |
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
             mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files
           '
 
-      # 8. Sync files directory (uses correct port)
-      - name: Upload files directory via SCP
-        run: |
-          scp -P 37980 -r web/sites/default/files \
-          ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/web/sites/default/
-
-      # 9. Clear Drupal cache (Drush-based)
       - name: Clear Drupal cache
         run: |
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
