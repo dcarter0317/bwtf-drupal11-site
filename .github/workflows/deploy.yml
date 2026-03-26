@@ -3,40 +3,73 @@ name: Deploy to NameHero Staging
 on:
   push:
     branches:
-      - main  # Change to your default branch if needed
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     env:
-      ACTIONS_STEP_DEBUG: true
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
+      # 1. Checkout repo (Node 24 compatible)
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
+      # 2. Load SSH key
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.IDEAPAD_ACTIONS_FOR_DEPLOYMENT }}
 
-      - name: Debug Git Configuration
+      # 3. Add NameHero to known_hosts (secure)
+      - name: Add server to known_hosts
         run: |
-          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git remote -v'
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 37980 ${{ secrets.NAMEHERO_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Pull latest code on server
+      # 4. Test SSH connection (fail fast if broken)
+      - name: Test SSH connection
         run: |
-          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com && git pull'
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} "echo ✅ SSH connected"
 
-      - name: Ensure destination directory exists
+      # 5. Debug remote repo (helps diagnose exit code 128 issues)
+      - name: Debug Git configuration on server
         run: |
-          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files'
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            cd /home/bwtfcom/stage.bwtf.com &&
+            echo "---- GIT REMOTE ----" &&
+            git remote -v &&
+            echo "---- GIT STATUS ----" &&
+            git status
+          '
 
-      - name: SCP files directory to server
+      # 6. Pull latest code on server
+      - name: Deploy (git pull on server)
         run: |
-          scp -o StrictHostKeyChecking=no -r web/sites/default/files ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/web/sites/default/
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            cd /home/bwtfcom/stage.bwtf.com &&
+            git pull origin main
+          '
 
-      - name: Clear Drupal cache (optional)
+      # 7. Ensure Drupal files directory exists
+      - name: Ensure files directory exists
         run: |
-          ssh -o StrictHostKeyChecking=no -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'cd /home/bwtfcom/stage.bwtf.com/web && php core/scripts/drupal cache:rebuild || true'
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files
+          '
+
+      # 8. Sync files directory (uses correct port)
+      - name: Upload files directory via SCP
+        run: |
+          scp -P 37980 -r web/sites/default/files \
+          ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/web/sites/default/
+
+      # 9. Clear Drupal cache (Drush-based)
+      - name: Clear Drupal cache
+        run: |
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            cd /home/bwtfcom/stage.bwtf.com/web &&
+            ../vendor/bin/drush cr || true
+          '
