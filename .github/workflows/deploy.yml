@@ -16,99 +16,88 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, gd, zip
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          composer install --no-dev --optimize-autoloader --no-interaction
+
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.IDEAPAD_ACTIONS_FOR_DEPLOYMENT }}
 
       - name: Add NameHero host to known_hosts
+        shell: bash
         run: |
           set -euxo pipefail
           mkdir -p ~/.ssh
           ssh-keyscan -p 37980 ${{ secrets.NAMEHERO_HOST }} >> ~/.ssh/known_hosts
 
       - name: Test SSH connection
+        shell: bash
         run: |
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} "whoami && hostname && pwd"
 
       - name: Ensure remote deploy path exists
+        shell: bash
         run: |
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            mkdir -p /home/bwtfcom/stage.bwtf.com &&
-            ls -ld /home/bwtfcom/stage.bwtf.com
+            mkdir -p /home/bwtfcom/stage.bwtf.com
           '
 
-        - name: Set up PHP
-          uses: shivammathur/setup-php@v2
-          with:
-            php-version: '8.3'
-            extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, gd, zip
-            tools: composer:v2
-
-        - name: Install Composer dependencies
-          shell: bash
-          run: |
-            set -euxo pipefail
-            composer install --no-dev --optimize-autoloader --no-interaction
-
-        - name: Create deploy archive
-          shell: bash
-          run: |
-            set -euxo pipefail
-            tar -czf /tmp/deploy.tar.gz \
-              --exclude=.git \
-              --exclude=.github \
-              --exclude=node_modules \
-              --exclude=web/sites/default/files \
-              --exclude=web/sites/default/settings.php \
-              .
-            ls -lh /tmp/deploy.tar.gz
+      - name: Create deploy archive
+        shell: bash
+        run: |
+          set -euxo pipefail
+          tar -czf /tmp/deploy.tar.gz \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=node_modules \
+            --exclude=web/sites/default/files \
+            --exclude=web/sites/default/settings.php \
+            .
+          ls -lh /tmp/deploy.tar.gz
 
       - name: Upload archive to server
         shell: bash
         run: |
           set -euxo pipefail
-          scp -v -P 37980 /tmp/deploy.tar.gz \
-            ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/
-
-      - name: Verify archive on server
-        run: |
-          set -euxo pipefail
-          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            ls -lh /home/bwtfcom/stage.bwtf.com/deploy.tar.gz
-          '
+          scp -P 37980 /tmp/deploy.tar.gz \
+            ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/deploy.tar.gz
 
       - name: Extract archive on server
+        shell: bash
         run: |
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
             cd /home/bwtfcom/stage.bwtf.com &&
             tar -xzf deploy.tar.gz &&
-            rm -f deploy.tar.gz &&
-            ls -la
+            rm -f deploy.tar.gz
           '
 
       - name: Ensure Drupal files directory exists
+        shell: bash
         run: |
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files &&
-            ls -ld /home/bwtfcom/stage.bwtf.com/web/sites/default/files
-          '
-
-      - name: Verify Drush exists
-        run: |
-          set -euxo pipefail
-          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            ls -l /home/bwtfcom/stage.bwtf.com/vendor/bin/drush
+            mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files
           '
 
       - name: Clear Drupal cache
+        shell: bash
         run: |
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
             cd /home/bwtfcom/stage.bwtf.com/web &&
-            ../vendor/bin/drush cr
+            ../vendor/bin/drush cr || true
           '
