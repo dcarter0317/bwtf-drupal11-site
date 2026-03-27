@@ -41,21 +41,23 @@ jobs:
           '
 
       - name: Create deploy archive
+        shell: bash
         run: |
           set -euxo pipefail
-          tar -czf deploy.tar.gz \
+          tar -czf /tmp/deploy.tar.gz \
             --exclude=.git \
             --exclude=.github \
             --exclude=node_modules \
             --exclude=web/sites/default/files \
             --exclude=web/sites/default/settings.php \
             .
-          ls -lh deploy.tar.gz
+          ls -lh /tmp/deploy.tar.gz
 
       - name: Upload archive to server
+        shell: bash
         run: |
           set -euxo pipefail
-          scp -P 37980 deploy.tar.gz \
+          scp -v -P 37980 /tmp/deploy.tar.gz \
             ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/
 
       - name: Verify archive on server
