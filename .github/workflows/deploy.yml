@@ -67,7 +67,7 @@ jobs:
           --exclude=web/sites/default/settings.php \
           --exclude=web/sites/default/default.settings.php \
           --exclude=web/sites/default/default.services.yml \
-      .
+        .
           ls -lh /tmp/deploy.tar.gz
 
       - name: Upload archive to server
