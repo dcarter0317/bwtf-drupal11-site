@@ -36,16 +36,27 @@ jobs:
             mkdir -p /home/bwtfcom/stage.bwtf.com
           '
 
+      - name: Debug remote tools
+        run: |
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            whoami
+            pwd
+            which rsync || echo "rsync not found"
+            rsync --version || true
+            df -h
+            ls -la /home/bwtfcom/stage.bwtf.com || true
+          '
       - name: Upload code to server
         run: |
-          rsync -az \
+          rsync -avz \
             --exclude=".git" \
             --exclude=".github" \
             --exclude="node_modules" \
             --exclude="web/sites/default/files" \
+            --exclude="web/sites/default/settings.php" \
             -e "ssh -p 37980" \
             ./ ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/
-
+           
       - name: Fix permissions for files directory
         run: |
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
