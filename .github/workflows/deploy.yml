@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload code to server
         run: |
-          rsync -az --delete \
+          rsync -az \
             --exclude=".git" \
             --exclude=".github" \
             --exclude="node_modules" \
