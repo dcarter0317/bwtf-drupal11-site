@@ -60,12 +60,14 @@ jobs:
         run: |
           set -euxo pipefail
           tar -czf /tmp/deploy.tar.gz \
-            --exclude=.git \
-            --exclude=.github \
-            --exclude=node_modules \
-            --exclude=web/sites/default/files \
-            --exclude=web/sites/default/settings.php \
-            .
+          --exclude=.git \
+          --exclude=.github \
+          --exclude=node_modules \
+          --exclude=web/sites/default/files \
+          --exclude=web/sites/default/settings.php \
+          --exclude=web/sites/default/default.settings.php \
+          --exclude=web/sites/default/default.services.yml \
+      .
           ls -lh /tmp/deploy.tar.gz
 
       - name: Upload archive to server
