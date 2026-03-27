@@ -100,7 +100,7 @@ jobs:
               ! -name files \
               -exec rm -rf {} +
           '
-
+~
       - name: Extract archive on server
         shell: bash
         run: |
