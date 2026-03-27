@@ -96,9 +96,11 @@ jobs:
               -exec rm -rf {} +
 
             find web/sites/default -mindepth 1 -maxdepth 1 \
-              ! -name settings.php \
-              ! -name files \
-              -exec rm -rf {} +
+                ! -name settings.php \
+                ! -name files \
+                ! -name default.settings.php \
+                ! -name default.services.yml \
+                -exec rm -rf {} +
           '
       - name: Extract archive on server
         shell: bash
