@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up SSH agent
+      - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.IDEAPAD_ACTIONS_FOR_DEPLOYMENT }}
@@ -36,28 +36,30 @@ jobs:
             mkdir -p /home/bwtfcom/stage.bwtf.com
           '
 
-      - name: Debug remote tools
+      - name: Create deploy archive
+        run: |
+          tar -czf deploy.tar.gz \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=node_modules \
+            --exclude=web/sites/default/files \
+            --exclude=web/sites/default/settings.php \
+            .
+
+      - name: Upload archive to server
+        run: |
+          scp -P 37980 deploy.tar.gz \
+            ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/
+
+      - name: Extract archive on server
         run: |
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            whoami
-            pwd
-            which rsync || echo "rsync not found"
-            rsync --version || true
-            df -h
-            ls -la /home/bwtfcom/stage.bwtf.com || true
+            cd /home/bwtfcom/stage.bwtf.com &&
+            tar -xzf deploy.tar.gz &&
+            rm -f deploy.tar.gz
           '
-      - name: Upload code to server
-        run: |
-          rsync -avz \
-            --exclude=".git" \
-            --exclude=".github" \
-            --exclude="node_modules" \
-            --exclude="web/sites/default/files" \
-            --exclude="web/sites/default/settings.php" \
-            -e "ssh -p 37980" \
-            ./ ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/
-           
-      - name: Fix permissions for files directory
+
+      - name: Ensure Drupal files directory exists
         run: |
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
             mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files
