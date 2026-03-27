@@ -107,7 +107,7 @@ jobs:
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
             cd /home/bwtfcom/stage.bwtf.com &&
-            tar -xzf deploy.tar.gz &&
+pwd            tar -xzf deploy.tar.gz &&
             rm -f deploy.tar.gz
           '
 
