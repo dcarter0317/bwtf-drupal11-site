@@ -1,6 +1,6 @@
-name: 'Test Social'
+name: 'BWTF Social Icons'
 type: module
-description: 'Test module to verify block plugin discovery.'
+description: 'Social icons block for BWTF.'
 core_version_requirement: '^10 || ^11'
 package: Custom
 version: '1.0.0'

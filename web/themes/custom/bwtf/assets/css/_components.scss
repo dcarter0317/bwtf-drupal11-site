@@ -227,6 +227,12 @@ img {
   }
 }
 
+.social {
+  ul {
+   padding: 20px 20px 20px 0;
+  }
+}
+
 .pager--links {
   list-style: none;
   text-align: center;
@@ -966,7 +972,7 @@ footer {
   }
 
   .footer-social {
-    padding: 20px;
+    padding: 20px 20px 20px 0;
     list-style: none;
     display: flex;
     place-items: center;

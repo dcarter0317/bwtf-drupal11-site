@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Social media links component.
+ *
+ * Available variables:
+ * - social_links: Array of social media link data.
+ *   - platform: Machine name of the platform.
+ *   - url: Full URL to the social media profile.
+ *   - label: Human-readable label for the platform.
+ *   - icon: Font Awesome icon class.
+ */
+#}
+{{ attach_library('bwtf/social-links') }}
+
+{% if social_links is not empty %}
+<div class="social">
+  <h2>Socials</h2>
+  <ul>
+    {% for link in social_links %}
+      <li>
+        <a href="{{ link.url }}" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           aria-label="{{ link.label }}">
+          <i class="{{ link.icon }}" aria-hidden="true"></i>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

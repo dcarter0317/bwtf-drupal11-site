@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\test_social\Plugin\Block;
+namespace Drupal\bwtf_social_icons\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Annotation\Translation;
 
 /**
- * Provides a 'Test Social' block.
+ * Provides a 'BWTF Social Icons' block.
  *
  * @Block(
- *   id = "test_social_block",
- *   admin_label = @Translation("Test Social Block"),
+ *   id = "bwtf_social_icons_block",
+ *   admin_label = @Translation("BWTF Social Icons Block"),
  * )
  */
-class TestSocialBlock extends BlockBase {
+class BwtfSocialIconsBlock extends BlockBase {
   public function build() {
     $cfg = \Drupal::config('bwtf.settings');
 
