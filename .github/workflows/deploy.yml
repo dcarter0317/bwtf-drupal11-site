@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euxo pipefail
           ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            mkdir -p /home/bwtfcom/stage.bwtf.com
+            mkdir -p /home/bwtfcom/stage.bwtf.com/web/sites/default/files
           '
 
       - name: Create deploy archive
@@ -74,6 +74,32 @@ jobs:
           set -euxo pipefail
           scp -P 37980 /tmp/deploy.tar.gz \
             ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/deploy.tar.gz
+
+      - name: Clean old code but preserve settings and files
+        shell: bash
+        run: |
+          set -euxo pipefail
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            cd /home/bwtfcom/stage.bwtf.com
+
+            find . -mindepth 1 -maxdepth 1 \
+              ! -name web \
+              ! -name deploy.tar.gz \
+              -exec rm -rf {} +
+
+            find web -mindepth 1 -maxdepth 1 \
+              ! -name sites \
+              -exec rm -rf {} +
+
+            find web/sites -mindepth 1 -maxdepth 1 \
+              ! -name default \
+              -exec rm -rf {} +
+
+            find web/sites/default -mindepth 1 -maxdepth 1 \
+              ! -name settings.php \
+              ! -name files \
+              -exec rm -rf {} +
+          '
 
       - name: Extract archive on server
         shell: bash
