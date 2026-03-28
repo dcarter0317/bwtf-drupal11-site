@@ -130,3 +130,6 @@ jobs:
             cd /home/bwtfcom/stage.bwtf.com/web &&
             ../vendor/bin/drush cr || true
           '
+      - name: Post-deploy PHP 8.3 & Drush fix
+        shell: bash
+        run: ssh ${{ secrets.STAGE_SSH_USER }}@${{ secrets.STAGE_HOST }} 'bash /home/bwtfcom/stage.bwtf.com/post_deploy_fix.sh'    
