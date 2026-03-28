@@ -132,4 +132,4 @@ jobs:
           '
       - name: Post-deploy PHP 8.3 & Drush fix
         shell: bash
-        run: ssh -p 37980 ${{ secrets.STAGE_SSH_USER }}@${{ secrets.STAGE_HOST }} 'bash /home/bwtfcom/stage.bwtf.com/post_deploy_fix.sh'
+        run: ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'bash /home/bwtfcom/stage.bwtf.com/post_deploy_fix.sh'
