@@ -133,3 +133,12 @@ jobs:
       - name: Post-deploy PHP 8.3 & Drush fix
         shell: bash
         run: ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} 'bash /home/bwtfcom/stage.bwtf.com/post_deploy_fix.sh'
+
+      - name: Import Drupal configuration (drush cim)
+        shell: bash
+        run: |
+          set -euxo pipefail
+          ssh -p 37980 ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            cd /home/bwtfcom/stage.bwtf.com/web &&
+            ../php ../drush cim -y || true
+          '
