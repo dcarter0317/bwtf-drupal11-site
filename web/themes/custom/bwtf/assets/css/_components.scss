@@ -226,7 +226,7 @@ img {
 
 /* Layout */
 .content {
-  @include breakpoint($bp-lg) {
+  @include breakpoint-min($bp-lg) {
     display: grid;
     grid-template-columns: 40% 30%;
   }
