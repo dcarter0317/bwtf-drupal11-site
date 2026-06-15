@@ -256,9 +256,12 @@ img {
 }
 
 /* Layout */
+.content {
+  display: grid;
+  grid-template-columns: 40% 30%;
+}
 @media (min-width: 768px) {
   .content {
-    display: grid;
     grid-template-columns: 68% 28%;
     margin-top: 20px;
     gap: 2%;
@@ -606,7 +609,9 @@ aside {
     padding: 0;
     margin: 0 auto;
   }
-  aside h2, aside h3, aside h4 {
+  aside h2,
+  aside h3,
+  aside h4 {
     text-align: center;
     width: 100%;
     margin-left: 0;
@@ -884,7 +889,8 @@ aside .block-simpleads .simpleads iframe {
   font-size: 1.1rem;
   cursor: pointer;
   pointer-events: auto;
-  z-index: 3; /* ensure it sits above the input border */
+  z-index: 3;
+  /* ensure it sits above the input border */
 }
 
 .search-form .search-btn:focus {
@@ -958,12 +964,16 @@ aside .block-simpleads .simpleads iframe {
     text-align: center;
   }
 }
-.social h2, .social h3, .social h4 {
+.social h2,
+.social h3,
+.social h4 {
   font-size: 1.2rem;
   font-weight: 100;
 }
 @media (max-width: 640px) {
-  .social h2, .social h3, .social h4 {
+  .social h2,
+  .social h3,
+  .social h4 {
     width: 100%;
     text-align: center;
     margin: 0 auto 1rem;
@@ -1017,7 +1027,8 @@ footer p {
   font-size: 0.8rem;
   font-weight: 300;
 }
-footer a, footer a:visited {
+footer a,
+footer a:visited {
   color: #1DA1F2;
 }
 @media (min-width: 768px) {
