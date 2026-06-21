@@ -30,21 +30,23 @@
  */
 #}
 
-<div class="article-card">
-      <div class="article-card__media">
-      {{ fields.field_hero_image.content }}
-      </div>
-      <div class="article-card__text">
-        <div class="article-card__header">
-          <small class="article-card__date">{{ fields.field_date.content }}</small>
+<div class="article-card-wrapper">
+  <div class="article-card">
+        <div class="article-card__media">
+        {{ fields.field_hero_image.content }}
         </div>
-        <div class="article-card__body">
-          <h5 class="article-card__title">{{ fields.title.content }}</h5>
-          <p class="article-card__description">{{ fields.body.content }}</p>
+        <div class="article-card__text">
+          <div class="article-card__header">
+            <small class="article-card__date">{{ fields.field_date.content }}</small>
+          </div>
+          <div class="article-card__body">
+            <h5 class="article-card__title">{{ fields.title.content }}</h5>
+            <p class="article-card__description">{{ fields.body.content }}</p>
+          </div>
+          <div class="article-card__footer">
+          {{ fields.view_node.content }}
+          </div>
         </div>
-        <div class="article-card__footer">
-        {{ fields.view_node.content }}
-        </div>
-      </div>
-  </div>
+    </div>
+</div>
 
