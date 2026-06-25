@@ -1,0 +1,22 @@
+uuid: d61a1aee-4f3a-4857-9a39-387b05eb831d
+langcode: en
+status: false
+dependencies:
+  theme:
+    - bwtf
+_core:
+  default_config_hash: nGE3EoPQQaQCuqTUtZgw0-KIzmrqdKDzdNQf2JyPUt4
+id: bwtf_primary_local_tasks
+theme: bwtf
+region: header
+weight: -4
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Primary tabs'
+  label_display: '0'
+  provider: core
+  primary: true
+  secondary: false
+visibility: {  }

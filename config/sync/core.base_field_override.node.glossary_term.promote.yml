@@ -1,0 +1,22 @@
+uuid: f28a08ee-233a-4aa0-a2a4-975c36b6af2e
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.glossary_term
+id: node.glossary_term.promote
+field_name: promote
+entity_type: node
+bundle: glossary_term
+label: 'Promoted to front page'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

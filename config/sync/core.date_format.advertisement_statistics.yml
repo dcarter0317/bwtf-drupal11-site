@@ -1,0 +1,10 @@
+uuid: 502af275-676e-4168-95dd-38c333303465
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: fECk2O3jparhG2a8uGpr-sIMDKRlrPGrdSyNnKzZmBo
+id: advertisement_statistics
+label: 'Advertisement Statistics'
+locked: false
+pattern: 'F d, Y'

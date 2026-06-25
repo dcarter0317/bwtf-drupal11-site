@@ -1,0 +1,11 @@
+uuid: fd3b6d6a-013d-40e1-893c-ad3fee1d1538
+langcode: en
+status: true
+dependencies:
+  module:
+    - simpleads
+id: simpleads_group.token
+label: Token
+description: null
+targetEntityType: simpleads_group
+cache: true

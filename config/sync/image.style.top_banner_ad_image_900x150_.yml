@@ -1,0 +1,15 @@
+uuid: cd2ebe7e-9972-48be-9780-9d28bae11201
+langcode: en
+status: true
+dependencies: {  }
+name: top_banner_ad_image_900x150_
+label: 'Banner Ad Image (900x150)'
+effects:
+  113d71ea-95c7-4c22-9c4e-4bfb63175d04:
+    uuid: 113d71ea-95c7-4c22-9c4e-4bfb63175d04
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 900
+      height: 150
+      anchor: center-center

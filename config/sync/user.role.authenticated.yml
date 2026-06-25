@@ -1,0 +1,46 @@
+uuid: 424f9fa0-162e-40ff-9372-aa9d6c0193c0
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.basic_html
+    - rest.resource.simpleads_click
+    - rest.resource.simpleads_group
+    - rest.resource.simpleads_impression
+    - rest.resource.simpleads_reference
+    - rest.resource.simpleads_views
+  module:
+    - comment
+    - contact
+    - file
+    - filter
+    - google_analytics
+    - media
+    - rest
+    - shortcut
+    - simpleads
+    - system
+_core:
+  default_config_hash: btW6TFHajhy7Eo6YUvdFiPh4TcPggo8GBXYctjV6zag
+id: authenticated
+label: 'Authenticated user'
+weight: 1
+is_admin: false
+permissions:
+  - 'access comments'
+  - 'access content'
+  - 'access shortcuts'
+  - 'access site-wide contact form'
+  - 'count simpleads clicks'
+  - 'count simpleads impressions'
+  - 'delete own files'
+  - 'opt-in or out of google analytics tracking'
+  - 'post comments'
+  - 'restful get simpleads_group'
+  - 'restful get simpleads_reference'
+  - 'restful get simpleads_views'
+  - 'restful post simpleads_click'
+  - 'restful post simpleads_impression'
+  - 'skip comment approval'
+  - 'use text format basic_html'
+  - 'view media'

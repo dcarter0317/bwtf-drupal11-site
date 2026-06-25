@@ -1,0 +1,13 @@
+uuid: a2aa6c6d-16e0-49f4-958c-a0864416f866
+langcode: en
+status: true
+dependencies:
+  module:
+    - simpleads
+_core:
+  default_config_hash: Utmie4C3AC8mu6AN9sU6J4le1dB1daSPoCrH7QxBiCM
+id: simpleads.advertisement
+label: Advertisement
+description: null
+targetEntityType: simpleads
+cache: true

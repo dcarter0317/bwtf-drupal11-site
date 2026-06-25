@@ -1,0 +1,27 @@
+uuid: 2d0968cf-8886-4bca-9451-489608008635
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_site_section
+field_name: field_site_section
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: 'Latest News'
+      label: 'Latest News'
+    -
+      value: News
+      label: News
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

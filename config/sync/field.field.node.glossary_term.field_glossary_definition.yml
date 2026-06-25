@@ -1,0 +1,21 @@
+uuid: 39977d41-3674-492c-ac66-775d2ac17229
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_glossary_definition
+    - node.type.glossary_term
+  module:
+    - text
+id: node.glossary_term.field_glossary_definition
+field_name: field_glossary_definition
+entity_type: node
+bundle: glossary_term
+label: 'Glossary Definition'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

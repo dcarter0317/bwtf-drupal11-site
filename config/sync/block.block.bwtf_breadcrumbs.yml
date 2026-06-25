@@ -1,0 +1,30 @@
+uuid: 3380be3d-d1bd-4cfa-8730-fcf72c1acf3a
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - system
+  theme:
+    - bwtf
+_core:
+  default_config_hash: VhBzWb7lMRtIOg9G7VSw_0uopi-7zXeHq4vXqqV1HFE
+id: bwtf_breadcrumbs
+theme: bwtf
+region: breadcrumbs
+weight: -8
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: Breadcrumbs
+  label_display: '0'
+  provider: system
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      page: page

@@ -1,0 +1,22 @@
+uuid: 9a63b6c9-45f4-45b2-8c3c-63703484d605
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - bwtf
+_core:
+  default_config_hash: BZ5tpW7H8X4PVGRm3MImTIHd2tN0eF7zOtp4SpRYUA0
+id: bwtf_messages
+theme: bwtf
+region: header
+weight: -5
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  label_display: '0'
+  provider: system
+visibility: {  }

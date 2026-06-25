@@ -1,0 +1,24 @@
+uuid: da3bf192-3777-46da-8a61-d342df538b28
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.glossary_term.field_glossary_definition
+    - field.field.node.glossary_term.field_glossary_term
+    - node.type.glossary_term
+  module:
+    - user
+id: node.glossary_term.teaser
+targetEntityType: node
+bundle: glossary_term
+mode: teaser
+content:
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_glossary_definition: true
+  field_glossary_term: true

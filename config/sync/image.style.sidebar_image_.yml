@@ -1,0 +1,15 @@
+uuid: a0ed0e55-def4-434e-9ed2-94afcdafd804
+langcode: en
+status: true
+dependencies: {  }
+name: sidebar_image_
+label: 'Sidebar Ad Image (300x300)'
+effects:
+  7d39e972-0391-48b4-ba86-1b9105732e40:
+    uuid: 7d39e972-0391-48b4-ba86-1b9105732e40
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 300
+      height: 300
+      anchor: center-center

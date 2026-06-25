@@ -1,0 +1,23 @@
+uuid: 8ddde7f1-e6ac-4b7d-a274-5274f4b9c53d
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:e9f1c1fc-52c8-43c4-ab05-755ca41e694d'
+  module:
+    - block_content
+  theme:
+    - bwtf
+id: bwtf_socials
+theme: bwtf
+region: sidebar
+weight: -8
+provider: null
+plugin: 'block_content:e9f1c1fc-52c8-43c4-ab05-755ca41e694d'
+settings:
+  id: 'block_content:e9f1c1fc-52c8-43c4-ab05-755ca41e694d'
+  label: Socials
+  label_display: '0'
+  provider: block_content
+  view_mode: full
+visibility: {  }

@@ -1,0 +1,21 @@
+uuid: 2c18c065-abc4-4b81-8202-190379f62977
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_site_section
+    - node.type.page
+  module:
+    - options
+id: node.page.field_site_section
+field_name: field_site_section
+entity_type: node
+bundle: page
+label: 'Site Section'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -13,3 +13,5 @@
 # Drupal runtime files.
 /web/sites/default/files/
 /web/.htaccess
+.DS_Store
+.DS_Store

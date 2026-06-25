@@ -1,0 +1,22 @@
+uuid: a063aecc-7e53-4c5d-a0bd-58c66b732a1c
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - bwtf
+_core:
+  default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
+id: bwtf_powered
+theme: bwtf
+region: header
+weight: 0
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Powered by Drupal'
+  label_display: '0'
+  provider: system
+visibility: {  }
