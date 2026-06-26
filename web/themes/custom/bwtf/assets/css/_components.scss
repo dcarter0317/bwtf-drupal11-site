@@ -219,6 +219,12 @@ img {
 }
 
 /* Layout */
+
+.top-ad-section {
+  margin-bottom: 30px;
+}
+
+
 .content {
   @include breakpoint-min($bp-lg) {
     display: grid;
@@ -473,8 +479,6 @@ img {
   grid-template-columns: 33.33% 66.67%;
   background-color: $clr-white;
   overflow: hidden;
-  height: 150px;
-  min-height: 150px;
 
   &__media {
     margin-top: 0;
@@ -556,7 +560,8 @@ img {
     line-height: 1.35;
     color: darken($clr-grey-light, 15%);
 
-    p, & {
+    p,
+    & {
       display: -webkit-box;
       -webkit-line-clamp: 2;
       line-clamp: 2;
@@ -593,12 +598,14 @@ img {
   // Large sizes container query (exact match for user's desktop image)
   @container (min-width: 500px) {
     grid-template-columns: 33.33% 66.67%;
-    min-height: 200px;
-    height: 200px;
+    min-height: 240px;
+    height: 240px;
 
     &__media {
       img {
         border-radius: 8px 0 0 8px;
+        display: block;
+        object-fit: fill;
       }
     }
 
@@ -630,7 +637,9 @@ img {
     }
 
     &__description {
-      p, & {
+
+      p,
+      & {
         display: -webkit-box;
         -webkit-line-clamp: 4;
         line-clamp: 4;
