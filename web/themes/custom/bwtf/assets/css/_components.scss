@@ -640,9 +640,11 @@ img {
       p,
       & {
         display: -webkit-box;
-        -webkit-line-clamp: 4;
-        line-clamp: 4;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
         line-height: 1.4;
+        overflow: hidden;
       }
     }
 
@@ -654,6 +656,7 @@ img {
         padding: 6px 20px;
         font-size: 0.85rem;
         border-radius: 8px;
+        margin-bottom: 16px;
       }
     }
   }

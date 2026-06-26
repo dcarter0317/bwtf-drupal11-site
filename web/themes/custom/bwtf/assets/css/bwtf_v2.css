@@ -615,9 +615,11 @@ img {
   }
   .article-card__description p, .article-card__description {
     display: -webkit-box;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     line-height: 1.4;
+    overflow: hidden;
   }
   .article-card__footer {
     margin-top: 10px;
@@ -627,6 +629,7 @@ img {
     padding: 6px 20px;
     font-size: 0.85rem;
     border-radius: 8px;
+    margin-bottom: 16px;
   }
 }
 
