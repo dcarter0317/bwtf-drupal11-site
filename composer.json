@@ -24,6 +24,7 @@
         "drupal/imce": "^3.1",
         "drupal/inline_entity_form": "^3.0",
         "drupal/js_cookie": "^2.0",
+        "drupal/paragraphs": "^1.21",
         "drupal/pathauto": "^1.15",
         "drupal/search_api": "^1.41",
         "drupal/tour": "^2.0",
