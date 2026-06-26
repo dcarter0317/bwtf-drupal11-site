@@ -558,15 +558,14 @@ img {
     overflow: hidden;
     line-height: 1.35;
     color: darken($clr-grey-light, 15%);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 
-    p,
-    & {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
-      text-overflow: ellipsis;
-      overflow: hidden;
+    p {
+      display: inline;
       margin: 0;
     }
   }
@@ -636,15 +635,16 @@ img {
     }
 
     &__description {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      line-height: 1.4;
+      overflow: hidden;
 
-      p,
-      & {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        line-height: 1.4;
-        overflow: hidden;
+      p {
+        display: inline;
+        margin: 0;
       }
     }
 
