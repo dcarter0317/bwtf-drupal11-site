@@ -1,3 +1,5 @@
+.git
+
 # Ignore Windows zone identifier metadata files.
 *:Zone.Identifier
 
@@ -15,3 +17,37 @@
 /web/.htaccess
 .DS_Store
 .DS_Store
+
+# Composer
+/vendor/
+
+# Node
+/node_modules/
+
+# Drupal uploaded files
+/web/sites/default/files/
+
+# Private files (if your site uses one)
+/private/
+
+# Local settings (do NOT commit these)
+/web/sites/default/settings.php
+/web/sites/default/services.yml
+
+# Database dumps
+*.sql
+*.sql.gz
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Remote VS Code server (shouldn't be in your repo anyway)
+.vscode-server/
