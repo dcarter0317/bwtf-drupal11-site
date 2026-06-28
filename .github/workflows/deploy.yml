@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -31,7 +31,7 @@ jobs:
       - name: Add NameHero host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ secrets.NAMEHERO_PORT }} ${{ secrets.NAMEHERO_HOST }} >> ~/.ssh/known_hosts
 
       - name: Create deploy archive
         run: |
@@ -51,12 +51,13 @@ jobs:
 
       - name: Upload archive
         run: |
-          scp -P ${{ secrets.SSH_PORT }} /tmp/deploy.tar.gz \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/bwtfcom/stage.bwtf.com/deploy.tar.gz
+          scp -P ${{ secrets.NAMEHERO_PORT }} /tmp/deploy.tar.gz \
+            ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/deploy.tar.gz
 
       - name: Extract and run Drupal commands
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
+          ssh -p ${{ secrets.NAMEHERO_PORT }} ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
+            set -e
             cd /home/bwtfcom/stage.bwtf.com
 
             tar -xzf deploy.tar.gz
