@@ -13,16 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, gd, zip
-          tools: composer:v2
-
-      - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction
-
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.10.0
         with:
@@ -33,12 +23,18 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.NAMEHERO_PORT }} ${{ secrets.NAMEHERO_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Create deploy archive
+      - name: Create lightweight deploy archive
         run: |
           tar -czf /tmp/deploy.tar.gz \
             --exclude=.git \
             --exclude=.github \
+            --exclude=.ddev \
+            --exclude=vendor \
             --exclude=node_modules \
+            --exclude=web/core \
+            --exclude=web/modules/contrib \
+            --exclude=web/themes/contrib \
+            --exclude=web/profiles/contrib \
             --exclude=web/sites/default/files \
             --exclude=web/sites/default/settings.php \
             --exclude=web/sites/default/services.yml \
@@ -54,14 +50,17 @@ jobs:
           scp -P ${{ secrets.NAMEHERO_PORT }} /tmp/deploy.tar.gz \
             ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/deploy.tar.gz
 
-      - name: Extract and run Drupal commands
+      - name: Extract, install Composer dependencies, and run Drupal commands
         run: |
           ssh -p ${{ secrets.NAMEHERO_PORT }} ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
             set -e
+
             cd /home/bwtfcom/stage.bwtf.com
 
             tar -xzf deploy.tar.gz
             rm -f deploy.tar.gz
+
+            /opt/alt/php83/usr/bin/php composer.phar install --no-dev --optimize-autoloader --no-interaction
 
             vendor/bin/drush updb -y
             vendor/bin/drush cr
