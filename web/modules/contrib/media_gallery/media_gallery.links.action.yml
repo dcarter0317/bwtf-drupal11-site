@@ -1,5 +1,0 @@
-media_gallery.add_form:
-  route_name: entity.media_gallery.add_form
-  title: 'Add media gallery'
-  appears_on:
-    - entity.media_gallery.collection

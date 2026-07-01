@@ -1,8 +1,0 @@
-langcode: en
-status: true
-dependencies: {  }
-id: third_dashboard
-label: 'Third Dashboard'
-description: ''
-layout: {  }
-weight: 0

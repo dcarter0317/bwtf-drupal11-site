@@ -1,5 +1,0 @@
-access tour:
-  title: 'Access tours'
-administer tour:
-  title: 'Administer tour'
-  restrict access: true

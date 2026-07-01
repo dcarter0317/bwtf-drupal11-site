@@ -51,3 +51,41 @@
 
 # Remote VS Code server (shouldn't be in your repo anyway)
 .vscode-server/
+
+# Local/editor files
+.idea/
+*.log
+
+# Drupal generated files
+/web/sites/default/files/
+/web/sites/*/files/
+
+# Composer-managed Drupal files
+/vendor/
+/web/core/
+/web/modules/contrib/
+/web/themes/contrib/
+/web/profiles/contrib/
+
+# Runtime/user files
+/web/sites/default/files/
+/web/sites/*/files/
+
+# Local/private files
+/web/sites/default/settings.php
+/web/sites/default/services.yml
+.env
+.env.*
+.idea/
+*.log
+
+# Backups/archives/database dumps
+/backups/
+/backup/
+*.sql
+*.sql.gz
+*.tar
+*.tar.gz
+*.zip
+*.bak
+*.old

@@ -1,6 +1,0 @@
-tourauto:
-  js:
-    js/tourauto.js: {}
-  dependencies:
-    - core/once
-    - tour/tour

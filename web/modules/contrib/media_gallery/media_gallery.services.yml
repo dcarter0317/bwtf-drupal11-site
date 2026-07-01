@@ -1,9 +1,0 @@
-services:
-  media_gallery.layout_manager:
-    class: Drupal\media_gallery\MediaGalleryLayoutManager
-    arguments:
-      - '@container.namespaces'
-      - '@cache.discovery'
-      - '@module_handler'
-  media_gallery.item_renderer:
-    class: Drupal\media_gallery\MediaGalleryItemRenderer
