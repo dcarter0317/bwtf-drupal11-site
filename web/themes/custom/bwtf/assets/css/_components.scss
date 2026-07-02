@@ -473,7 +473,8 @@ img {
 .article-card {
   border: 1px solid $clr-grey-light;
   border-radius: 8px;
-  margin-bottom: 15px;
+  margin: 0 auto 15px auto;
+  max-width: 600px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
   display: grid;
   grid-template-columns: 33.33% 66.67%;
@@ -596,8 +597,7 @@ img {
   // Large sizes container query (exact match for user's desktop image)
   @container (min-width: 500px) {
     grid-template-columns: 33.33% 66.67%;
-    min-height: 240px;
-    height: 240px;
+    min-height: 190px;
 
     &__media {
       img {
@@ -608,25 +608,25 @@ img {
     }
 
     &__text {
-      padding: 15px 20px;
+      padding: 10px 14px;
     }
 
     &__header {
       margin-bottom: 0;
 
       small {
-        font-size: .85rem;
+        font-size: .8rem;
       }
     }
 
     &__body {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     &__title {
-      font-size: 1.25rem;
-      margin-top: 4px;
-      margin-bottom: 8px;
+      font-size: 1.1rem;
+      margin-top: 2px;
+      margin-bottom: 4px;
 
       a {
         display: block;
@@ -636,9 +636,9 @@ img {
     &__description {
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      line-height: 1.4;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      line-height: 1.35;
       overflow: hidden;
 
       p {
@@ -648,14 +648,14 @@ img {
     }
 
     &__footer {
-      margin-top: 10px;
+      margin-top: 6px;
       text-align: center;
 
       a {
-        padding: 6px 20px;
-        font-size: 0.85rem;
+        padding: 4px 16px;
+        font-size: 0.8rem;
         border-radius: 8px;
-        margin-bottom: 16px;
+        margin-bottom: 4px;
       }
     }
   }
