@@ -1,85 +1,44 @@
 .git
 
-# Ignore Windows zone identifier metadata files.
+# OS-specific files
+.DS_Store
 *:Zone.Identifier
 
-# Composer dependencies are managed outside the repo.
+# IDEs and Editors
+.idea/
+.vscode/
+.vscode-server/
+*.log
+
+# Composer & Node dependencies
 /vendor/
-
-# DDEV configuration should not be committed.
-/.ddev/
-
-# DDEV backups should not be committed.
-/.ddev/backups/
-
-# Drupal runtime files.
-/web/sites/default/files/
-/web/.htaccess
-.DS_Store
-.DS_Store
-
-# Composer
-/vendor/
-
-# Node
 /node_modules/
 
-# Drupal uploaded files
-/web/sites/default/files/
+# DDEV configuration & backups
+/.ddev/
+/.ddev/backups/
 
-# Private files (if your site uses one)
+# Local Environment files
+.env
+.env.*
+
+# Drupal Core and Contributed projects (managed by Composer)
+/web/core/
+/web/modules/contrib/
+/web/themes/contrib/
+/web/profiles/contrib/
+
+# Drupal runtime & site-specific files
+/web/.htaccess
+/web/sites/default/files/
+/web/sites/*/files/
 /private/
 
 # Local settings (do NOT commit these)
 /web/sites/default/settings.php
 /web/sites/default/services.yml
 
-# Database dumps
-*.sql
-*.sql.gz
-
-# Archives
-*.tar
-*.tar.gz
-*.zip
-
-# macOS
-.DS_Store
-
-# VS Code
-.vscode/
-
-# Remote VS Code server (shouldn't be in your repo anyway)
-.vscode-server/
-
-# Local/editor files
-.idea/
-*.log
-
-# Drupal generated files
-/web/sites/default/files/
-/web/sites/*/files/
-
-# Composer-managed Drupal files
-/vendor/
-/web/core/
-/web/modules/contrib/
-/web/themes/contrib/
-/web/profiles/contrib/
-
-# Runtime/user files
-/web/sites/default/files/
-/web/sites/*/files/
-
-# Local/private files
-/web/sites/default/settings.php
-/web/sites/default/services.yml
-.env
-.env.*
-.idea/
-*.log
-
-# Backups/archives/database dumps
+# Backups, archives, and database dumps
 /backups/
 /backup/
 *.sql
