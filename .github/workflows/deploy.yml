@@ -53,7 +53,11 @@ jobs:
       - name: Extract, install Composer dependencies, and run Drupal commands
         run: |
           ssh -p ${{ secrets.NAMEHERO_PORT }} ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }} '
-            set -e
+            set -ex
+
+            whoami
+            pwd
+            ls -la /home/bwtfcom/stage.bwtf.com/deploy.tar.gz || echo "deploy.tar.gz check failed"
 
             cd /home/bwtfcom/stage.bwtf.com
 
