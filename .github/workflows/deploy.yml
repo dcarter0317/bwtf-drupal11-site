@@ -35,7 +35,6 @@ jobs:
             --exclude=web/modules/contrib \
             --exclude=web/themes/contrib \
             --exclude=web/profiles/contrib \
-            --exclude=web/sites/default/files \
             --exclude=web/sites/default/settings.php \
             --exclude=web/sites/default/services.yml \
             --exclude='*.sql' \
@@ -43,11 +42,21 @@ jobs:
             --exclude='*.tar' \
             --exclude='*.tar.gz' \
             --exclude='*.zip' \
+            --exclude='web/sites/default/files/*' \
+            --exclude=web/sites/default/private \
+            --exclude=web/sites/default/settings.php.save \
+            --exclude=local-db.sql.gz \
+            --exclude=local-db.sql \
+            --exclude=backup-before-import.sql.gz \
             .
 
-      - name: Upload archive
+      - name: Upload archive2
         run: |
-          scp -P ${{ secrets.NAMEHERO_PORT }} /tmp/deploy.tar.gz \
+          scp \
+            -o ServerAliveInterval=30 \
+            -o ServerAliveCountMax=10 \
+            -P ${{ secrets.NAMEHERO_PORT }} \
+            /tmp/deploy.tar.gz \
             ${{ secrets.NAMEHERO_USER }}@${{ secrets.NAMEHERO_HOST }}:/home/bwtfcom/stage.bwtf.com/deploy.tar.gz
 
       - name: Extract, install Composer dependencies, and run Drupal commands
