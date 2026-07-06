@@ -45,6 +45,8 @@ jobs:
             --exclude='web/sites/default/files/*' \
             --exclude=web/sites/default/private \
             --exclude=web/sites/default/settings.php.save \
+            --exclude=web/sites/default/settings.local.php \
+            --exclude=web/sites/default/settings.ddev.php \
             --exclude=local-db.sql.gz \
             --exclude=local-db.sql \
             --exclude=backup-before-import.sql.gz \
@@ -69,6 +71,11 @@ jobs:
             ls -la /home/bwtfcom/stage.bwtf.com/deploy.tar.gz || echo "deploy.tar.gz check failed"
 
             cd /home/bwtfcom/stage.bwtf.com
+
+            if [ -d web/sites/default ]; then
+              chmod u+w web/sites/default
+              chmod u+w web/sites/default/*.php web/sites/default/*.yml || true
+            fi
 
             tar -xzf deploy.tar.gz
             rm -f deploy.tar.gz
