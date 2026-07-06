@@ -142,7 +142,8 @@ i {
 img {
   max-width: 100%;
   display: block;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 /* Nav */
@@ -292,7 +293,9 @@ img {
   position: relative;
   display: block;
   box-sizing: border-box;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   touch-action: pan-y;
 }
 .simple-ads .slick-list {
@@ -490,7 +493,8 @@ img {
   border-radius: 8px 0 0 8px;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  -o-object-fit: fill;
+     object-fit: fill;
 }
 .article-card__text {
   padding: 10px 12px;
@@ -585,7 +589,8 @@ img {
   .article-card__media img {
     border-radius: 8px 0 0 8px;
     display: block;
-    object-fit: fill;
+    -o-object-fit: fill;
+       object-fit: fill;
   }
   .article-card__text {
     padding: 10px 14px;
@@ -922,6 +927,9 @@ aside .block-simpleads .simpleads iframe {
   font-size: 1.1rem;
   outline: none;
 }
+.search-form input[type=search]::-moz-placeholder {
+  color: #B8B8B8;
+}
 .search-form input[type=search]::placeholder {
   color: #B8B8B8;
 }
@@ -1011,6 +1019,9 @@ aside .block-simpleads .simpleads iframe {
   position: relative;
   width: 100%;
   height: 2rem;
+}
+.form-search::-moz-placeholder {
+  color: #B8B8B8;
 }
 .form-search::placeholder {
   color: #B8B8B8;
@@ -1237,9 +1248,11 @@ footer a:visited {
   inline-size: 100%;
   block-size: 100%;
   max-height: 720px;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   /* fills entire width, may crop edges */
-  object-position: top;
+  -o-object-position: top;
+     object-position: top;
   position: relative;
   z-index: 0;
 }
@@ -1333,8 +1346,10 @@ footer a:visited {
   aspect-ratio: auto;
 }
 .hero.use-fixed-height .slide-media img {
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
 }
 
 /* Mobile polish */
@@ -1369,7 +1384,8 @@ footer a:visited {
   .hero .slide-media img {
     max-height: none !important;
     height: auto !important;
-    object-fit: contain !important;
+    -o-object-fit: contain !important;
+       object-fit: contain !important;
     width: 100%;
   }
   .hero .slide-text {
@@ -1427,6 +1443,4 @@ footer a:visited {
 .swiper {
   width: 100%;
   height: 100%;
-}
-
-/*# sourceMappingURL=bwtf_v2.css.map */
+}/*# sourceMappingURL=bwtf_v2.css.map */

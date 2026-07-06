@@ -1,0 +1,65 @@
+slider_aspect: '16:9'
+slider_overlay_preset: overlay-solid
+slider_overlay_from: 'rgba(0,0,0,.35)'
+slider_overlay_to: 'rgba(0,0,0,.55)'
+slider_autoplay_delay: '5000'
+slide1_title: 'Toy Review: "Age of the Primes" Sideways with Crosswise & Rook'
+slide1_desc: "Sideways is a mysterious 'bot whose allegiance seemingly changes between being an Autobot or a Decepticon but in reality he is an agent of the Chaos Bringer, Unicron!"
+slide1_url: /toyreviews/generations/aotp/sideways-armada
+slide1_link_text: 'Read More'
+slide1_image:
+  - '48203'
+slide2_title: 'Toy Review: "Studio Series 86" Kranix'
+slide2_desc: 'Kranix witnessed the destruction of his home world at the hands of Unicron.  He escaped only to meet an unfortunate fate at the hands of the Quintessons!'
+slide2_url: /toyreviews/generations/studioseries/ss86-kranix
+slide2_link_text: 'Read More'
+slide2_image:
+  - '48204'
+slide3_title: 'Toy Review: "Generations Legacy" Drillhorn'
+slide3_desc: 'Drillhorn is a veteran warrior who can be as stubborn as he is tough!'
+slide3_url: /toyreviews/generations/legacy/drillhorn
+slide3_link_text: 'Read More'
+slide3_image:
+  - '48205'
+slide4_title: ''
+slide4_desc: ''
+slide4_url: ''
+slide4_link_text: ''
+slide4_image: {  }
+slide5_title: ''
+slide5_desc: ''
+slide5_url: ''
+slide5_link_text: ''
+slide5_image: {  }
+slide6_title: ''
+slide6_desc: ''
+slide6_url: ''
+slide6_link_text: ''
+slide6_image: {  }
+social1_platform: ''
+social1_url: ''
+social2_platform: ''
+social2_url: ''
+social3_platform: ''
+social3_url: ''
+social4_platform: ''
+social4_url: ''
+social5_platform: ''
+social5_url: ''
+social6_platform: ''
+social6_url: ''
+social7_platform: ''
+social7_url: ''
+social8_platform: ''
+social8_url: ''
+features:
+  node_user_picture: 1
+  comment_user_picture: 1
+  comment_user_verification: 1
+  favicon: 1
+logo:
+  use_default: 0
+  path: sites/default/files/Laser-OP-vs-Jhiaxus-Logo_0.jpg
+favicon:
+  use_default: 1
+slider_display: 1
