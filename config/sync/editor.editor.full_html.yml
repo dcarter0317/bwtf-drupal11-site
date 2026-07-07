@@ -23,11 +23,14 @@ settings:
       - redo
       - '|'
       - link
+      - imce_link
       - '|'
       - bulletedList
       - numberedList
       - '|'
       - drupalMedia
+      - drupalInsertImage
+      - imce_image
       - blockQuote
       - insertTable
       - horizontalLine
@@ -89,11 +92,14 @@ settings:
           language: xml
     ckeditor5_heading:
       enabled_headings:
+        - heading1
         - heading2
         - heading3
         - heading4
         - heading5
         - heading6
+    ckeditor5_imageResize:
+      allow_resize: true
     ckeditor5_list:
       properties:
         reversed: true
