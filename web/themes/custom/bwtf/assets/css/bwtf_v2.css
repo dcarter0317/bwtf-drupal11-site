@@ -96,6 +96,36 @@ section {
   }
 }
 
+/* Search Page */
+nav.pager {
+  display: flex;
+  list-style: none;
+  text-align: center;
+  margin-block: 30px;
+}
+nav.pager ul {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+nav.pager li a {
+  display: inline-block;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: #1DA1F2;
+  font-weight: 100;
+  border: 1px solid #1DA1F2;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+nav.pager li a:hover {
+  background: #1DA1F2;
+  color: #fff;
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -661,6 +691,10 @@ img {
 /* Sidebar */
 aside {
   text-align: center;
+}
+aside h2 {
+  font-weight: 100;
+  font-size: 1.3rem;
 }
 @media (min-width: 768px) {
   aside {

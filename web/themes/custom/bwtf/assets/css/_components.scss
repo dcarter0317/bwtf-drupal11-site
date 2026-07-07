@@ -57,6 +57,41 @@ section {
   }
 }
 
+/* Search Page */
+nav.pager {
+  display: flex;
+  list-style: none;
+  text-align: center;
+  margin-block: 30px;
+
+  ul {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  li {
+    a {
+      display: inline-block;
+      padding: 5px 10px;
+      text-decoration: none;
+      color: #1DA1F2;
+      font-weight: 100;
+      border: 1px solid #1DA1F2;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #1DA1F2;
+        color: #fff;
+      }
+    }
+  }
+}
+
 /* Buttons */
 .btn {
   display: inline-block;
@@ -693,6 +728,11 @@ img {
 aside {
   text-align: center;
 
+  h2 {
+    font-weight: 100;
+    font-size: 1.3rem;
+  }
+
   @include breakpoint-min($bp-med) {
     text-align: initial;
   }
@@ -721,7 +761,6 @@ aside {
     h2,
     h3,
     h4 {
-      font-weight: 100;
       text-align: center;
       width: 100%;
       margin-left: 0;
