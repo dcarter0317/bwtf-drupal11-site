@@ -1211,6 +1211,20 @@ aside {
   }
 }
 
+/* Page Title */
+.page-title {
+  font-family: $font-primary;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: $clr-primary;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid $clr-secondary;
+  padding-bottom: 10px;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+}
+
 /* Footer */
 footer {
   background: $clr-primary;

@@ -338,7 +338,17 @@ function bwtf_preprocess_page(array &$variables): void {
     ];
   }
   // Expose social media links to all pages.
-  $variables['social_links'] = bwtf_get_social_links();}
+  $variables['social_links'] = bwtf_get_social_links();
+
+  // Retrieve the page title dynamically.
+  $request = \Drupal::request();
+  $route_match = \Drupal::routeMatch();
+  $page_title = '';
+  if ($route = $route_match->getRouteObject()) {
+    $page_title = \Drupal::service('title_resolver')->getTitle($request, $route);
+  }
+  $variables['page_title'] = $page_title;
+}
 
 /**
  * Implements hook_preprocess_HOOK() for simpleads blocks.
