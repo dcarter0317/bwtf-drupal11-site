@@ -9,7 +9,7 @@ dependencies:
 id: bwtf_simpleads_3
 theme: bwtf
 region: sidebar
-weight: -7
+weight: -6
 provider: null
 plugin: simpleads
 settings:

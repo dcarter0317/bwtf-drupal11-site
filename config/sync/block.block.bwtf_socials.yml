@@ -11,7 +11,7 @@ dependencies:
 id: bwtf_socials
 theme: bwtf
 region: sidebar
-weight: -8
+weight: -7
 provider: null
 plugin: 'block_content:e9f1c1fc-52c8-43c4-ab05-755ca41e694d'
 settings:

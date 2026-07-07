@@ -1,0 +1,29 @@
+uuid: 96c4912b-d81b-4b64-8829-1e0640a395f1
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - search
+  theme:
+    - bwtf
+id: bwtf_searchform
+theme: bwtf
+region: sidebar
+weight: -8
+provider: null
+plugin: search_form_block
+settings:
+  id: search_form_block
+  label: Search
+  label_display: '0'
+  provider: search
+  page_id: null
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      page: page
