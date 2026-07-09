@@ -1,23 +1,27 @@
+@use "sass:math";
+
+@use "variables";
+
 /* Base font stack: prefer Tahoma, then close matches, then system */
 $font-sans: Tahoma, "Segoe UI", Geneva, Verdana, system-ui, -apple-system,
             "Helvetica Neue", Arial, sans-serif;
 
-$font-primary: 'Poppins', sans-serif;
+variables.$font-primary: 'Poppins', sans-serif;
 
 /* Apply globally */
 html, body {
-  font-family: $font-primary;
+  font-family: variables.$font-primary;
   /* optional polish */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 body {
-  color: $clr-text-color-primary;
+  color: variables.$clr-text-color-primary;
 }
 
 /* Utility class if you need it */
-.font-primary { font-family: $font-primary; }
+.font-primary { font-family: variables.$font-primary; }
 
 /* Ensure headings/buttons inherit unless you override elsewhere */
 h1, h2, h3, h4, h5, h6,
@@ -36,8 +40,8 @@ $hero-min:   320px;
 $hero-ideal: 60vh;
 $hero-max:   720px;
 
-$aspect-16x9: 16/9;
-$aspect-21x9: 21/9;
+$aspect-16x9: math.div(16, 9);
+$aspect-21x9: math.div(21, 9);
 
 // --------------------------------
 

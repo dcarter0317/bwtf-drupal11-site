@@ -1,9 +1,13 @@
+@use "sass:color";
+@use "mixins";
+@use "variables";
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  color: $clr-text-color-primary;
+  color: variables.$clr-text-color-primary;
   overflow-x: hidden;
 }
 
@@ -33,7 +37,7 @@ section {
     width: 35px;
     height: 3px;
     margin: 0 0 5px;
-    background-color: $clr-primary;
+    background-color: variables.$clr-primary;
     transition: all 0.4s ease;
   }
 
@@ -52,7 +56,7 @@ section {
     }
   }
 
-  @include breakpoint-min($bp-lg) {
+  @include mixins.breakpoint-min(variables.$bp-lg) {
     display: none;
   }
 }
@@ -106,12 +110,12 @@ nav.pager {
   /* support both -- and __ variants */
   &.btn--primary,
   &.btn__primary {
-    color: $clr-white;
-    border: 1px solid $clr-white;
+    color: variables.$clr-white;
+    border: 1px solid variables.$clr-white;
     background: rgba(255, 255, 255, .3);
 
     &:hover {
-      background: $clr-primary;
+      background: variables.$clr-primary;
       border: 0;
     }
   }
@@ -119,12 +123,12 @@ nav.pager {
   &.btn-secondary,
   &.btn--secondary,
   &.btn__secondary {
-    color: $clr-link;
-    border: 1px solid $clr-link;
+    color: variables.$clr-link;
+    border: 1px solid variables.$clr-link;
 
     &:hover {
-      background: $clr-link;
-      color: $clr-white;
+      background: variables.$clr-link;
+      color: variables.$clr-white;
     }
   }
 
@@ -157,7 +161,7 @@ img {
   margin: 0;
   padding: 5px 0;
 
-  @include breakpoint-min($bp-lg) {
+  @include mixins.breakpoint-min(variables.$bp-lg) {
     padding: 5px 0;
   }
 }
@@ -180,7 +184,7 @@ img {
   align-items: center;
   pointer-events: none;
 
-  @include breakpoint-min($bp-lg) {
+  @include mixins.breakpoint-min(variables.$bp-lg) {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -199,15 +203,15 @@ img {
   li {
     padding: 10px 0;
 
-    @include breakpoint-min($bp-med) {
+    @include mixins.breakpoint-min(variables.$bp-med) {
       padding: 5px 10px;
     }
   }
 
   li:not(:last-child) {
-    border-bottom: 1px solid $clr-white;
+    border-bottom: 1px solid variables.$clr-white;
 
-    @include breakpoint-min($bp-med) {
+    @include mixins.breakpoint-min(variables.$bp-med) {
       border: none;
     }
   }
@@ -215,17 +219,17 @@ img {
   li a {
     display: block;
     font-weight: 200;
-    color: $clr-white;
+    color: variables.$clr-white;
     letter-spacing: 5px;
     text-decoration: none;
 
     &:hover,
     &:focus {
-      border-bottom: 4px solid $clr-secondary;
+      border-bottom: 4px solid variables.$clr-secondary;
       // padding-bottom: 6px;
     }
 
-    @include breakpoint-min($bp-lg) {
+    @include mixins.breakpoint-min(variables.$bp-lg) {
       letter-spacing: initial;
       color: initial;
       font-weight: 200;
@@ -237,12 +241,12 @@ img {
   li a.is-active,
   li a[aria-current="page"] {
     color: white;
-    background: $clr-secondary;
+    background: variables.$clr-secondary;
     padding: 10px;
     border-radius: 8px;
 
-    @include breakpoint-min($bp-lg) {
-      background: $clr-secondary;
+    @include mixins.breakpoint-min(variables.$bp-lg) {
+      background: variables.$clr-secondary;
       color: white;
     }
   }
@@ -261,7 +265,7 @@ img {
 
 
 .content {
-  @include breakpoint-min($bp-lg) {
+  @include mixins.breakpoint-min(variables.$bp-lg) {
     display: grid;
     grid-template-columns: 60% 30%;
     gap: 2%;
@@ -373,7 +377,7 @@ img {
     }
 
     &:before {
-      color: $clr-white;
+      color: variables.$clr-white;
       font-size: 30px;
       line-height: 1;
       opacity: 0.75;
@@ -440,13 +444,13 @@ img {
           height: 20px;
           text-align: center;
           opacity: 0.5;
-          color: $clr-white;
+          color: variables.$clr-white;
         }
       }
 
       &.slick-active button:before {
         opacity: 1;
-        color: $clr-primary;
+        color: variables.$clr-primary;
       }
     }
   }
@@ -495,7 +499,7 @@ img {
   grid-template-columns: 1fr;
   gap: 8px;
 
-  @include breakpoint-min($bp-med) {
+  @include mixins.breakpoint-min(variables.$bp-med) {
     grid-template-columns: 1fr;
   }
 }
@@ -506,14 +510,14 @@ img {
 }
 
 .article-card {
-  border: 1px solid $clr-grey-light;
+  border: 1px solid variables.$clr-grey-light;
   border-radius: 8px;
   margin-bottom: 15px;
   max-width: 600px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
   display: grid;
   grid-template-columns: 33.33% 66.67%;
-  background-color: $clr-white;
+  background-color: variables.$clr-white;
   overflow: hidden;
 
   &__media {
@@ -526,7 +530,7 @@ img {
       border-radius: 8px 0 0 8px;
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: contain;
     }
   }
 
@@ -551,19 +555,19 @@ img {
   }
 
   &__eyebrow {
-    color: $clr-light-blue;
+    color: variables.$clr-light-blue;
     font-weight: 500;
   }
 
   &__date {
-    color: $clr-grey-light;
+    color: variables.$clr-grey-light;
     margin-left: auto;
   }
 
   &__body {
-    color: darken($clr-grey-light, 30%);
+    color: color.adjust(variables.$clr-grey-light, $lightness: -30%);
     padding: 4px 0;
-    border-bottom: 1px solid $clr-border-light;
+    border-bottom: 1px solid variables.$clr-border-light;
     font-size: 0.85rem;
     display: flex;
     flex-direction: column;
@@ -580,12 +584,12 @@ img {
     line-height: 1.25;
 
     a {
-      color: $clr-deep-gray;
+      color: variables.$clr-deep-gray;
       text-decoration: none;
       display: block;
 
       &:hover {
-        color: $clr-link;
+        color: variables.$clr-link;
       }
     }
   }
@@ -593,7 +597,7 @@ img {
   &__description {
     overflow: hidden;
     line-height: 1.35;
-    color: darken($clr-grey-light, 15%);
+    color: color.adjust(variables.$clr-grey-light, $lightness: -15%);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -612,9 +616,9 @@ img {
 
     a {
       text-decoration: none;
-      color: $clr-link;
+      color: variables.$clr-link;
       font-weight: 400;
-      border: 1px solid $clr-link;
+      border: 1px solid variables.$clr-link;
       padding: 4px 16px;
       border-radius: 8px;
       transition: all 0.3s ease;
@@ -623,8 +627,8 @@ img {
       background-color: transparent;
 
       &:hover {
-        background: $clr-link;
-        color: $clr-white;
+        background: variables.$clr-link;
+        color: variables.$clr-white;
       }
     }
   }
@@ -638,7 +642,6 @@ img {
       img {
         border-radius: 8px 0 0 8px;
         display: block;
-        object-fit: fill;
       }
     }
 
@@ -709,8 +712,8 @@ img {
 /* Tags as Pills */
 .tag-pill {
   a {
-    background: $clr-grey-light;
-    color: $clr-deep-gray;
+    background: variables.$clr-grey-light;
+    color: variables.$clr-deep-gray;
     padding: 8px 16px;
     border-radius: 50px;
     text-decoration: none;
@@ -718,8 +721,8 @@ img {
     transition: background 0.3s ease, color 0.3s ease;
 
     &:hover {
-      background-color: $clr-deep-gray;
-      color: darken($clr-white, 20%);
+      background-color: variables.$clr-deep-gray;
+      color: color.adjust(variables.$clr-white, $lightness: -20%);
     }
   }
 }
@@ -733,7 +736,7 @@ aside {
     font-size: 1.3rem;
   }
 
-  @include breakpoint-min($bp-med) {
+  @include mixins.breakpoint-min(variables.$bp-med) {
     text-align: initial;
   }
 
@@ -779,7 +782,7 @@ aside {
     place-items: center;
     gap: 20px;
 
-    @include breakpoint-min($bp-med) {
+    @include mixins.breakpoint-min(variables.$bp-med) {
       grid-template-columns: 1fr;
     }
 
@@ -842,7 +845,7 @@ aside {
     place-items: center;
     gap: 10px;
 
-    @include breakpoint-min($bp-med) {
+    @include mixins.breakpoint-min(variables.$bp-med) {
       grid-template-columns: repeat(2, 37%);
     }
 
@@ -937,7 +940,7 @@ aside {
           width: 12px;
           height: 12px;
           border-radius: 50%;
-          border: 2px solid $clr-white;
+          border: 2px solid variables.$clr-white;
           background: rgba(255, 255, 255, 0.3);
           cursor: pointer;
           padding: 0;
@@ -949,8 +952,8 @@ aside {
           }
 
           &.active {
-            background: $clr-primary;
-            border-color: $clr-primary;
+            background: variables.$clr-primary;
+            border-color: variables.$clr-primary;
           }
         }
       }
@@ -987,9 +990,9 @@ aside {
     width: 100%;
     height: 3rem;
     background: none;
-    border: 1px solid $clr-border-light;
+    border: 1px solid variables.$clr-border-light;
     border-radius: 4px;
-    color: $clr-deep-gray;
+    color: variables.$clr-deep-gray;
     /* leave left padding for text, increase right padding for icon */
     padding: 8px 3rem 8px 10px;
     font-family: inherit;
@@ -997,7 +1000,7 @@ aside {
     outline: none;
 
     &::placeholder {
-      color: $clr-grey-light;
+      color: variables.$clr-grey-light;
     }
   }
 
@@ -1033,7 +1036,7 @@ aside {
   border: none;
   background: transparent;
   /* match the site's primary text color */
-  color: $clr-text-color-primary;
+  color: variables.$clr-text-color-primary;
   padding: 0.15rem 0.25rem;
   font-size: 1.1rem;
   cursor: pointer;
@@ -1044,12 +1047,12 @@ aside {
 
 .search-form .search-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba($clr-primary, 0.15);
+  box-shadow: 0 0 0 3px rgba(variables.$clr-primary, 0.15);
   border-radius: 4px;
 }
 
 .search-form .search-btn i {
-  color: $clr-text-color-primary;
+  color: variables.$clr-text-color-primary;
 }
 
 /* Fallback: if the submit button is rendered outside the input, position it
@@ -1074,7 +1077,7 @@ aside {
   border: none;
   padding: 0;
   margin: 0;
-  color: $clr-text-color-primary;
+  color: variables.$clr-text-color-primary;
   cursor: pointer;
 }
 
@@ -1090,7 +1093,7 @@ aside {
   height: 2rem;
 
   &::placeholder {
-    color: $clr-grey-light;
+    color: variables.$clr-grey-light;
   }
 
   .js-form-submit.form-submit {
@@ -1106,10 +1109,10 @@ aside {
   max-width: 450px;
   margin: 40px auto;
   padding: 30px;
-  background: $clr-white;
+  background: variables.$clr-white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid $clr-border-light;
+  border: 1px solid variables.$clr-border-light;
 
   .form-item {
     margin-bottom: 20px;
@@ -1119,27 +1122,27 @@ aside {
 
     label {
       font-weight: 500;
-      color: $clr-deep-gray;
+      color: variables.$clr-deep-gray;
       font-size: 0.9rem;
     }
 
     input.form-text {
       width: 100%;
       padding: 12px 16px;
-      border: 1px solid $clr-border-light;
+      border: 1px solid variables.$clr-border-light;
       border-radius: 8px;
       font-family: inherit;
       font-size: 1rem;
-      color: $clr-deep-gray;
+      color: variables.$clr-deep-gray;
       background-color: #fafafa;
       transition: all 0.3s ease;
       box-sizing: border-box;
 
       &:focus {
         outline: none;
-        border-color: $clr-link;
-        background-color: $clr-white;
-        box-shadow: 0 0 0 3px rgba($clr-link, 0.15);
+        border-color: variables.$clr-link;
+        background-color: variables.$clr-white;
+        box-shadow: 0 0 0 3px rgba(variables.$clr-link, 0.15);
       }
     }
   }
@@ -1152,22 +1155,22 @@ aside {
       padding: 12px 24px;
       font-size: 1rem;
       font-weight: 500;
-      color: $clr-white;
-      background-color: $clr-link;
+      color: variables.$clr-white;
+      background-color: variables.$clr-link;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba($clr-link, 0.3);
+      box-shadow: 0 2px 8px rgba(variables.$clr-link, 0.3);
 
       &:hover {
-        background-color: darken($clr-link, 10%);
-        box-shadow: 0 4px 12px rgba($clr-link, 0.4);
+        background-color: color.adjust(variables.$clr-link, $lightness: -10%);
+        box-shadow: 0 4px 12px rgba(variables.$clr-link, 0.4);
       }
 
       &:active {
         transform: translateY(1px);
-        box-shadow: 0 2px 4px rgba($clr-link, 0.2);
+        box-shadow: 0 2px 4px rgba(variables.$clr-link, 0.2);
       }
     }
   }
@@ -1213,13 +1216,13 @@ aside {
 
 /* Page Title */
 .page-title {
-  font-family: $font-primary;
+  font-family: variables.$font-primary;
   font-size: 1.7rem;
   font-weight: 400;
-  color: $clr-primary;
+  color: variables.$clr-primary;
   margin-top: 0;
   margin-bottom: 20px;
-  border-bottom: 2px solid $clr-secondary;
+  border-bottom: 2px solid variables.$clr-secondary;
   padding-bottom: 10px;
   letter-spacing: -1px;
   text-transform: uppercase;
@@ -1227,8 +1230,8 @@ aside {
 
 /* Footer */
 footer {
-  background: $clr-primary;
-  color: $clr-border-light;
+  background: variables.$clr-primary;
+  color: variables.$clr-border-light;
   text-align: center;
   padding: 20px 10px;
   width: 100%;
@@ -1254,7 +1257,7 @@ footer {
       font-weight: 400;
     }
 
-    @include breakpoint-min($bp-med) {
+    @include mixins.breakpoint-min(variables.$bp-med) {
       justify-content: start;
       // padding-left: 0;
     }
@@ -1269,10 +1272,10 @@ footer {
 
   a,
   a:visited {
-    color: $clr-link;
+    color: variables.$clr-link;
   }
 
-  @include breakpoint-min($bp-med) {
+  @include mixins.breakpoint-min(variables.$bp-med) {
     text-align: left;
   }
 }

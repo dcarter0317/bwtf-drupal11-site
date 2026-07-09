@@ -42,6 +42,7 @@ button, input, select, textarea {
    (kept minimal and syntactically valid)
    ------------------------------ */
 /* Your components */
+/* bwtf_v2.scss (recommended order) */
 html {
   scroll-behavior: smooth;
 }
@@ -523,8 +524,8 @@ img {
   border-radius: 8px 0 0 8px;
   width: 100%;
   height: 100%;
-  -o-object-fit: fill;
-     object-fit: fill;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .article-card__text {
   padding: 10px 12px;
@@ -619,8 +620,6 @@ img {
   .article-card__media img {
     border-radius: 8px 0 0 8px;
     display: block;
-    -o-object-fit: fill;
-       object-fit: fill;
   }
   .article-card__text {
     padding: 10px 14px;

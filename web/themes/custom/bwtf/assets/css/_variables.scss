@@ -1,3 +1,4 @@
+@use "sass:color";
 $clr-white: #FFF;
 $clr-link: #1DA1F2;
 $clr-primary: #2E1F64;
@@ -9,7 +10,7 @@ $clr-border-light: #E3DEDE;
 $clr-text-light: $clr-border-light;
 $clr-text-color-dark: #040404;
 $clr-teritiary: #116153;
-$clr-text-color-primary: darken($clr-grey-light, 30%);
+$clr-text-color-primary: color.adjust($clr-grey-light, $lightness: -30%);
 
 
 $font-primary: 'Poppins', sans-serif;
