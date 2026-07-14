@@ -193,7 +193,7 @@ img {
     width: 100%;
     text-transform: capitalize;
     background: initial;
-    min-height: auto;
+    min-height: 0;
     position: relative;
     inset: auto;
     padding: 0;
@@ -315,6 +315,7 @@ img {
     position: relative;
     display: block;
     box-sizing: border-box;
+    -webkit-user-select: none;
     user-select: none;
     touch-action: pan-y;
   }

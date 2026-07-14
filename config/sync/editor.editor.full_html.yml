@@ -28,13 +28,13 @@ settings:
       - bulletedList
       - numberedList
       - '|'
-      - drupalMedia
       - drupalInsertImage
+      - drupalMedia
       - imce_image
+      - '|'
       - blockQuote
       - insertTable
       - horizontalLine
-      - '|'
       - heading
       - codeBlock
       - '|'

@@ -15,3 +15,9 @@ effects:
       width: 220
       height: 220
       upscale: false
+  b92db591-46fa-45d6-9e01-2fc80efedc6f:
+    uuid: b92db591-46fa-45d6-9e01-2fc80efedc6f
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp
