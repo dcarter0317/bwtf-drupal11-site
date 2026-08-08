@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * BWTF Content Sync module hooks.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function bwtf_content_sync_help($route_name, $route_match) {
+  if ($route_name === 'help.page.bwtf_content_sync') {
+    return '<p>Use the bundled Drush scripts to export changed content from Drupal 8 production and import it into Drupal 11 staging. Run the import in dry-run mode first.</p>';
+  }
+}

@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * @file
+ * Install hooks for BWTF Content Sync.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function bwtf_content_sync_schema() {
+  $schema['bwtf_content_sync_log'] = [
+    'description' => 'Records content packages imported by BWTF Content Sync.',
+    'fields' => [
+      'entity_type' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'source_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ],
+      'source_uuid' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'destination_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'source_changed' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'source_hash' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'package_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'imported' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'imported',
+      ],
+    ],
+    'primary key' => ['entity_type', 'source_id'],
+    'indexes' => [
+      'source_uuid' => ['source_uuid'],
+      'package_id' => ['package_id'],
+      'imported' => ['imported'],
+    ],
+  ];
+
+  return $schema;
+}

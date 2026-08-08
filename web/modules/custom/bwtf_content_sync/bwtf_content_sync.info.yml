@@ -1,0 +1,7 @@
+name: BWTF Content Sync
+type: module
+description: 'Exports changed Drupal 8 content and safely imports it into the in-place-upgraded Drupal 11 BWTF staging site.'
+package: Custom
+core_version_requirement: '^8.9 || ^9 || ^10 || ^11'
+dependencies:
+  - drupal:node
