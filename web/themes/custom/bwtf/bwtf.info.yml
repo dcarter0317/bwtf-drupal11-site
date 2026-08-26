@@ -2,8 +2,8 @@ name: BWTF 2.0
 type: theme
 base theme: stable9
 version: VERSION
-description: A custom theme Drupal 10 and 11 for Ben's World of Transformers website..
-core_version_requirement: ^10 || ^11
+description: A custom theme Drupal 10, 11, and 12 for Ben's World of Transformers website.
+core_version_requirement: ^10 || ^11 || ^12
 screenshot: screenshot.png
 
 # Favicon
@@ -34,4 +34,3 @@ libraries-override:
   simpleads/simpleads.block.js:
     js:
       js/simpleads.block.js: false
-  

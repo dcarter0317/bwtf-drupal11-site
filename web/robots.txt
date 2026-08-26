@@ -76,15 +76,3 @@ Disallow: /index.php/user/login
 Disallow: /index.php/user/logout
 Disallow: /index.php/media/oembed
 Disallow: /index.php/*/media/oembed
-# Block Bots
-User-agent: Yandex
-Disallow: /
-User-agent: Baiduspider
-Disallow: /
-User-agent: Googlebot
-Disallow: /
-User-agent: Slurp
-Disallow: /
-# Crawl-delay
-User-agent: *
-Crawl-delay: 30
