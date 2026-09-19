@@ -8,10 +8,13 @@ This module does **not** copy Drupal database tables and does **not** depend on 
 
 - Production: `https://bwtf.com/` — Drupal 8
 - Staging: `https://stage.bwtf.com/` — Drupal 11
-- Initial cutoff: `2026-01-01 00:00:00 UTC`
-- Initial node bundle: `page`
+- Cutoff: `2026-01-01 00:00:00 UTC`
+- Node bundles: every bundle on the source site (`--bundles=all`, the default)
 
-The initial `page` restriction matches the earlier production query that found 65 changed nodes, all of type `page`. Add more bundles only after verifying them.
+An earlier production query found 65 changed nodes, all of type `page`. The
+export now covers every node bundle by default so a bundle that starts
+changing later, such as `glossary_term`, is never silently missed. Narrow it
+with `--bundles=page` when you want the older, smaller selection.
 
 ## What it exports
 
@@ -25,11 +28,23 @@ The export starts with nodes whose `created` or `changed` timestamp is on or aft
 - menu-link content entities pointing to the changed nodes;
 - path aliases for the changed nodes.
 
+It also writes `inventory.json`: one row for every node that currently exists
+on the source site, in scope bundles, regardless of the cutoff. The importer
+uses it to report destination content that no longer exists on production. The
+inventory carries no field data, only `nid`, `uuid`, `bundle`, `title`,
+`status`, `created` and `changed`.
+
 Referenced users are not exported by default because production and staging originated from the same site and should already share user IDs. Use `--include-users` only after reviewing the security and account implications.
 
 ## Important limitations
 
-1. **Deletions are not automatic.** A record deleted on production after January 1 cannot be identified from its current entity data. Review deletions separately.
+1. **Deletions are reported, never applied.** The importer compares
+   `inventory.json` against staging nodes and lists anything on staging that
+   production no longer has, split into `missing_on_source` and `id_mismatch`.
+   It never deletes or unpublishes: a staging node missing from production was
+   either deleted there or created only on staging, and only a human can tell
+   those apart. Rows created on staging after the cutoff are labelled
+   `created_on_staging_after_cutoff` to make that judgement easier.
 2. **Revision history is not cloned.** The current production revision is imported. Existing staging entities receive a new synchronization revision.
 3. **Staging-newer records are conflicts by default.** The importer stops if staging was changed later than the source package. Review before using `--overwrite-newer`.
 4. **ID/UUID collisions are blocking.** If a new production entity's numeric ID is already used by unrelated staging content, the importer will not overwrite it.
@@ -138,7 +153,7 @@ PACKAGE=/home/bwtfcom/backups/bwtf-content-$(date +%F-%H%M%S)
 # Use the path appropriate for the production Drush installation.
 drush scr modules/custom/bwtf_content_sync/scripts/bwtf_content_export.php -- \
   --since=2026-01-01 \
-  --bundles=page \
+  --bundles=all \
   --output="$PACKAGE"
 
 echo "$PACKAGE"
@@ -149,6 +164,7 @@ The package contains:
 ```text
 manifest.json
 entities.json
+inventory.json
 aliases.json
 files/
 ```
@@ -294,6 +310,58 @@ Suggested schedule while testing continues:
 3. Export and import a fresh package before each major test round.
 4. Repeat immediately before final launch.
 
+# Automated nightly sync
+
+`scripts/bwtf_sync_cron.sh` runs the whole sequence unattended: export,
+`rsync`, staging database backup, preflight, and apply only when the preflight
+is clean. It takes a lock so two runs never overlap, writes a timestamped log,
+and prunes old packages, logs and backups.
+
+Install it on the NameHero account:
+
+```bash
+mkdir -p /home/bwtfcom/bin
+cp /home/bwtfcom/stage.bwtf.com/web/modules/custom/bwtf_content_sync/scripts/bwtf_sync_cron.sh \
+  /home/bwtfcom/bin/bwtf_sync_cron.sh
+chmod +x /home/bwtfcom/bin/bwtf_sync_cron.sh
+```
+
+Always do a preflight-only run first:
+
+```bash
+bash /home/bwtfcom/bin/bwtf_sync_cron.sh --preflight-only
+```
+
+Then schedule it, for example nightly at 02:30 server time:
+
+```cron
+30 2 * * * /bin/bash /home/bwtfcom/bin/bwtf_sync_cron.sh >/dev/null 2>&1
+```
+
+Every setting is an environment variable with the same name as the constant at
+the top of the script: `PROD_ROOT`, `STAGE_ROOT`, `STAGE_DOCROOT`, `WORK_DIR`,
+`SINCE`, `BUNDLES`, `MAILTO`, `KEEP_PACKAGE_DAYS`, `KEEP_LOG_DAYS`,
+`KEEP_DB_BACKUPS`, `OVERWRITE_NEWER`, `PREFLIGHT_ONLY`, `SKIP_DB_BACKUP`.
+
+To be emailed a report on every run:
+
+```cron
+30 2 * * * MAILTO_ADDR=you@example.com /bin/bash -c 'MAILTO="$MAILTO_ADDR" /home/bwtfcom/bin/bwtf_sync_cron.sh' >/dev/null 2>&1
+```
+
+What the nightly run will *not* do on its own:
+
+- overwrite a staging row that is newer than production (set
+  `OVERWRITE_NEWER=1` only after reviewing why staging is newer);
+- delete or unpublish anything;
+- continue past a preflight that reports `conflict`, `error` or
+  `alias_conflict`. The run stops, staging is untouched, and the log names the
+  report to read.
+
+Because the run aborts on conflicts, a failed night is a signal to look, not a
+reason to force. The most common cause is somebody editing a
+production-owned page on staging.
+
 # Final launch
 
 1. Put Drupal 8 production into maintenance mode or enforce an editorial freeze.
@@ -311,7 +379,8 @@ Suggested schedule while testing continues:
 
 ```text
 --since=2026-01-01
---bundles=page,article
+--bundles=all
+--bundles=page,glossary_term
 --output=/absolute/package/path
 --include-users
 --skip-menu-links

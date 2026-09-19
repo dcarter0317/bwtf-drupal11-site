@@ -4,7 +4,7 @@
 
 - [ ] Confirm Drupal 8 production is the editorial source of truth.
 - [ ] Confirm the cutoff is January 1, 2026.
-- [ ] Confirm the initial bundle is `page`.
+- [ ] Confirm the bundle scope (`all` by default).
 - [ ] Back up Drupal 11 staging database.
 - [ ] Back up or snapshot staging public files.
 - [ ] Confirm the same module version is installed on production and staging.
@@ -29,6 +29,7 @@
 - [ ] Review `conflict`, `error`, and `alias_conflict` counts.
 - [ ] Resolve staging ID/UUID collisions.
 - [ ] Review any destination-newer records.
+- [ ] Review the deletion report (`missing_on_source`, `id_mismatch`).
 - [ ] Confirm the staging backup can be restored.
 - [ ] Apply the package.
 - [ ] Rebuild caches.
@@ -45,3 +46,11 @@
 - [ ] Verify unpublished pages.
 - [ ] Verify author ownership.
 - [ ] Save the import report with the release notes.
+
+## Automation
+
+- [ ] Run `bwtf_sync_cron.sh --preflight-only` by hand once.
+- [ ] Confirm the log, package and backup directories are being written.
+- [ ] Add the cron entry.
+- [ ] Confirm the first scheduled run succeeded.
+- [ ] Re-check the log after any production editorial burst.

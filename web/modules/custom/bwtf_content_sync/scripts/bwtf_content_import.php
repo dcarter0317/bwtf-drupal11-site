@@ -37,6 +37,59 @@ $make_importer = function () {
   );
 };
 
+/**
+ * Prints the report-only deletion section.
+ */
+$print_deletions = function (array $report) {
+  $deletions = isset($report['deletions']) ? $report['deletions'] : [];
+  if (!$deletions) {
+    return;
+  }
+
+  print PHP_EOL . 'Deletion check (report only, nothing is ever deleted):' . PHP_EOL;
+  if (empty($deletions['checked'])) {
+    print '  Skipped. ' . (isset($deletions['reason']) ? $deletions['reason'] : '') . PHP_EOL;
+    return;
+  }
+
+  print sprintf('  Source nodes: %d, destination nodes: %d', $deletions['source_node_count'], $deletions['destination_node_count']) . PHP_EOL;
+
+  $missing = isset($deletions['missing_on_source']) ? $deletions['missing_on_source'] : [];
+  if (!$missing) {
+    print '  No destination nodes are missing from the source site.' . PHP_EOL;
+  }
+  else {
+    print sprintf('  %d destination node(s) do not exist on the source site:', count($missing)) . PHP_EOL;
+    $shown = 0;
+    foreach ($missing as $row) {
+      if ($shown++ >= 25) {
+        print sprintf('    ... and %d more. See the JSON report.', count($missing) - 25) . PHP_EOL;
+        break;
+      }
+      print sprintf(
+        '    nid %-6s %-14s %-44s [%s]',
+        $row['nid'],
+        $row['bundle'],
+        mb_substr($row['title'], 0, 44),
+        $row['likely']
+      ) . PHP_EOL;
+    }
+  }
+
+  $mismatch = isset($deletions['id_mismatch']) ? $deletions['id_mismatch'] : [];
+  if ($mismatch) {
+    print sprintf('  %d node ID mismatch(es) worth reviewing:', count($mismatch)) . PHP_EOL;
+    $shown = 0;
+    foreach ($mismatch as $row) {
+      if ($shown++ >= 25) {
+        print sprintf('    ... and %d more. See the JSON report.', count($mismatch) - 25) . PHP_EOL;
+        break;
+      }
+      print sprintf('    nid %-6s %-28s %s', $row['destination_nid'], $row['reason'], mb_substr($row['title'], 0, 44)) . PHP_EOL;
+    }
+  }
+};
+
 // Every apply run performs a complete preflight before writing anything.
 $preflight_options = $shared_options + ['dry_run' => TRUE];
 $preflight = $make_importer()->import($package, $preflight_options);
@@ -49,6 +102,8 @@ print 'Report: ' . $preflight_path . PHP_EOL;
 foreach ($preflight['summary'] as $status => $count) {
   print sprintf('  %-18s %d', $status . ':', $count) . PHP_EOL;
 }
+
+$print_deletions($preflight);
 
 $blocking = $preflight['summary']['conflict'] + $preflight['summary']['error'] + $preflight['summary']['alias_conflict'];
 if ($blocking > 0) {
@@ -74,6 +129,8 @@ print 'Report: ' . $report_path . PHP_EOL;
 foreach ($report['summary'] as $status => $count) {
   print sprintf('  %-18s %d', $status . ':', $count) . PHP_EOL;
 }
+
+$print_deletions($report);
 
 $failures = $report['summary']['conflict'] + $report['summary']['error'] + $report['summary']['alias_conflict'];
 if ($failures > 0) {

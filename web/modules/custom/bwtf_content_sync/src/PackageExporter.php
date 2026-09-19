@@ -77,6 +77,13 @@ class PackageExporter {
   protected $includeUsers = FALSE;
 
   /**
+   * Number of independently changed taxonomy terms exported as roots.
+   *
+   * @var int
+   */
+  protected $changedTermCount = 0;
+
+  /**
    * Constructs the exporter.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, FileSystemInterface $file_system) {
@@ -105,11 +112,20 @@ class PackageExporter {
     $this->aliases = [];
     $this->seen = [];
     $this->warnings = [];
+    $this->changedTermCount = 0;
     $this->outputDirectory = rtrim($output_directory, '/');
     $this->includeUsers = !empty($options['include_users']);
 
     PackageUtils::ensureDirectory($this->outputDirectory);
     PackageUtils::ensureDirectory($this->outputDirectory . '/files');
+
+    $bundle_mode = $this->isAllBundles($bundles) ? 'all' : 'explicit';
+    if ($bundle_mode === 'all') {
+      $bundles = $this->discoverNodeBundles();
+      if (!$bundles) {
+        throw new \RuntimeException('No node bundles were found on the source site.');
+      }
+    }
 
     $node_ids = $this->findChangedNodeIds($since, $bundles);
     $node_storage = $this->entityTypeManager->getStorage('node');
@@ -128,6 +144,18 @@ class PackageExporter {
       }
     }
 
+    // Taxonomy terms referenced by the changed nodes are already pulled in as
+    // dependencies. This additionally catches terms edited on their own -
+    // renamed, re-described, or re-parented - whose nodes did not change.
+    if (empty($options['skip_changed_terms'])) {
+      $this->exportChangedTerms($since);
+    }
+
+    // The inventory lists every node that currently exists on the source site,
+    // regardless of the cutoff. The importer uses it to report destination
+    // nodes that no longer exist on the source. It never deletes anything.
+    $inventory = $this->buildInventory($bundles);
+
     $package_id = 'bwtf-' . gmdate('Ymd-His') . '-' . substr(hash('sha256', implode(',', $node_ids)), 0, 12);
     $manifest = [
       'format' => 1,
@@ -137,20 +165,190 @@ class PackageExporter {
       'source_drupal_version' => defined('Drupal::VERSION') ? \Drupal::VERSION : NULL,
       'since_timestamp' => (int) $since,
       'since_utc' => gmdate('c', $since),
+      'bundle_mode' => $bundle_mode,
       'node_bundles' => array_values($bundles),
       'root_node_ids' => array_values(array_map('strval', $node_ids)),
       'root_node_count' => count($node_ids),
       'entity_count' => count($this->records),
       'alias_count' => count($this->aliases),
+      'changed_term_count' => $this->changedTermCount,
+      'inventory_count' => count($inventory),
       'include_users' => $this->includeUsers,
       'warnings' => $this->warnings,
     ];
 
     PackageUtils::writeJson($this->outputDirectory . '/entities.json', $this->records);
+    PackageUtils::writeJson($this->outputDirectory . '/inventory.json', $inventory);
     PackageUtils::writeJson($this->outputDirectory . '/aliases.json', $this->aliases);
     PackageUtils::writeJson($this->outputDirectory . '/manifest.json', $manifest);
 
     return $manifest;
+  }
+
+  /**
+   * Exports taxonomy terms changed since the cutoff, as export roots.
+   *
+   * Terms referenced by changed nodes are already exported as dependencies.
+   * This covers the other case: a term edited on its own, whose nodes were
+   * not touched and so would never be visited.
+   *
+   * @param int $since
+   *   Unix timestamp cutoff.
+   */
+  protected function exportChangedTerms($since) {
+    if (!$this->entityTypeManager->hasDefinition('taxonomy_term')) {
+      return;
+    }
+
+    $table = 'taxonomy_term_field_data';
+    try {
+      if (!$this->database->schema()->tableExists($table)) {
+        return;
+      }
+      // Term 'changed' tracking does not exist on every Drupal 8 minor
+      // version, so fall back to exporting nothing rather than failing.
+      if (!$this->database->schema()->fieldExists($table, 'changed')) {
+        $this->warnings[] = 'The taxonomy term table has no changed column, so independently edited terms cannot be detected. Terms referenced by changed nodes were still exported.';
+        return;
+      }
+    }
+    catch (\Exception $exception) {
+      $this->warnings[] = sprintf('Unable to inspect the taxonomy term schema: %s', $exception->getMessage());
+      return;
+    }
+
+    try {
+      $query = $this->database->select($table, 't');
+      $query->addField('t', 'tid');
+      $query->condition('t.changed', (int) $since, '>=');
+      $query->condition('t.default_langcode', 1);
+      $query->distinct();
+      $ids = $query->execute()->fetchCol();
+    }
+    catch (\Exception $exception) {
+      $this->warnings[] = sprintf('Unable to query changed taxonomy terms: %s', $exception->getMessage());
+      return;
+    }
+
+    if (!$ids) {
+      return;
+    }
+
+    $storage = $this->entityTypeManager->getStorage('taxonomy_term');
+    foreach ($storage->loadMultiple($ids) as $term) {
+      if (!$term instanceof ContentEntityInterface) {
+        continue;
+      }
+      $before = count($this->records);
+      $this->exportEntity($term);
+      if (count($this->records) > $before) {
+        $this->changedTermCount++;
+      }
+    }
+  }
+
+  /**
+   * Determines whether every node bundle was requested.
+   *
+   * @param string[] $bundles
+   *   Requested bundles.
+   *
+   * @return bool
+   *   TRUE when all bundles should be exported.
+   */
+  protected function isAllBundles(array $bundles) {
+    if (!$bundles) {
+      return TRUE;
+    }
+
+    foreach ($bundles as $bundle) {
+      if (strtolower(trim((string) $bundle)) === 'all') {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Discovers every node bundle that exists on the source site.
+   *
+   * @return string[]
+   *   Node bundle machine names.
+   */
+  protected function discoverNodeBundles() {
+    $bundles = [];
+
+    try {
+      $definitions = \Drupal::service('entity_type.bundle.info')->getBundleInfo('node');
+      $bundles = array_keys($definitions);
+    }
+    catch (\Exception $exception) {
+      $this->warnings[] = sprintf('Unable to read node bundle info: %s', $exception->getMessage());
+    }
+
+    // Fall back to whatever the content table actually contains, and union it
+    // in either way so a bundle with content is never missed.
+    try {
+      $query = $this->database->select('node_field_data', 'n');
+      $query->addField('n', 'type');
+      $query->distinct();
+      $bundles = array_unique(array_merge($bundles, $query->execute()->fetchCol()));
+    }
+    catch (\Exception $exception) {
+      $this->warnings[] = sprintf('Unable to read node types from the database: %s', $exception->getMessage());
+    }
+
+    $bundles = array_values(array_filter(array_map('strval', $bundles)));
+    sort($bundles);
+
+    return $bundles;
+  }
+
+  /**
+   * Builds an inventory of every node currently on the source site.
+   *
+   * This is deliberately independent of the cutoff. The importer compares it
+   * against destination nodes to report content that was deleted on the
+   * source since the staging site was built.
+   *
+   * @param string[] $bundles
+   *   Node bundles in scope.
+   *
+   * @return array
+   *   Inventory rows.
+   */
+  protected function buildInventory(array $bundles) {
+    $inventory = [];
+
+    try {
+      $query = $this->database->select('node_field_data', 'n');
+      $query->innerJoin('node', 'nb', 'nb.nid = n.nid');
+      $query->fields('n', ['nid', 'type', 'title', 'status', 'created', 'changed']);
+      $query->addField('nb', 'uuid', 'uuid');
+      $query->condition('n.default_langcode', 1);
+      if ($bundles) {
+        $query->condition('n.type', $bundles, 'IN');
+      }
+      $query->orderBy('n.nid', 'ASC');
+
+      foreach ($query->execute() as $row) {
+        $inventory[] = [
+          'nid' => (string) $row->nid,
+          'uuid' => (string) $row->uuid,
+          'bundle' => (string) $row->type,
+          'title' => (string) $row->title,
+          'status' => (int) $row->status,
+          'created' => (int) $row->created,
+          'changed' => (int) $row->changed,
+        ];
+      }
+    }
+    catch (\Exception $exception) {
+      $this->warnings[] = sprintf('Unable to build the source node inventory: %s', $exception->getMessage());
+    }
+
+    return $inventory;
   }
 
   /**
@@ -371,6 +569,12 @@ class PackageExporter {
 
     foreach ($values as $item) {
       if (!isset($item['target_id']) || $item['target_id'] === NULL || $item['target_id'] === '') {
+        continue;
+      }
+
+      // A target_id of 0 is not an entity. Taxonomy terms use it in the
+      // parent field to mean "top level", and loading it always fails.
+      if ((string) $item['target_id'] === '0') {
         continue;
       }
 

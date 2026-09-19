@@ -63,6 +63,31 @@ class PackageImporter {
   protected $options = [];
 
   /**
+   * Whether this importer switched the active account.
+   *
+   * @var bool
+   */
+  protected $accountSwitched = FALSE;
+
+  /**
+   * Entity types whose numeric ID may be reassigned on the destination.
+   *
+   * A node ID appears in path aliases and URLs, so a node must keep its
+   * source ID or stop as a conflict. These types are referenced only
+   * internally, by URI or UUID, so when the source ID is already taken on
+   * the destination they can be created under a fresh ID and every
+   * reference to them rewritten through the ID map.
+   *
+   * @var string[]
+   */
+  protected $reassignableEntityTypes = [
+    'file',
+    'menu_link_content',
+    'paragraph',
+    'block_content',
+  ];
+
+  /**
    * Constructs the importer.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, FileSystemInterface $file_system) {
@@ -97,8 +122,17 @@ class PackageImporter {
     $manifest = PackageUtils::readJson($this->packageDirectory . '/manifest.json');
     $records = PackageUtils::readJson($this->packageDirectory . '/entities.json');
     $aliases = PackageUtils::readJson($this->packageDirectory . '/aliases.json');
+    $inventory = file_exists($this->packageDirectory . '/inventory.json')
+      ? PackageUtils::readJson($this->packageDirectory . '/inventory.json')
+      : [];
 
     $this->validateManifest($manifest);
+
+    // Drupal validates that the acting user is permitted to use a field's
+    // text format. A drush script runs as the anonymous user, who cannot use
+    // full_html, so every such body would fail validation. Act as user 1 for
+    // the duration of the import.
+    $this->switchToAdminAccount();
 
     $report = [
       'package_id' => isset($manifest['package_id']) ? $manifest['package_id'] : '',
@@ -116,9 +150,12 @@ class PackageImporter {
         'alias_update' => 0,
         'alias_unchanged' => 0,
         'alias_conflict' => 0,
+        'missing_on_source' => 0,
+        'id_mismatch' => 0,
       ],
       'entities' => [],
       'aliases' => [],
+      'deletions' => [],
     ];
 
     foreach ($records as $record) {
@@ -145,7 +182,176 @@ class PackageImporter {
       }
     }
 
+    // Deletion detection is report-only and never blocks or writes.
+    $report['deletions'] = $this->buildDeletionReport($inventory, $manifest);
+    $report['summary']['missing_on_source'] = count($report['deletions']['missing_on_source']);
+    $report['summary']['id_mismatch'] = count($report['deletions']['id_mismatch']);
+
+    $this->switchBackAccount();
+
     $report['finished_utc'] = gmdate('c');
+    return $report;
+  }
+
+  /**
+   * Acts as user 1 so permission-aware validation passes.
+   */
+  protected function switchToAdminAccount() {
+    if ($this->accountSwitched) {
+      return;
+    }
+
+    try {
+      $admin = $this->entityTypeManager->getStorage('user')->load(1);
+      if (!$admin) {
+        return;
+      }
+      $switcher = \Drupal::service('account_switcher');
+      $switcher->switchTo($admin);
+      $this->accountSwitched = TRUE;
+    }
+    catch (\Exception $exception) {
+      // Continue as the current user; validation errors will say so.
+    }
+  }
+
+  /**
+   * Restores the original account.
+   */
+  protected function switchBackAccount() {
+    if (!$this->accountSwitched) {
+      return;
+    }
+
+    try {
+      \Drupal::service('account_switcher')->switchBack();
+    }
+    catch (\Exception $exception) {
+      // Nothing useful to do here.
+    }
+    $this->accountSwitched = FALSE;
+  }
+
+  /**
+   * Compares the source inventory against destination nodes.
+   *
+   * Reports destination nodes that no longer exist on the source site. This
+   * never deletes, unpublishes, or otherwise modifies anything: a node can be
+   * missing because it was deleted on production, or because it was created
+   * only on staging, and only a human can tell those apart.
+   *
+   * @param array $inventory
+   *   Source inventory rows, possibly empty.
+   * @param array $manifest
+   *   Package manifest.
+   *
+   * @return array
+   *   Deletion report.
+   */
+  protected function buildDeletionReport(array $inventory, array $manifest) {
+    $report = [
+      'checked' => FALSE,
+      'reason' => '',
+      'bundles' => [],
+      'source_node_count' => count($inventory),
+      'destination_node_count' => 0,
+      'missing_on_source' => [],
+      'id_mismatch' => [],
+    ];
+
+    if (!$inventory) {
+      $report['reason'] = 'The package contains no inventory.json, so deletions cannot be detected. Re-export with the current module version.';
+      return $report;
+    }
+
+    $source_uuids = [];
+    $source_nids = [];
+    foreach ($inventory as $row) {
+      if (!empty($row['uuid'])) {
+        $source_uuids[(string) $row['uuid']] = (string) (isset($row['nid']) ? $row['nid'] : '');
+      }
+      if (isset($row['nid'])) {
+        $source_nids[(string) $row['nid']] = (string) (isset($row['uuid']) ? $row['uuid'] : '');
+      }
+    }
+
+    // Only bundles the source actually exported can be judged.
+    $bundles = isset($manifest['node_bundles']) && is_array($manifest['node_bundles'])
+      ? array_values(array_filter(array_map('strval', $manifest['node_bundles'])))
+      : [];
+    $report['bundles'] = $bundles;
+
+    $since = isset($manifest['since_timestamp']) ? (int) $manifest['since_timestamp'] : 0;
+
+    try {
+      $query = $this->database->select('node_field_data', 'n');
+      $query->innerJoin('node', 'nb', 'nb.nid = n.nid');
+      $query->fields('n', ['nid', 'type', 'title', 'status', 'created', 'changed']);
+      $query->addField('nb', 'uuid', 'uuid');
+      $query->condition('n.default_langcode', 1);
+      if ($bundles) {
+        $query->condition('n.type', $bundles, 'IN');
+      }
+      $query->orderBy('n.nid', 'ASC');
+      $rows = $query->execute();
+    }
+    catch (\Exception $exception) {
+      $report['reason'] = sprintf('Unable to read destination nodes: %s', $exception->getMessage());
+      return $report;
+    }
+
+    $report['checked'] = TRUE;
+
+    foreach ($rows as $row) {
+      $report['destination_node_count']++;
+      $uuid = (string) $row->uuid;
+      $nid = (string) $row->nid;
+
+      if ($uuid !== '' && isset($source_uuids[$uuid])) {
+        // Present on the source. Flag a moved numeric ID for awareness.
+        if ($source_uuids[$uuid] !== '' && $source_uuids[$uuid] !== $nid) {
+          $report['id_mismatch'][] = [
+            'reason' => 'same_uuid_different_id',
+            'destination_nid' => $nid,
+            'source_nid' => $source_uuids[$uuid],
+            'uuid' => $uuid,
+            'bundle' => (string) $row->type,
+            'title' => (string) $row->title,
+          ];
+        }
+        continue;
+      }
+
+      if (isset($source_nids[$nid])) {
+        // The ID exists on the source but belongs to different content.
+        $report['id_mismatch'][] = [
+          'reason' => 'id_taken_by_different_uuid',
+          'destination_nid' => $nid,
+          'destination_uuid' => $uuid,
+          'source_uuid' => $source_nids[$nid],
+          'bundle' => (string) $row->type,
+          'title' => (string) $row->title,
+        ];
+        continue;
+      }
+
+      $created = (int) $row->created;
+      $report['missing_on_source'][] = [
+        'nid' => $nid,
+        'uuid' => $uuid,
+        'bundle' => (string) $row->type,
+        'title' => (string) $row->title,
+        'status' => (int) $row->status,
+        'created' => $created,
+        'created_utc' => $created ? gmdate('c', $created) : '',
+        'changed' => (int) $row->changed,
+        'changed_utc' => $row->changed ? gmdate('c', (int) $row->changed) : '',
+        'likely' => ($since && $created >= $since)
+          ? 'created_on_staging_after_cutoff'
+          : 'deleted_on_production_or_staging_only',
+      ];
+    }
+
     return $report;
   }
 
@@ -206,6 +412,7 @@ class PackageImporter {
 
       $entity = $resolution['entity'];
       $is_new = $entity === NULL;
+      $reassign_id = !empty($resolution['reassign']);
       if (!$is_new) {
         $result['destination_id'] = (string) $entity->id();
         $destination_hash = $this->buildDestinationHash($entity, $record);
@@ -231,19 +438,32 @@ class PackageImporter {
 
       // Structural preflight: verify the destination bundle, fields,
       // references, and packaged binary before classifying the operation.
-      $preview = $is_new ? $this->createEntity($storage, $record) : clone $entity;
+      $preview = $is_new ? $this->createEntity($storage, $record, $reassign_id) : clone $entity;
       $this->assertRecordCompatible($preview, $record);
       $this->validateBinaryRecord($record);
 
       if ($this->options['dry_run']) {
-        $predicted_id = $is_new ? $source_id : (string) $entity->id();
+        if ($is_new) {
+          // A reassigned entity's real ID is only known once it is saved.
+          $predicted_id = $reassign_id ? '(new id)' : $source_id;
+        }
+        else {
+          $predicted_id = (string) $entity->id();
+        }
         $this->idMap[$entity_type_id . ':' . $source_id] = $predicted_id;
         if (!empty($record['revision_id'])) {
           $this->revisionMap[$entity_type_id . ':' . $source_id . ':' . $record['revision_id']] = $record['revision_id'];
         }
         $result['status'] = $is_new ? 'create' : 'update';
         $result['destination_id'] = $predicted_id;
-        $result['message'] = $is_new ? 'Would create entity.' : 'Would update entity.';
+        if ($is_new) {
+          $result['message'] = $reassign_id
+            ? sprintf('Would create entity under a new ID; source ID %s is taken on the destination.', $source_id)
+            : 'Would create entity.';
+        }
+        else {
+          $result['message'] = 'Would update entity.';
+        }
         return $result;
       }
 
@@ -259,7 +479,14 @@ class PackageImporter {
 
       $result['status'] = $is_new ? 'create' : 'update';
       $result['destination_id'] = (string) $entity->id();
-      $result['message'] = $is_new ? 'Entity created.' : 'Entity updated.';
+      if ($is_new) {
+        $result['message'] = $reassign_id
+          ? sprintf('Entity created under new ID %s; source ID %s was taken.', $entity->id(), $source_id)
+          : 'Entity created.';
+      }
+      else {
+        $result['message'] = 'Entity updated.';
+      }
     }
     catch (\Exception $exception) {
       $result['status'] = 'error';
@@ -286,6 +513,24 @@ class PackageImporter {
     }
 
     if ($by_uuid && $by_id && (string) $by_uuid->id() !== (string) $by_id->id()) {
+      $entity_type_id = $storage->getEntityTypeId();
+      if (in_array($entity_type_id, $this->reassignableEntityTypes, TRUE)) {
+        // This is the normal state after a previous run reassigned this
+        // entity's ID: the UUID match is the same content under its new ID,
+        // and the source ID belongs to unrelated destination content. Update
+        // the entity the UUID identifies.
+        return [
+          'entity' => $by_uuid,
+          'conflict' => FALSE,
+          'reassign' => FALSE,
+          'message' => sprintf(
+            'Matched by UUID at destination ID %s; source ID %s holds other content.',
+            $by_uuid->id(),
+            $source_id
+          ),
+        ];
+      }
+
       return [
         'entity' => NULL,
         'conflict' => TRUE,
@@ -301,6 +546,23 @@ class PackageImporter {
     if (!$by_uuid && $by_id) {
       $destination_uuid = method_exists($by_id, 'uuid') ? (string) $by_id->uuid() : '';
       if ($source_uuid && $destination_uuid && $source_uuid !== $destination_uuid) {
+        $entity_type_id = $storage->getEntityTypeId();
+        if (in_array($entity_type_id, $this->reassignableEntityTypes, TRUE)) {
+          // The destination already uses this ID for unrelated content, but
+          // this entity type is not referenced by its numeric ID from
+          // outside. Create it under a new ID; the ID map rewrites every
+          // reference to it.
+          return [
+            'entity' => NULL,
+            'conflict' => FALSE,
+            'reassign' => TRUE,
+            'message' => sprintf(
+              'Source ID %s is taken on the destination; creating under a new ID.',
+              $source_id
+            ),
+          ];
+        }
+
         return [
           'entity' => NULL,
           'conflict' => TRUE,
@@ -323,7 +585,7 @@ class PackageImporter {
   /**
    * Creates an empty entity with source identity values.
    */
-  protected function createEntity($storage, array $record) {
+  protected function createEntity($storage, array $record, $reassign_id = FALSE) {
     $entity_type = $storage->getEntityType();
     $values = [];
     $id_key = $entity_type->getKey('id');
@@ -331,7 +593,10 @@ class PackageImporter {
     $bundle_key = $entity_type->getKey('bundle');
     $langcode_key = $entity_type->getKey('langcode');
 
-    if ($id_key) {
+    // When reassigning, leave the ID unset so the destination allocates a
+    // fresh one. The UUID is still carried over, so later syncs recognise
+    // this entity as the same content.
+    if ($id_key && !$reassign_id) {
       $values[$id_key] = $record['id'];
     }
     if ($uuid_key && !empty($record['uuid'])) {
@@ -378,6 +643,12 @@ class PackageImporter {
         $target_storage = $this->entityTypeManager->getStorage($target_type);
         foreach ($values as $item) {
           if (!isset($item['target_id']) || $item['target_id'] === '' || $item['target_id'] === NULL) {
+            continue;
+          }
+
+          // A target_id of 0 is not an entity reference. Taxonomy terms use
+          // it in the parent field to mean "this term is top level".
+          if ((string) $item['target_id'] === '0') {
             continue;
           }
 
@@ -429,6 +700,10 @@ class PackageImporter {
    * Applies field values and synchronization metadata.
    */
   protected function applyRecordToEntity(ContentEntityInterface $entity, array $record, $is_update) {
+    // Captured before any field values are applied, because the record
+    // carries its own 'changed' value which would overwrite it.
+    $original_changed = $is_update ? $this->getChangedTime($entity) : 0;
+
     if ($is_update && method_exists($entity, 'setNewRevision')) {
       $entity->setNewRevision(TRUE);
       if (method_exists($entity, 'setRevisionLogMessage')) {
@@ -455,10 +730,19 @@ class PackageImporter {
       $entity->setCreatedTime((int) $record['created']);
     }
     if (method_exists($entity, 'setChangedTime') && !empty($record['changed'])) {
-      $entity->setChangedTime((int) $record['changed']);
-    }
-    if (method_exists($entity, 'setRevisionCreationTime') && !empty($record['changed'])) {
-      $entity->setRevisionCreationTime((int) $record['changed']);
+      $changed = (int) $record['changed'];
+      // Core's EntityChanged constraint refuses a save whose changed time is
+      // older than the stored one, which is exactly the case when production
+      // deliberately overwrites a staging row that was edited later. Nudge
+      // the timestamp past the destination's so the production content wins
+      // without tripping the guard.
+      if ($is_update && $original_changed && $original_changed >= $changed) {
+        $changed = $original_changed + 1;
+      }
+      $entity->setChangedTime($changed);
+      if (method_exists($entity, 'setRevisionCreationTime')) {
+        $entity->setRevisionCreationTime($changed);
+      }
     }
     if (method_exists($entity, 'setSyncing')) {
       $entity->setSyncing(TRUE);
@@ -511,6 +795,11 @@ class PackageImporter {
 
     foreach ($values as &$item) {
       if (!isset($item['target_id']) || $item['target_id'] === '') {
+        continue;
+      }
+
+      // Never remap 0: it means "no parent", not entity 0.
+      if ((string) $item['target_id'] === '0') {
         continue;
       }
 
@@ -740,8 +1029,10 @@ class PackageImporter {
       return;
     }
 
+    // Drupal 11's Merge::key() takes a single string field and asserts as
+    // much; the multi-field form is keys(). Drupal 8 accepted an array here.
     $this->database->merge('bwtf_content_sync_log')
-      ->key([
+      ->keys([
         'entity_type' => $record['entity_type'],
         'source_id' => (string) $record['id'],
       ])

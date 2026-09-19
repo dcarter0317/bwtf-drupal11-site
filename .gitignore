@@ -48,3 +48,5 @@
 *.zip
 *.bak
 *.old
+# Local sync run reports, not part of the codebase
+.sync-reports/
