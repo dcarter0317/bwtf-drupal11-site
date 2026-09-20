@@ -24,6 +24,7 @@
         "drupal/core-recommended": "^11.3",
         "drupal/ctools": "^4.1",
         "drupal/entity_browser": "^2.17",
+        "drupal/glightbox": "^1.0",
         "drupal/imce": "^3.1",
         "drupal/inline_entity_form": "^3.0",
         "drupal/js_cookie": "^2.0",
