@@ -1,0 +1,103 @@
+uuid: 0463c570-56eb-4e43-b329-1fa3e2e419dc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.ept_video.field_ept_settings
+    - field.field.paragraph.ept_video.field_ept_text
+    - field.field.paragraph.ept_video.field_ept_title
+    - field.field.paragraph.ept_video.field_ept_video
+    - paragraphs.paragraphs_type.ept_video
+  module:
+    - ept_video
+    - field_group
+    - media_library
+    - text
+third_party_settings:
+  field_group:
+    group_tabs:
+      children:
+        - group_content
+        - group_settings
+      label: Tabs
+      region: content
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        direction: horizontal
+        width_breakpoint: 640
+    group_content:
+      children:
+        - field_ept_title
+        - field_ept_video
+        - field_ept_text
+      label: Content
+      region: content
+      parent_name: group_tabs
+      weight: 7
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: open
+        description: ''
+        required_fields: true
+    group_settings:
+      children:
+        - field_ept_settings
+      label: Settings
+      region: content
+      parent_name: group_tabs
+      weight: 8
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+_core:
+  default_config_hash: uWfzDvi2652DPEZs_2EApToxb-ZwFGKVzEDZ3Jd27xU
+id: paragraph.ept_video.default
+targetEntityType: paragraph
+bundle: ept_video
+mode: default
+content:
+  field_ept_settings:
+    type: ept_settings_video
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_ept_text:
+    type: text_textarea
+    weight: 9
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_ept_title:
+    type: text_textarea
+    weight: 6
+    region: content
+    settings:
+      rows: 2
+      placeholder: ''
+    third_party_settings: {  }
+  field_ept_video:
+    type: media_library_widget
+    weight: 8
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

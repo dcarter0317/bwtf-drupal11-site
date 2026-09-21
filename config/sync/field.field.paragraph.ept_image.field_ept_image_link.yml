@@ -1,0 +1,25 @@
+uuid: f22eb28f-701f-4a71-91ab-11beaeaaabb9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ept_image_link
+    - paragraphs.paragraphs_type.ept_image
+  module:
+    - link
+_core:
+  default_config_hash: Dmezv08ITbH8uMIaLoQS0_rAIw2TDc-iXuD0VCZW5q0
+id: paragraph.ept_image.field_ept_image_link
+field_name: field_ept_image_link
+entity_type: paragraph
+bundle: ept_image
+label: 'Image Link'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 17
+field_type: link

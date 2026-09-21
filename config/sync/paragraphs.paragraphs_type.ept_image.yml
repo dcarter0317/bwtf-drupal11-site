@@ -1,0 +1,12 @@
+uuid: 81bf760c-b6ae-40e9-9446-56528989526a
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: GEIZEGHO5Mf_kO9Yek21HvRO-j_2fbPepBSsr35U_zY
+id: ept_image
+label: 'EPT Image'
+icon_uuid: null
+icon_default: null
+description: 'Extra Paragraph Type (EPT): Image'
+behavior_plugins: {  }

@@ -1,0 +1,24 @@
+uuid: 6f6dca25-4e59-4c8a-9ec9-aaf168ccc381
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ept_title
+    - paragraphs.paragraphs_type.ept_video
+  module:
+    - text
+_core:
+  default_config_hash: liOGejMkGS8WchkLMEwnO9OEFeI2CuDopa6y4ARi6R4
+id: paragraph.ept_video.field_ept_title
+field_name: field_ept_title
+entity_type: paragraph
+bundle: ept_video
+label: Title
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

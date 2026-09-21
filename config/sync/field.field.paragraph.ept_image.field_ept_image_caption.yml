@@ -1,0 +1,24 @@
+uuid: afd26ec6-93bd-4cc8-8c9e-051fd94a3fef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ept_image_caption
+    - paragraphs.paragraphs_type.ept_image
+  module:
+    - text
+_core:
+  default_config_hash: tA0YJl2CpERDaSbF2WLaH5CxWoJo4OUxxMw-Y_Z85KA
+id: paragraph.ept_image.field_ept_image_caption
+field_name: field_ept_image_caption
+entity_type: paragraph
+bundle: ept_image
+label: 'Image caption'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

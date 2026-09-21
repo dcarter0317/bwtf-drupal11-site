@@ -24,10 +24,18 @@ module:
   entity_browser: 0
   entity_browser_entity_form: 0
   entity_reference_revisions: 0
+  ept_core: 0
+  ept_image: 0
+  ept_video: 0
+  ept_video_and_image_gallery: 0
   field: 0
+  field_group: 0
   field_ui: 0
   file: 0
   filter: 0
+  glightbox: 0
+  glightbox_inline: 0
+  glightbox_media_video: 0
   google_analytics: 0
   help: 0
   history: 0
@@ -41,6 +49,7 @@ module:
   media: 0
   media_entity_browser: 0
   media_library: 0
+  media_library_form_element: 0
   menu_link_content: 0
   menu_ui: 0
   metatag: 0

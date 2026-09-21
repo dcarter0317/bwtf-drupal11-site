@@ -1,0 +1,24 @@
+uuid: 2ee20658-e53b-4106-805d-7b5b10c0bb8a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ept_text
+    - paragraphs.paragraphs_type.ept_video_and_image_gallery
+  module:
+    - text
+_core:
+  default_config_hash: iohq2efRKb05xjfjet4Iqszn41WFrfgfSMpBRl9I8EQ
+id: paragraph.ept_video_and_image_gallery.field_ept_text
+field_name: field_ept_text
+entity_type: paragraph
+bundle: ept_video_and_image_gallery
+label: Text
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

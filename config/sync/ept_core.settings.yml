@@ -1,0 +1,13 @@
+_core:
+  default_config_hash: eYlqpNn_5W04WVeLB4bYW404IYbkVrx7N9zxzBAJ-Io
+ept_core_mobile_breakpoint: '640'
+ept_core_tablet_breakpoint: '1020'
+ept_core_desktop_breakpoint: '1320'
+ept_core_xxsmall_width: '480'
+ept_core_xsmall_width: '640'
+ept_core_small_width: '768'
+ept_core_default_width: '960'
+ept_core_large_width: '1100'
+ept_core_xlarge_width: '1320'
+ept_core_xxlarge_width: '1600'
+ept_core_background_color: '#0d77b5'

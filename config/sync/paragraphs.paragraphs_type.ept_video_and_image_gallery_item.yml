@@ -1,0 +1,12 @@
+uuid: dc24a7f9-7d0a-465e-9098-47d58cd04fdb
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: OrMDgoP5KHK7xLNhKOohBVVuqmo2J4D3YWH3a3Od1Dw
+id: ept_video_and_image_gallery_item
+label: 'EPT Video and Image gallery item'
+icon_uuid: null
+icon_default: null
+description: 'Video and Image item for EPT Video and Image Gallery paragraph'
+behavior_plugins: {  }

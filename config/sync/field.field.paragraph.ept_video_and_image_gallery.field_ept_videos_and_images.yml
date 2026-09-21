@@ -1,0 +1,33 @@
+uuid: 0a4992ef-d484-454d-bfef-5f1936a3b511
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ept_videos_and_images
+    - paragraphs.paragraphs_type.ept_video_and_image_gallery
+    - paragraphs.paragraphs_type.ept_video_and_image_gallery_item
+  module:
+    - entity_reference_revisions
+_core:
+  default_config_hash: Md5TJXPOSzIMO3hzpok2uncR4UY-8oOvihBYAwl1UTE
+id: paragraph.ept_video_and_image_gallery.field_ept_videos_and_images
+field_name: field_ept_videos_and_images
+entity_type: paragraph
+bundle: ept_video_and_image_gallery
+label: 'Videos and Images'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      ept_video_and_image_gallery_item: ept_video_and_image_gallery_item
+    negate: 0
+    target_bundles_drag_drop:
+      ept_video_and_image_gallery_item:
+        weight: 82
+        enabled: true
+field_type: entity_reference_revisions

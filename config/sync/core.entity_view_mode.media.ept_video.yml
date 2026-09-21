@@ -1,0 +1,13 @@
+uuid: 5501463b-45d2-4ba2-882d-c4ae19accaeb
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+_core:
+  default_config_hash: 0wiLx1gaRcymNOKRYsVEppFtOWUHrgVQsi6qUlIr_TM
+id: media.ept_video
+label: 'EPT Video'
+description: ''
+targetEntityType: media
+cache: true

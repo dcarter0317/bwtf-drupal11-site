@@ -1,0 +1,35 @@
+uuid: 8ebfacd8-1fbb-4548-8b3f-fd321bb1f9a8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.ept_video_and_image_gallery_item.field_ept_gallery_item
+    - field.field.paragraph.ept_video_and_image_gallery_item.field_ept_gallery_item_text
+    - paragraphs.paragraphs_type.ept_video_and_image_gallery_item
+  module:
+    - text
+_core:
+  default_config_hash: PB75oeGkZ1ajIp-S4ceLC_lub5_nmn_WU0f_7wBeOag
+id: paragraph.ept_video_and_image_gallery_item.default
+targetEntityType: paragraph
+bundle: ept_video_and_image_gallery_item
+mode: default
+content:
+  field_ept_gallery_item:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: ept_video_and_image_gallery_item
+      link: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_ept_gallery_item_text:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  search_api_excerpt: true

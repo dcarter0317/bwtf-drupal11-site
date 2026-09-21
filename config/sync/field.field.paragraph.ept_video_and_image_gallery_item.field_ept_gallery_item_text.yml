@@ -1,0 +1,24 @@
+uuid: 7a188722-a713-4d97-a52c-22cd3b9faa70
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ept_gallery_item_text
+    - paragraphs.paragraphs_type.ept_video_and_image_gallery_item
+  module:
+    - text
+_core:
+  default_config_hash: rHN5K2dhzZ2JBJLK9KNsBbDp_D8-ug9T0oRgKfs_L_8
+id: paragraph.ept_video_and_image_gallery_item.field_ept_gallery_item_text
+field_name: field_ept_gallery_item_text
+entity_type: paragraph
+bundle: ept_video_and_image_gallery_item
+label: 'Gallery item text'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

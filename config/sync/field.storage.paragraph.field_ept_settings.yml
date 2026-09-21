@@ -1,0 +1,21 @@
+uuid: 00aecbf5-14b8-467e-b4cb-d6100b5c2455
+langcode: en
+status: true
+dependencies:
+  module:
+    - ept_core
+    - paragraphs
+_core:
+  default_config_hash: HvKMBmRf1ancerUpnNjtwfTeY-R4_vPBnsqEe9j-ovs
+id: paragraph.field_ept_settings
+field_name: field_ept_settings
+entity_type: paragraph
+type: ept_settings
+settings: {  }
+module: ept_core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

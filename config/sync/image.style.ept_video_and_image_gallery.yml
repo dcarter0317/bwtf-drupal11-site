@@ -1,0 +1,17 @@
+uuid: 103aceff-4e5b-4e1c-acf7-b734d47f4b75
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: VijhP4To3EdFocRuOjCdr8vV8fPomTYloLASZEYa0pc
+name: ept_video_and_image_gallery
+label: 'EPT Video and Image gallery'
+effects:
+  dd219b2f-d95b-480c-83e9-b9b81fe45c90:
+    uuid: dd219b2f-d95b-480c-83e9-b9b81fe45c90
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 480
+      height: 360
+      anchor: center-center
