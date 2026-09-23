@@ -39,6 +39,12 @@ KEEP_DB_BACKUPS="${KEEP_DB_BACKUPS:-10}"
 # Email a report. Leave empty to disable.
 MAILTO="${MAILTO:-}"
 
+# Sender address. Without this, mail goes out as <user>@<server hostname>,
+# which no SPF or DKIM record covers, so Gmail and Yahoo greylist it and file
+# it as spam. Use an address on a domain this server is authorised to send
+# for. Leave empty to keep the default sender.
+MAIL_FROM="${MAIL_FROM:-}"
+
 # Set to 1 to stop before writing to staging.
 PREFLIGHT_ONLY="${PREFLIGHT_ONLY:-0}"
 # Production is the single source of truth until the cutover, so it wins even
@@ -97,7 +103,14 @@ finish() {
     else
       subject="BWTF content sync FAILED - $RUN_ID"
     fi
-    mail -s "$subject" "$MAILTO" < "$LOG_FILE" || true
+    if [ -n "$MAIL_FROM" ]; then
+      # -r is mailx/s-nail; fall back to the default sender if unsupported.
+      mail -s "$subject" -r "$MAIL_FROM" "$MAILTO" < "$LOG_FILE" 2>/dev/null \
+        || mail -s "$subject" "$MAILTO" < "$LOG_FILE" \
+        || true
+    else
+      mail -s "$subject" "$MAILTO" < "$LOG_FILE" || true
+    fi
   fi
 
   exit "$code"
@@ -259,7 +272,10 @@ ls -1t "$DB_BACKUP_DIR"/stage-before-sync-*.sql.gz 2>/dev/null \
 APPLIED_REPORT="$(ls -1t "$PACKAGE"/import-report-applied-*.json 2>/dev/null | head -1)"
 if [ -n "$APPLIED_REPORT" ]; then
   log "Report: $APPLIED_REPORT"
-  grep -o '"[a-z_]*":[0-9]*' "$APPLIED_REPORT" | head -12 >>"$LOG_FILE" 2>/dev/null || true
+  # The report is pretty-printed, so the value follows a space after the
+  # colon. Pull the summary counts out and log them one per line.
+  grep -oE '"(create|update|unchanged|conflict|error|alias_create|alias_update|alias_unchanged|alias_conflict|missing_on_source|id_mismatch)": *[0-9]+' \
+    "$APPLIED_REPORT" | head -12 | sed 's/^/  /' >>"$LOG_FILE" 2>/dev/null || true
 fi
 
 finish 0
