@@ -175,6 +175,85 @@ class PackageUtils {
   }
 
   /**
+   * Determines whether a theme config key belongs to the homepage slider.
+   *
+   * Only slider keys are synchronized. Social links and the logo in the same
+   * config object are maintained on staging and are left alone.
+   *
+   * @param string $key
+   *   Top-level config key, such as slide1_title or slider_display.
+   *
+   * @return bool
+   *   TRUE for slider keys.
+   */
+  public static function isSliderConfigKey($key) {
+    return (bool) preg_match('/^(slider_[a-z0-9_]+|slide\d+_(title|desc|url|link_text|image))$/', (string) $key);
+  }
+
+  /**
+   * Determines whether a slider config key holds slide image file IDs.
+   *
+   * @param string $key
+   *   Top-level config key.
+   *
+   * @return bool
+   *   TRUE for slideN_image keys.
+   */
+  public static function isSlideImageKey($key) {
+    return (bool) preg_match('/^slide\d+_image$/', (string) $key);
+  }
+
+  /**
+   * Normalizes a stored slide image value into a list of file IDs.
+   *
+   * The theme settings form has stored this as a scalar fid, a list of fids,
+   * and an empty string or map over time.
+   *
+   * @param mixed $value
+   *   Stored config value.
+   *
+   * @return string[]
+   *   Non-zero file IDs as strings.
+   */
+  public static function normalizeFileIds($value) {
+    $values = is_array($value) ? array_values($value) : [$value];
+    $ids = [];
+    foreach ($values as $item) {
+      if (is_scalar($item) && (string) $item !== '' && (string) $item !== '0') {
+        $ids[] = (string) $item;
+      }
+    }
+    return $ids;
+  }
+
+  /**
+   * Normalizes a slider config value for comparison.
+   *
+   * Drupal 8 and Drupal 11 store the same setting as '5000' or 5000, and
+   * TRUE or 1, so compare strings rather than typed values.
+   *
+   * @param string $key
+   *   Top-level config key.
+   * @param mixed $value
+   *   Stored config value.
+   *
+   * @return mixed
+   *   Comparable value.
+   */
+  public static function normalizeSliderValue($key, $value) {
+    if (self::isSlideImageKey($key)) {
+      return self::normalizeFileIds($value);
+    }
+    if (is_bool($value)) {
+      return $value ? '1' : '0';
+    }
+    if ($value === NULL) {
+      return '';
+    }
+    return is_scalar($value) ? (string) $value : $value;
+  }
+
+  /**
    * Converts a stream-wrapper URI to a package-relative binary path.
    *
    * @param string $uri

@@ -47,6 +47,12 @@ $manifest = $exporter->export($since, $bundles, $output, [
   // must be left alone. Pass --include-menu-links to override.
   'skip_menu_links' => empty($options['include-menu-links']),
   'skip_changed_terms' => !empty($options['skip-changed-terms']),
+  // The homepage slider lives in theme config. Pass --skip-theme-config to
+  // leave it out, or --theme-config=name1,name2 to read other config.
+  'skip_theme_config' => !empty($options['skip-theme-config']),
+  'theme_config' => isset($options['theme-config'])
+    ? array_values(array_filter(array_map('trim', explode(',', $options['theme-config']))))
+    : ['bwtf.settings'],
 ]);
 
 print PHP_EOL;
@@ -60,6 +66,7 @@ print 'Total entities, including dependencies: ' . $manifest['entity_count'] . P
 print 'Menu links: ' . (empty($options['include-menu-links']) ? 'excluded (navigation left untouched)' : 'INCLUDED') . PHP_EOL;
 print 'Independently changed terms: ' . $manifest['changed_term_count'] . PHP_EOL;
 print 'Aliases: ' . $manifest['alias_count'] . PHP_EOL;
+print 'Slider config: ' . ($manifest['theme_config'] ? implode(', ', $manifest['theme_config']) : 'not exported') . PHP_EOL;
 print 'Source inventory rows: ' . $manifest['inventory_count'] . PHP_EOL;
 print 'Warnings: ' . count($manifest['warnings']) . PHP_EOL;
 

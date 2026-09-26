@@ -90,6 +90,21 @@ $print_deletions = function (array $report) {
   }
 };
 
+/**
+ * Prints the homepage slider section.
+ */
+$print_config = function (array $report) {
+  $results = isset($report['config']) ? $report['config'] : [];
+  if (!$results) {
+    return;
+  }
+
+  print PHP_EOL . 'Homepage slider:' . PHP_EOL;
+  foreach ($results as $result) {
+    print sprintf('  %-16s %-10s %s', $result['name'], $result['status'], $result['message']) . PHP_EOL;
+  }
+};
+
 // Every apply run performs a complete preflight before writing anything.
 $preflight_options = $shared_options + ['dry_run' => TRUE];
 $preflight = $make_importer()->import($package, $preflight_options);
@@ -103,9 +118,10 @@ foreach ($preflight['summary'] as $status => $count) {
   print sprintf('  %-18s %d', $status . ':', $count) . PHP_EOL;
 }
 
+$print_config($preflight);
 $print_deletions($preflight);
 
-$blocking = $preflight['summary']['conflict'] + $preflight['summary']['error'] + $preflight['summary']['alias_conflict'];
+$blocking = $preflight['summary']['conflict'] + $preflight['summary']['error'] + $preflight['summary']['alias_conflict'] + $preflight['summary']['config_conflict'];
 if ($blocking > 0) {
   throw new RuntimeException(sprintf(
     'Preflight found %d blocking conflict/error result(s). Nothing was imported. Review the report.',
@@ -130,9 +146,10 @@ foreach ($report['summary'] as $status => $count) {
   print sprintf('  %-18s %d', $status . ':', $count) . PHP_EOL;
 }
 
+$print_config($report);
 $print_deletions($report);
 
-$failures = $report['summary']['conflict'] + $report['summary']['error'] + $report['summary']['alias_conflict'];
+$failures = $report['summary']['conflict'] + $report['summary']['error'] + $report['summary']['alias_conflict'] + $report['summary']['config_conflict'];
 if ($failures > 0) {
   throw new RuntimeException(sprintf(
     'The apply run completed with %d conflict/error result(s). Review the report and restore the backup if necessary.',

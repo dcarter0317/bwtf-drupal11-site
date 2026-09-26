@@ -28,6 +28,21 @@ The export starts with nodes whose `created` or `changed` timestamp is on or aft
 - menu-link content entities pointing to the changed nodes;
 - path aliases for the changed nodes.
 
+It also exports the **homepage slider** into `config.json`. The BWTF 2.0 slider
+is theme config (`bwtf.settings`), not content, so no node change ever carries
+it. Every run exports the slider keys (`slider_*` and `slideN_title`, `_desc`,
+`_url`, `_link_text`, `_image`) and the slide images as file entities with
+their binaries. Social links and the logo in the same config object are
+deliberately left out; they are maintained on staging.
+
+On import, slide image file IDs are remapped like any other reference, file
+usage is registered for the theme, and the result is reported as
+`config_update`, `config_unchanged` or `config_conflict`. A conflict means the
+slider was edited on staging since the last sync; it blocks the run like any
+other conflict until reviewed, or overridden with `--overwrite-newer`. The
+theme tags the rendered slider with `config:bwtf.settings`, so an imported
+change shows without waiting for a cache rebuild.
+
 It also writes `inventory.json`: one row for every node that currently exists
 on the source site, in scope bundles, regardless of the cutoff. The importer
 uses it to report destination content that no longer exists on production. The
@@ -166,6 +181,7 @@ manifest.json
 entities.json
 inventory.json
 aliases.json
+config.json
 files/
 ```
 
@@ -216,7 +232,7 @@ The preflight will classify entities as:
 - `conflict`
 - `error`
 
-Do not apply the package while `conflict`, `error`, or `alias_conflict` is nonzero.
+Do not apply the package while `conflict`, `error`, `alias_conflict`, or `config_conflict` is nonzero.
 
 ### Common conflict: staging ID collision
 
@@ -384,6 +400,8 @@ production-owned page on staging.
 --output=/absolute/package/path
 --include-users
 --skip-menu-links
+--skip-theme-config
+--theme-config=bwtf.settings
 ```
 
 ## Import

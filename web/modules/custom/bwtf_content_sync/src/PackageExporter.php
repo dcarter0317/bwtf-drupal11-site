@@ -84,6 +84,13 @@ class PackageExporter {
   protected $changedTermCount = 0;
 
   /**
+   * Exported theme config records.
+   *
+   * @var array
+   */
+  protected $themeConfig = [];
+
+  /**
    * Constructs the exporter.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, FileSystemInterface $file_system) {
@@ -113,6 +120,7 @@ class PackageExporter {
     $this->seen = [];
     $this->warnings = [];
     $this->changedTermCount = 0;
+    $this->themeConfig = [];
     $this->outputDirectory = rtrim($output_directory, '/');
     $this->includeUsers = !empty($options['include_users']);
 
@@ -151,6 +159,13 @@ class PackageExporter {
       $this->exportChangedTerms($since);
     }
 
+    // The homepage slider is theme config, not content, so no node change
+    // ever reaches it. Its slide images are exported as file entities.
+    if (empty($options['skip_theme_config'])) {
+      $config_names = isset($options['theme_config']) ? $options['theme_config'] : ['bwtf.settings'];
+      $this->exportThemeConfig($config_names);
+    }
+
     // The inventory lists every node that currently exists on the source site,
     // regardless of the cutoff. The importer uses it to report destination
     // nodes that no longer exist on the source. It never deletes anything.
@@ -173,6 +188,9 @@ class PackageExporter {
       'alias_count' => count($this->aliases),
       'changed_term_count' => $this->changedTermCount,
       'inventory_count' => count($inventory),
+      'theme_config' => array_values(array_map(function ($record) {
+        return $record['name'];
+      }, $this->themeConfig)),
       'include_users' => $this->includeUsers,
       'warnings' => $this->warnings,
     ];
@@ -180,6 +198,7 @@ class PackageExporter {
     PackageUtils::writeJson($this->outputDirectory . '/entities.json', $this->records);
     PackageUtils::writeJson($this->outputDirectory . '/inventory.json', $inventory);
     PackageUtils::writeJson($this->outputDirectory . '/aliases.json', $this->aliases);
+    PackageUtils::writeJson($this->outputDirectory . '/config.json', $this->themeConfig);
     PackageUtils::writeJson($this->outputDirectory . '/manifest.json', $manifest);
 
     return $manifest;
@@ -244,6 +263,62 @@ class PackageExporter {
       if (count($this->records) > $before) {
         $this->changedTermCount++;
       }
+    }
+  }
+
+  /**
+   * Exports the homepage slider keys of the theme config.
+   *
+   * Every slider key is exported on every run, regardless of the cutoff:
+   * config has no changed time, and the importer skips it when staging
+   * already matches.
+   *
+   * @param string[] $config_names
+   *   Config object names, normally bwtf.settings.
+   */
+  protected function exportThemeConfig(array $config_names) {
+    $file_storage = $this->entityTypeManager->getStorage('file');
+
+    foreach ($config_names as $name) {
+      $config = \Drupal::config($name);
+      if ($config->isNew()) {
+        $this->warnings[] = sprintf('Theme config %s does not exist on the source site, so the slider was not exported.', $name);
+        continue;
+      }
+
+      $values = [];
+      foreach ($config->getRawData() as $key => $value) {
+        if (PackageUtils::isSliderConfigKey($key)) {
+          $values[$key] = $value;
+        }
+      }
+      if (!$values) {
+        $this->warnings[] = sprintf('Theme config %s has no slider keys, so the slider was not exported.', $name);
+        continue;
+      }
+
+      $file_ids = [];
+      foreach ($values as $key => $value) {
+        if (!PackageUtils::isSlideImageKey($key)) {
+          continue;
+        }
+        foreach (PackageUtils::normalizeFileIds($value) as $fid) {
+          $file = $file_storage->load($fid);
+          if ($file instanceof ContentEntityInterface) {
+            $this->exportEntity($file);
+            $file_ids[] = $fid;
+          }
+          else {
+            $this->warnings[] = sprintf('Slide image file %s in %s:%s could not be loaded.', $fid, $name, $key);
+          }
+        }
+      }
+
+      $this->themeConfig[] = [
+        'name' => $name,
+        'values' => $values,
+        'file_ids' => array_values(array_unique($file_ids)),
+      ];
     }
   }
 

@@ -274,8 +274,8 @@ if [ -n "$APPLIED_REPORT" ]; then
   log "Report: $APPLIED_REPORT"
   # The report is pretty-printed, so the value follows a space after the
   # colon. Pull the summary counts out and log them one per line.
-  grep -oE '"(create|update|unchanged|conflict|error|alias_create|alias_update|alias_unchanged|alias_conflict|missing_on_source|id_mismatch)": *[0-9]+' \
-    "$APPLIED_REPORT" | head -12 | sed 's/^/  /' >>"$LOG_FILE" 2>/dev/null || true
+  grep -oE '"(create|update|unchanged|conflict|error|alias_create|alias_update|alias_unchanged|alias_conflict|missing_on_source|id_mismatch|config_update|config_unchanged|config_conflict)": *[0-9]+' \
+    "$APPLIED_REPORT" | head -14 | sed 's/^/  /' >>"$LOG_FILE" 2>/dev/null || true
 fi
 
 finish 0

@@ -228,6 +228,12 @@ function bwtf_preprocess_page(array &$variables): void {
 
   $slides = [];
 
+  // The slider is built from config and file entities, so the cached page
+  // must be invalidated when either changes. Without this, a slider updated
+  // by the content sync or the settings form stays stale until a cache
+  // rebuild.
+  $variables['#cache']['tags'][] = 'config:bwtf.settings';
+
   // Optional current node fallback (kept from your original).
   $route_node = \Drupal::routeMatch()->getParameter('node');
   $current_nid = $route_node instanceof \Drupal\node\NodeInterface ? (int) $route_node->id() : NULL;
@@ -248,6 +254,7 @@ function bwtf_preprocess_page(array &$variables): void {
     $img21 = ['src' => '', 'srcset' => NULL, 'is_svg' => FALSE];
 
     if ($fid && ($file = \Drupal\file\Entity\File::load($fid))) {
+      $variables['#cache']['tags'] = array_merge($variables['#cache']['tags'], $file->getCacheTags());
       $uri = $file->getFileUri();                       // public://bwtf/slider/...
       $ext = strtolower(pathinfo($uri, PATHINFO_EXTENSION));
       $is_svg = ($ext === 'svg');

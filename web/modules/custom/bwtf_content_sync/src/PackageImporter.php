@@ -88,6 +88,15 @@ class PackageImporter {
   ];
 
   /**
+   * Config objects a package may write, and only their slider keys.
+   *
+   * @var string[]
+   */
+  protected $allowedConfigNames = [
+    'bwtf.settings',
+  ];
+
+  /**
    * Constructs the importer.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, FileSystemInterface $file_system) {
@@ -125,6 +134,10 @@ class PackageImporter {
     $inventory = file_exists($this->packageDirectory . '/inventory.json')
       ? PackageUtils::readJson($this->packageDirectory . '/inventory.json')
       : [];
+    // Packages exported before slider support have no config.json.
+    $config_records = file_exists($this->packageDirectory . '/config.json')
+      ? PackageUtils::readJson($this->packageDirectory . '/config.json')
+      : [];
 
     $this->validateManifest($manifest);
 
@@ -152,9 +165,13 @@ class PackageImporter {
         'alias_conflict' => 0,
         'missing_on_source' => 0,
         'id_mismatch' => 0,
+        'config_update' => 0,
+        'config_unchanged' => 0,
+        'config_conflict' => 0,
       ],
       'entities' => [],
       'aliases' => [],
+      'config' => [],
       'deletions' => [],
     ];
 
@@ -180,6 +197,13 @@ class PackageImporter {
       else {
         $report['summary']['alias_conflict']++;
       }
+    }
+
+    // Config runs after entities so slide image file IDs can be remapped.
+    foreach ($config_records as $config_record) {
+      $result = $this->processThemeConfig($config_record, $manifest);
+      $report['config'][] = $result;
+      $report['summary']['config_' . $result['status']]++;
     }
 
     // Deletion detection is report-only and never blocks or writes.
@@ -494,6 +518,216 @@ class PackageImporter {
     }
 
     return $result;
+  }
+
+  /**
+   * Imports the slider keys of a theme config record.
+   *
+   * @param array $record
+   *   Config record from config.json.
+   * @param array $manifest
+   *   Package manifest.
+   *
+   * @return array
+   *   Result with status update, unchanged or conflict.
+   */
+  protected function processThemeConfig(array $record, array $manifest) {
+    $name = isset($record['name']) ? (string) $record['name'] : '';
+    $result = [
+      'name' => $name,
+      'status' => 'conflict',
+      'changed_keys' => [],
+      'message' => '',
+    ];
+
+    if (!in_array($name, $this->allowedConfigNames, TRUE)) {
+      $result['message'] = sprintf('Config %s is not on the list of config this module may write.', $name);
+      return $result;
+    }
+
+    try {
+      $values = [];
+      $file_ids = [];
+      $source_values = isset($record['values']) && is_array($record['values']) ? $record['values'] : [];
+      foreach ($source_values as $key => $value) {
+        // The exporter already filters keys; never trust a package to widen it.
+        if (!PackageUtils::isSliderConfigKey($key)) {
+          continue;
+        }
+        if (PackageUtils::isSlideImageKey($key)) {
+          $value = $this->rewriteSlideImageIds($name, $key, $value);
+          $file_ids = array_merge($file_ids, $value);
+        }
+        $values[$key] = $value;
+      }
+
+      $config = \Drupal::configFactory()->getEditable($name);
+      $current = $config->getRawData();
+      $new_hash = $this->hashSliderValues($values);
+
+      foreach ($values as $key => $value) {
+        $existing = array_key_exists($key, $current) ? $current[$key] : NULL;
+        if (PackageUtils::normalizeSliderValue($key, $existing) !== PackageUtils::normalizeSliderValue($key, $value)) {
+          $result['changed_keys'][] = $key;
+        }
+      }
+
+      if (!$result['changed_keys']) {
+        $result['status'] = 'unchanged';
+        $result['message'] = 'Slider settings already match the package.';
+        return $result;
+      }
+
+      // Config has no changed time, so compare against what the last sync
+      // wrote. A difference means someone edited the slider on staging.
+      $last_hash = $this->getLastImportHash('config', $name);
+      $current_subset = array_intersect_key($current, $values);
+      if (!$this->options['overwrite_newer'] && $last_hash !== NULL && !hash_equals($last_hash, $this->hashSliderValues($current_subset))) {
+        $result['message'] = sprintf(
+          'The slider in %s was edited on staging since the last sync. Review before using --overwrite-newer.',
+          $name
+        );
+        return $result;
+      }
+
+      if ($this->options['dry_run']) {
+        $result['status'] = 'update';
+        $result['message'] = 'Would update slider settings: ' . implode(', ', $result['changed_keys']) . '.';
+        return $result;
+      }
+
+      foreach ($values as $key => $value) {
+        $config->set($key, $value);
+      }
+      $config->save();
+      $this->registerConfigFileUsage($name, $file_ids);
+      $this->writeConfigImportLog($name, $new_hash, $manifest);
+
+      $result['status'] = 'update';
+      $result['message'] = 'Slider settings updated: ' . implode(', ', $result['changed_keys']) . '.';
+    }
+    catch (\Exception $exception) {
+      $result['status'] = 'conflict';
+      $result['message'] = $exception->getMessage();
+    }
+
+    return $result;
+  }
+
+  /**
+   * Maps source slide image file IDs to destination file IDs.
+   *
+   * @return int[]
+   *   Destination file IDs, in the list form the theme settings form saves.
+   */
+  protected function rewriteSlideImageIds($name, $key, $value) {
+    $file_storage = $this->entityTypeManager->getStorage('file');
+    $ids = [];
+
+    foreach (PackageUtils::normalizeFileIds($value) as $source_fid) {
+      $map_key = 'file:' . $source_fid;
+      $mapped = isset($this->idMap[$map_key]) ? (string) $this->idMap[$map_key] : $source_fid;
+
+      if (!ctype_digit($mapped)) {
+        // A dry run cannot know a reassigned file's new ID. The file record
+        // itself already passed preflight, so keep a placeholder that never
+        // matches the stored value.
+        $ids[] = $mapped;
+        continue;
+      }
+
+      if (!isset($this->idMap[$map_key]) && !$file_storage->load($mapped)) {
+        throw new \RuntimeException(sprintf(
+          'Slide image file %s in %s:%s is not present in the package or destination.',
+          $source_fid,
+          $name,
+          $key
+        ));
+      }
+      $ids[] = (int) $mapped;
+    }
+
+    return $ids;
+  }
+
+  /**
+   * Hashes slider values in their normalized, comparable form.
+   */
+  protected function hashSliderValues(array $values) {
+    $normalized = [];
+    foreach ($values as $key => $value) {
+      $normalized[$key] = PackageUtils::normalizeSliderValue($key, $value);
+    }
+    return PackageUtils::hashData($normalized);
+  }
+
+  /**
+   * Records that the theme uses the slide images, as the settings form does.
+   *
+   * Without a usage row, file cleanup may treat the images as unused.
+   */
+  protected function registerConfigFileUsage($name, array $file_ids) {
+    $file_usage = \Drupal::service('file.usage');
+    $file_storage = $this->entityTypeManager->getStorage('file');
+
+    foreach (array_unique($file_ids) as $fid) {
+      $file = $file_storage->load($fid);
+      if (!$file) {
+        continue;
+      }
+      if (method_exists($file, 'isTemporary') && $file->isTemporary()) {
+        $file->setPermanent();
+        $file->save();
+      }
+      // add() increments a counter, so only add the row once.
+      $usage = $file_usage->listUsage($file);
+      if (!isset($usage['bwtf']['config'][$name])) {
+        $file_usage->add($file, 'bwtf', 'config', $name);
+      }
+    }
+  }
+
+  /**
+   * Returns the hash written by the last import of a record, if any.
+   */
+  protected function getLastImportHash($entity_type, $source_id) {
+    if (!$this->database->schema()->tableExists('bwtf_content_sync_log')) {
+      return NULL;
+    }
+
+    $hash = $this->database->select('bwtf_content_sync_log', 'l')
+      ->fields('l', ['source_hash'])
+      ->condition('l.entity_type', $entity_type)
+      ->condition('l.source_id', $source_id)
+      ->execute()
+      ->fetchField();
+
+    return $hash === FALSE || $hash === '' ? NULL : (string) $hash;
+  }
+
+  /**
+   * Writes an import log row for a config object.
+   */
+  protected function writeConfigImportLog($name, $hash, array $manifest) {
+    if (!$this->database->schema()->tableExists('bwtf_content_sync_log')) {
+      return;
+    }
+
+    $this->database->merge('bwtf_content_sync_log')
+      ->keys([
+        'entity_type' => 'config',
+        'source_id' => $name,
+      ])
+      ->fields([
+        'source_uuid' => '',
+        'destination_id' => $name,
+        'source_changed' => 0,
+        'source_hash' => $hash,
+        'package_id' => isset($manifest['package_id']) ? (string) $manifest['package_id'] : '',
+        'imported' => time(),
+        'status' => 'updated',
+      ])
+      ->execute();
   }
 
   /**
