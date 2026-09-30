@@ -356,8 +356,22 @@ Then schedule it, for example nightly at 02:30 server time:
 
 Every setting is an environment variable with the same name as the constant at
 the top of the script: `PROD_ROOT`, `STAGE_ROOT`, `STAGE_DOCROOT`, `WORK_DIR`,
-`SINCE`, `BUNDLES`, `MAILTO`, `KEEP_PACKAGES`, `KEEP_LOG_DAYS`,
-`KEEP_DB_BACKUPS`, `OVERWRITE_NEWER`, `PREFLIGHT_ONLY`, `SKIP_DB_BACKUP`.
+`BASE_SINCE`, `SINCE`, `SINCE_OVERLAP_HOURS`, `BUNDLES`, `MAILTO`,
+`KEEP_PACKAGES`, `KEEP_LOG_DAYS`, `KEEP_DB_BACKUPS`, `OVERWRITE_NEWER`,
+`PREFLIGHT_ONLY`, `SKIP_DB_BACKUP`.
+
+**Incremental exports.** After a successful run the script records the run's
+start time in `$WORK_DIR/last-successful-sync`. The next run exports only
+content created or changed since then, minus `SINCE_OVERLAP_HOURS` (default 24)
+as a safety margin, and never earlier than `BASE_SINCE` (2026-01-01). With no
+state file it does a full export. Force a full export with `--full`, or from a
+given date with `--since=YYYY-MM-DD` or `SINCE`. A failed run does not update
+the state file, so the next run retries from the last good point.
+
+**Disk use.** Only the newest package is kept (`KEEP_PACKAGES=1`), and after a
+successful apply its `files/` copies are deleted, since staging already has the
+files from the file-sync step. A run that finds nothing to change deletes its
+package and skips the staging database dump.
 
 To be emailed a report on every run:
 

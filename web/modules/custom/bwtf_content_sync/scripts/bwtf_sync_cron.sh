@@ -28,7 +28,13 @@ LOG_DIR="${LOG_DIR:-$WORK_DIR/sync-logs}"
 DB_BACKUP_DIR="${DB_BACKUP_DIR:-$WORK_DIR/stage-db}"
 
 # Content selection.
-SINCE="${SINCE:-2026-01-01}"
+# SINCE is the earliest date ever exported. Normally each run exports only
+# what changed since the last successful run (minus SINCE_OVERLAP_HOURS as a
+# safety margin), tracked in $WORK_DIR/last-successful-sync. Setting SINCE or
+# passing --since forces a full export from that date instead.
+BASE_SINCE="${BASE_SINCE:-2026-01-01}"
+SINCE="${SINCE:-}"
+SINCE_OVERLAP_HOURS="${SINCE_OVERLAP_HOURS:-24}"
 BUNDLES="${BUNDLES:-all}"
 
 # Retention: number of packages and staging dumps to keep, days of logs.
@@ -62,6 +68,7 @@ for arg in "$@"; do
     --overwrite-newer)          OVERWRITE_NEWER=1 ;;
     --skip-db-backup)           SKIP_DB_BACKUP=1 ;;
     --since=*)                  SINCE="${arg#*=}" ;;
+    --full)                     SINCE="$BASE_SINCE" ;;
     --bundles=*)                BUNDLES="${arg#*=}" ;;
     -h|--help)
       sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
@@ -150,12 +157,38 @@ PHP83="${PHP83:-/opt/cpanel/ea-php83/root/usr/bin/php}"
 PROD_DRUSH="${PROD_DRUSH:-$PHP74 $PROD_ROOT/vendor/bin/drush}"
 STAGE_DRUSH="${STAGE_DRUSH:-$PHP83 -d memory_limit=-1 $STAGE_ROOT/vendor/bin/drush.php}"
 
+# ----------------------------------------------------- incremental cutoff --
+
+STATE_FILE="$WORK_DIR/last-successful-sync"
+RUN_STARTED="$(date +%s)"
+SINCE_NOTE="explicit"
+if [ -z "$SINCE" ]; then
+  BASE_TS="$(date -d "$BASE_SINCE 00:00:00 UTC" +%s 2>/dev/null || echo 0)"
+  LAST_TS="$(cat "$STATE_FILE" 2>/dev/null || true)"
+  case "$LAST_TS" in ''|*[!0-9]*) LAST_TS="" ;; esac
+  if [ -n "$LAST_TS" ] && [ "$BASE_TS" -gt 0 ]; then
+    SINCE=$((LAST_TS - SINCE_OVERLAP_HOURS * 3600))
+    [ "$SINCE" -lt "$BASE_TS" ] && SINCE="$BASE_TS"
+    SINCE_NOTE="incremental, last success $(date -d "@$LAST_TS" '+%Y-%m-%d %H:%M:%S')"
+  else
+    SINCE="$BASE_SINCE"
+    SINCE_NOTE="full, no previous successful run recorded"
+  fi
+fi
+
+# Record this run as the new baseline. Called only after work is complete, and
+# stamped with the START of the run so edits made mid-run are picked up next time.
+mark_success() {
+  [ "$PREFLIGHT_ONLY" = "1" ] && return 0
+  echo "$RUN_STARTED" > "$STATE_FILE" 2>/dev/null || log "WARNING: could not write $STATE_FILE."
+}
+
 # -------------------------------------------------------------------- start --
 
 log "=== BWTF content sync, run $RUN_ID ==="
 log "Production:  $PROD_ROOT"
 log "Staging:     $STAGE_ROOT"
-log "Since:       $SINCE"
+log "Since:       $SINCE ($SINCE_NOTE)"
 log "Bundles:     $BUNDLES"
 log "Package:     $PACKAGE"
 log "Prod drush:  $PROD_DRUSH"
@@ -266,6 +299,7 @@ if [ "$PENDING" -eq 0 ]; then
   log "No new or changed content. Skipping the database backup and apply."
   rm -rf "$PACKAGE"
   log "Removed empty-run package $PACKAGE."
+  mark_success
   finish 0
 fi
 log "Preflight found $PENDING pending change(s)."
@@ -291,6 +325,13 @@ $STAGE_DRUSH scr "$MODULE_REL/scripts/bwtf_content_import.php" -- \
 
 $STAGE_DRUSH cr >>"$LOG_FILE" 2>&1 || log "WARNING: cache rebuild returned a non-zero status."
 log "Apply complete."
+
+# The package's file copies are no longer needed: staging already has the
+# files from step 2. Keep the JSON reports and drop the bulk of the space.
+if [ -d "$PACKAGE/files" ]; then
+  rm -rf "$PACKAGE/files" && log "Removed applied file copies from $PACKAGE."
+fi
+mark_success
 
 # Summarise what the run did, straight from the applied report.
 APPLIED_REPORT="$(ls -1t "$PACKAGE"/import-report-applied-*.json 2>/dev/null | head -1)"
