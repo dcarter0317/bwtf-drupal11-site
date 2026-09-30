@@ -32,9 +32,9 @@ SINCE="${SINCE:-2026-01-01}"
 BUNDLES="${BUNDLES:-all}"
 
 # Retention, in days / copies.
-KEEP_PACKAGE_DAYS="${KEEP_PACKAGE_DAYS:-14}"
+KEEP_PACKAGE_DAYS="${KEEP_PACKAGE_DAYS:-3}"
 KEEP_LOG_DAYS="${KEEP_LOG_DAYS:-30}"
-KEEP_DB_BACKUPS="${KEEP_DB_BACKUPS:-10}"
+KEEP_DB_BACKUPS="${KEEP_DB_BACKUPS:-5}"
 
 # Email a report. Leave empty to disable.
 MAILTO="${MAILTO:-}"
@@ -88,7 +88,19 @@ die() {
   finish 1
 }
 
+# Prune old packages, logs and staging dumps. Runs on every exit, so failed
+# and no-change runs cannot pile up on the server.
+prune_old() {
+  find "$PACKAGE_DIR" -maxdepth 1 -type d -name 'bwtf-content-*' -mtime "+$KEEP_PACKAGE_DAYS" \
+    -exec rm -rf {} + 2>/dev/null || true
+  find "$LOG_DIR" -maxdepth 1 -type f -name 'sync-*.log' -mtime "+$KEEP_LOG_DAYS" \
+    -delete 2>/dev/null || true
+  ls -1t "$DB_BACKUP_DIR"/stage-before-sync-*.sql.gz 2>/dev/null \
+    | tail -n "+$((KEEP_DB_BACKUPS + 1))" | xargs -r rm -f 2>/dev/null || true
+}
+
 finish() {
+  prune_old
   local code="${1:-0}"
   if [ "$code" -eq 0 ]; then
     log "=== Sync finished successfully (run $RUN_ID) ==="
@@ -212,28 +224,14 @@ else
   log "WARNING: skipping file sync, one of the files directories was not found."
 fi
 
-# ------------------------------------------------- 3. back up the stage DB ---
-
-if [ "$PREFLIGHT_ONLY" = "1" ] || [ "$SKIP_DB_BACKUP" = "1" ]; then
-  log "--- Step 3/5: staging database backup skipped ---"
-else
-  log "--- Step 3/5: backing up the staging database ---"
-  cd "$STAGE_ROOT" || die "Cannot enter $STAGE_ROOT."
-  DB_FILE="$DB_BACKUP_DIR/stage-before-sync-$RUN_ID.sql"
-  $STAGE_DRUSH sql:dump --result-file="$DB_FILE" >>"$LOG_FILE" 2>&1 \
-    || die "Staging database backup failed. Nothing was imported."
-  gzip -f "$DB_FILE" >>"$LOG_FILE" 2>&1 || true
-  log "Backup written to $DB_FILE.gz"
-fi
-
-# --------------------------------------------------- 4. preflight and apply --
+# ------------------------------------------------------- 3. staging preflight --
 
 cd "$STAGE_ROOT" || die "Cannot enter $STAGE_ROOT."
 
 IMPORT_ARGS=(--package="$PACKAGE")
 [ "$OVERWRITE_NEWER" = "1" ] && IMPORT_ARGS+=(--overwrite-newer)
 
-log "--- Step 4/5: staging preflight ---"
+log "--- Step 3/5: staging preflight ---"
 $STAGE_DRUSH scr "$MODULE_REL/scripts/bwtf_content_import.php" -- \
   "${IMPORT_ARGS[@]}" >>"$LOG_FILE" 2>&1
 PREFLIGHT_STATUS=$?
@@ -251,6 +249,41 @@ if [ "$PREFLIGHT_ONLY" = "1" ]; then
   finish 0
 fi
 
+# Count what the preflight would write. A nightly run with nothing new should
+# leave nothing behind: no database dump and no package.
+PREFLIGHT_REPORT="$(ls -1t "$PACKAGE"/import-report-preflight-*.json 2>/dev/null | head -1)"
+PENDING=0
+if [ -n "$PREFLIGHT_REPORT" ]; then
+  for key in create update alias_create alias_update config_update; do
+    n="$(grep -oE "\"$key\": *[0-9]+" "$PREFLIGHT_REPORT" | head -1 | grep -oE '[0-9]+$')"
+    PENDING=$((PENDING + ${n:-0}))
+  done
+else
+  PENDING=1  # No report to read; assume there is work rather than skip it.
+fi
+
+if [ "$PENDING" -eq 0 ]; then
+  log "No new or changed content. Skipping the database backup and apply."
+  rm -rf "$PACKAGE"
+  log "Removed empty-run package $PACKAGE."
+  finish 0
+fi
+log "Preflight found $PENDING pending change(s)."
+
+# ------------------------------------------------- 4. back up the stage DB ---
+
+if [ "$SKIP_DB_BACKUP" = "1" ]; then
+  log "--- Step 4/5: staging database backup skipped ---"
+else
+  log "--- Step 4/5: backing up the staging database ---"
+  cd "$STAGE_ROOT" || die "Cannot enter $STAGE_ROOT."
+  DB_FILE="$DB_BACKUP_DIR/stage-before-sync-$RUN_ID.sql"
+  $STAGE_DRUSH sql:dump --result-file="$DB_FILE" >>"$LOG_FILE" 2>&1 \
+    || die "Staging database backup failed. Nothing was imported."
+  gzip -f "$DB_FILE" >>"$LOG_FILE" 2>&1 || true
+  log "Backup written to $DB_FILE.gz"
+fi
+
 log "--- Step 5/5: applying the package to staging ---"
 $STAGE_DRUSH scr "$MODULE_REL/scripts/bwtf_content_import.php" -- \
   "${IMPORT_ARGS[@]}" --apply >>"$LOG_FILE" 2>&1 \
@@ -258,15 +291,6 @@ $STAGE_DRUSH scr "$MODULE_REL/scripts/bwtf_content_import.php" -- \
 
 $STAGE_DRUSH cr >>"$LOG_FILE" 2>&1 || log "WARNING: cache rebuild returned a non-zero status."
 log "Apply complete."
-
-# ------------------------------------------------------------- 5. retention --
-
-find "$PACKAGE_DIR" -maxdepth 1 -type d -name 'bwtf-content-*' -mtime "+$KEEP_PACKAGE_DAYS" \
-  -exec rm -rf {} + 2>/dev/null || true
-find "$LOG_DIR" -maxdepth 1 -type f -name 'sync-*.log' -mtime "+$KEEP_LOG_DAYS" \
-  -delete 2>/dev/null || true
-ls -1t "$DB_BACKUP_DIR"/stage-before-sync-*.sql.gz 2>/dev/null \
-  | tail -n "+$((KEEP_DB_BACKUPS + 1))" | xargs -r rm -f 2>/dev/null || true
 
 # Summarise what the run did, straight from the applied report.
 APPLIED_REPORT="$(ls -1t "$PACKAGE"/import-report-applied-*.json 2>/dev/null | head -1)"
