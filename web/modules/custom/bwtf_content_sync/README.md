@@ -356,7 +356,7 @@ Then schedule it, for example nightly at 02:30 server time:
 
 Every setting is an environment variable with the same name as the constant at
 the top of the script: `PROD_ROOT`, `STAGE_ROOT`, `STAGE_DOCROOT`, `WORK_DIR`,
-`SINCE`, `BUNDLES`, `MAILTO`, `KEEP_PACKAGE_DAYS`, `KEEP_LOG_DAYS`,
+`SINCE`, `BUNDLES`, `MAILTO`, `KEEP_PACKAGES`, `KEEP_LOG_DAYS`,
 `KEEP_DB_BACKUPS`, `OVERWRITE_NEWER`, `PREFLIGHT_ONLY`, `SKIP_DB_BACKUP`.
 
 To be emailed a report on every run:

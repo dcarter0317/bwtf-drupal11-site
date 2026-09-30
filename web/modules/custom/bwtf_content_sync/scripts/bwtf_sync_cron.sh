@@ -31,8 +31,8 @@ DB_BACKUP_DIR="${DB_BACKUP_DIR:-$WORK_DIR/stage-db}"
 SINCE="${SINCE:-2026-01-01}"
 BUNDLES="${BUNDLES:-all}"
 
-# Retention, in days / copies.
-KEEP_PACKAGE_DAYS="${KEEP_PACKAGE_DAYS:-3}"
+# Retention: number of packages and staging dumps to keep, days of logs.
+KEEP_PACKAGES="${KEEP_PACKAGES:-1}"
 KEEP_LOG_DAYS="${KEEP_LOG_DAYS:-30}"
 KEEP_DB_BACKUPS="${KEEP_DB_BACKUPS:-5}"
 
@@ -91,8 +91,8 @@ die() {
 # Prune old packages, logs and staging dumps. Runs on every exit, so failed
 # and no-change runs cannot pile up on the server.
 prune_old() {
-  find "$PACKAGE_DIR" -maxdepth 1 -type d -name 'bwtf-content-*' -mtime "+$KEEP_PACKAGE_DAYS" \
-    -exec rm -rf {} + 2>/dev/null || true
+  ls -1dt "$PACKAGE_DIR"/bwtf-content-* 2>/dev/null \
+    | tail -n "+$((KEEP_PACKAGES + 1))" | xargs -r rm -rf 2>/dev/null || true
   find "$LOG_DIR" -maxdepth 1 -type f -name 'sync-*.log' -mtime "+$KEEP_LOG_DAYS" \
     -delete 2>/dev/null || true
   ls -1t "$DB_BACKUP_DIR"/stage-before-sync-*.sql.gz 2>/dev/null \
