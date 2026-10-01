@@ -447,6 +447,10 @@ class PackageImporter {
           return $result;
         }
 
+        // Name the fields that differ, so a record that updates on every run
+        // can be traced to the field that never round-trips.
+        $result['changed_fields'] = $this->findChangedFields($entity, $record);
+
         $destination_changed = $this->getChangedTime($entity);
         $source_changed = isset($record['changed']) ? (int) $record['changed'] : 0;
         if (!$this->options['overwrite_newer'] && $source_changed && $destination_changed > ($source_changed + 60)) {
@@ -1072,6 +1076,34 @@ class PackageImporter {
       return TRUE;
     }
     return FALSE;
+  }
+
+  /**
+   * Lists the fields whose destination values differ from the package.
+   *
+   * @return string[]
+   *   Entries of the form langcode:field_name.
+   */
+  protected function findChangedFields(ContentEntityInterface $entity, array $record) {
+    $changed = [];
+    foreach ($record['translations'] as $langcode => $source_fields) {
+      if (!$entity->hasTranslation($langcode)) {
+        $changed[] = $langcode . ':(translation)';
+        continue;
+      }
+
+      $translation = $entity->getTranslation($langcode);
+      foreach ($source_fields as $field_name => $source_values) {
+        if (!$translation->hasField($field_name)) {
+          $changed[] = $langcode . ':' . $field_name . ' (missing)';
+          continue;
+        }
+        if (PackageUtils::hashData($source_values) !== PackageUtils::hashData($translation->get($field_name)->getValue())) {
+          $changed[] = $langcode . ':' . $field_name;
+        }
+      }
+    }
+    return $changed;
   }
 
   /**
