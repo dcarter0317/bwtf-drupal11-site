@@ -40,7 +40,7 @@ BUNDLES="${BUNDLES:-all}"
 # Retention: number of packages and staging dumps to keep, days of logs.
 KEEP_PACKAGES="${KEEP_PACKAGES:-1}"
 KEEP_LOG_DAYS="${KEEP_LOG_DAYS:-30}"
-KEEP_DB_BACKUPS="${KEEP_DB_BACKUPS:-5}"
+KEEP_DB_BACKUPS="${KEEP_DB_BACKUPS:-2}"
 
 # Email a report. Leave empty to disable.
 MAILTO="${MAILTO:-}"
@@ -102,7 +102,9 @@ prune_old() {
     | tail -n "+$((KEEP_PACKAGES + 1))" | xargs -r rm -rf 2>/dev/null || true
   find "$LOG_DIR" -maxdepth 1 -type f -name 'sync-*.log' -mtime "+$KEEP_LOG_DAYS" \
     -delete 2>/dev/null || true
-  ls -1t "$DB_BACKUP_DIR"/stage-before-sync-*.sql.gz 2>/dev/null \
+  # Every dump in the folder counts, including older manual ones, so the folder
+  # always holds the newest KEEP_DB_BACKUPS files and nothing else.
+  ls -1t "$DB_BACKUP_DIR"/*.sql "$DB_BACKUP_DIR"/*.sql.gz 2>/dev/null \
     | tail -n "+$((KEEP_DB_BACKUPS + 1))" | xargs -r rm -f 2>/dev/null || true
 }
 
@@ -313,7 +315,7 @@ else
   cd "$STAGE_ROOT" || die "Cannot enter $STAGE_ROOT."
   DB_FILE="$DB_BACKUP_DIR/stage-before-sync-$RUN_ID.sql"
   $STAGE_DRUSH sql:dump --result-file="$DB_FILE" >>"$LOG_FILE" 2>&1 \
-    || die "Staging database backup failed. Nothing was imported."
+    || { rm -f "$DB_FILE"; die "Staging database backup failed. Nothing was imported."; }
   gzip -f "$DB_FILE" >>"$LOG_FILE" 2>&1 || true
   log "Backup written to $DB_FILE.gz"
 fi

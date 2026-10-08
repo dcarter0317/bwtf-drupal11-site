@@ -372,6 +372,9 @@ the state file, so the next run retries from the last good point.
 successful apply its `files/` copies are deleted, since staging already has the
 files from the file-sync step. A run that finds nothing to change deletes its
 package and skips the staging database dump.
+The staging dump folder is a rolling pair: only the newest `KEEP_DB_BACKUPS`
+(default 2) `.sql` / `.sql.gz` files are kept, and older ones are deleted at the
+end of every run, whatever their name.
 
 To be emailed a report on every run:
 
