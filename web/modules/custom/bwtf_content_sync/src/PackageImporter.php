@@ -2,11 +2,13 @@
 
 namespace Drupal\bwtf_content_sync;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\Database\Connection;
+use Drupal\file\FileInterface;
+use Drupal\path_alias\PathAliasInterface;
 
 /**
  * Imports a BWTF content package into Drupal 11 staging.
@@ -16,21 +18,21 @@ class PackageImporter {
   /**
    * Entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * Database connection.
    *
-   * @var \Drupal\Core\Database\Connection
+   * @var Connection
    */
   protected $database;
 
   /**
    * File system service.
    *
-   * @var \Drupal\Core\File\FileSystemInterface
+   * @var FileSystemInterface
    */
   protected $fileSystem;
 
@@ -676,10 +678,10 @@ class PackageImporter {
 
     foreach (array_unique($file_ids) as $fid) {
       $file = $file_storage->load($fid);
-      if (!$file) {
+      if (!$file instanceof FileInterface) {
         continue;
       }
-      if (method_exists($file, 'isTemporary') && $file->isTemporary()) {
+      if ($file->isTemporary()) {
         $file->setPermanent();
         $file->save();
       }
@@ -1208,24 +1210,26 @@ class PackageImporter {
       'path' => $path,
       'langcode' => $result['langcode'],
     ]);
+    /** @var PathAliasInterface|null $existing */
     $existing = $existing_by_path ? reset($existing_by_path) : NULL;
 
+    /** @var PathAliasInterface[] $alias_collisions */
     $alias_collisions = $storage->loadByProperties([
       'alias' => $result['alias'],
       'langcode' => $result['langcode'],
     ]);
     foreach ($alias_collisions as $collision) {
-      if ($collision->get('path')->value !== $path) {
+      if ($collision->getPath() !== $path) {
         $result['message'] = sprintf(
           'Alias %s is already assigned to %s.',
           $result['alias'],
-          $collision->get('path')->value
+          $collision->getPath()
         );
         return $result;
       }
     }
 
-    if ($existing && $existing->get('alias')->value === $result['alias']) {
+    if ($existing && $existing->getAlias() === $result['alias']) {
       $result['status'] = 'unchanged';
       $result['message'] = 'Alias already matches.';
       return $result;
@@ -1238,6 +1242,7 @@ class PackageImporter {
     }
 
     if (!$existing) {
+      /** @var PathAliasInterface $existing */
       $existing = $storage->create([
         'path' => $path,
         'alias' => $result['alias'],
@@ -1246,7 +1251,7 @@ class PackageImporter {
       ]);
     }
     else {
-      $existing->set('alias', $result['alias']);
+      $existing->setAlias($result['alias']);
       if ($existing->hasField('status')) {
         $existing->set('status', isset($alias['status']) ? (int) $alias['status'] : 1);
       }
