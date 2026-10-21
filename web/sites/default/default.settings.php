@@ -723,7 +723,8 @@ $settings['update_free_access'] = FALSE;
  *
  * @see https://www.drupal.org/node/3537128
  */
-# $settings['enable_html5_validation'] = TRUE;
+# $settings['enable_html5_validation'] = TRUE; //DEFAULT 
+$settings['enable_html5_validation'] = FALSE;
 
 /**
  * Load services definition file.
