@@ -149,3 +149,6 @@ $settings['skip_permissions_hardening'] = TRUE;
  * the language or field module.
  */
 # $settings['config_exclude_modules'] = ['devel', 'stage_file_proxy'];
+//This disables the browser's native client-side validation popups, forcing the form to use Drupal's server-side Form API (FAPI) messages. 
+// This is recommended to avoid accessibility and usability issues.
+$settings['enable_html5_validation'] = FALSE;
