@@ -137,6 +137,29 @@ To maintain security and stability, all third-party modules and libraries must b
   ddev drush updb -y
   ```
 
+### Updating Drupal Core
+
+To update Drupal core and its core-recommended dependencies:
+
+1. **Check for available core updates:**
+   ```sh
+   ddev composer outdated "drupal/*"
+   ```
+2. **Update Drupal core and all related dependencies:**
+   ```sh
+   ddev composer update "drupal/core-*" --with-all-dependencies
+   ```
+3. **Execute database updates and rebuild caches:**
+   ```sh
+   ddev drush updb -y
+   ddev drush cr
+   ```
+4. **Export updated configuration (if applicable) and verify:**
+   ```sh
+   ddev drush cex -y
+   ddev drush status
+   ```
+
 ---
 
 ## Custom Theme Development
@@ -153,30 +176,59 @@ The theme styling is authored in Sass (`.scss`) and compiled into CSS files (`we
 
 ## Deployment & Hosting
 
-### Automated Deployment
+### Automated Deployment to NameHero Staging
 
 We use a GitHub Actions workflow defined in [.github/workflows/deploy.yml](file:///Users/thelabadm/Documents/development/bwtf-drupal11-site/.github/workflows/deploy.yml) to automatically deploy code pushed to the `main` branch.
 
 **Deployment Target:**
-* **Host:** NameHero Staging Server
+* **Host:** NameHero Staging Server (cPanel / CloudLinux)
+* **Target Path:** `/home/bwtfcom/stage.bwtf.com/`
 * **Staging URL:** [https://stage.bwtf.com](https://stage.bwtf.com)
+* **PHP Binary:** `/opt/alt/php83/usr/bin/php` (PHP 8.3 CLI)
 
-**What the Deployment Workflow Does:**
-1. Packages the repository files (excluding local settings, DDEV configs, cache, and vendor directories).
-2. Uploads the code archive to `/home/bwtfcom/stage.bwtf.com/` via SSH/SFTP.
-3. Extracts the archive and installs production Composer dependencies using the server's PHP 8.3 CLI binary.
-4. Executes pending database updates (`drush updb`), imports the configuration (`drush cim`), and rebuilds caches.
+**Required GitHub Repository Secrets:**
+* `MACBOOK_NAMEHERO`: SSH private key used to authenticate with NameHero.
+* `NAMEHERO_HOST`: SSH hostname or IP for the NameHero server.
+* `NAMEHERO_PORT`: SSH port number (e.g., `37980`).
+* `NAMEHERO_USER`: SSH username (`bwtfcom`).
+
+**Deployment Pipeline Process:**
+1. **Packaging:** Creates a lightweight `/tmp/deploy.tar.gz` archive containing the repository source, excluding local development configurations (`.ddev`, `settings.ddev.php`, `settings.local.php`), Git files, caches, and vendor/contrib libraries (`vendor`, `web/core`, `web/modules/contrib`, `web/themes/contrib`, `web/sites/default/files/*`).
+2. **Archive Transfer:** Copies `deploy.tar.gz` via `scp` over SSH directly to `/home/bwtfcom/stage.bwtf.com/`.
+3. **Extraction & Dependency Installation:**
+   * Unpacks `deploy.tar.gz` over the staging document root.
+   * Installs production Composer dependencies using the server's PHP 8.3 binary:
+     ```sh
+     /opt/alt/php83/usr/bin/php composer.phar install --no-dev --optimize-autoloader --no-interaction
+     ```
+4. **Database & Cache Updates:**
+   * Runs pending database updates: `vendor/bin/drush updb -y`
+   * Clears cache: `vendor/bin/drush cr`
+   * Ensures maintenance mode is disabled: `vendor/bin/drush state:set system.maintenance_mode 0 --input-format=integer`
+   * Final cache rebuild: `vendor/bin/drush cr`
 
 ### Manual Staging Support & Troubleshooting
 
-Staging environment runs on a NameHero cPanel-based host. To facilitate running CLI tools directly on the server:
+The staging environment runs on a NameHero cPanel-based host. To facilitate running CLI tools directly on the server:
 - A helper script [post_deploy_fix.sh](file:///Users/thelabadm/Documents/development/bwtf-drupal11-site/post_deploy_fix.sh) is provided to configure the path, PHP 8.3 wrapper, and Drush command alias.
 - To execute Drush commands directly on the server:
-  1. SSH into the NameHero staging account.
-  2. Run:
+  1. SSH into the NameHero staging account:
      ```sh
-     drush <command>
+     ssh -p <PORT> bwtfcom@<HOST>
      ```
+  2. Navigate to the staging root:
+     ```sh
+     cd /home/bwtfcom/stage.bwtf.com
+     ```
+  3. Execute Drush commands:
+     ```sh
+     vendor/bin/drush <command>
+     # Or simply 'drush <command>' if post_deploy_fix.sh was run
+     ```
+
+### Content Synchronization Between Production & Staging
+
+Both production (`/home/bwtfcom/public_html`) and staging (`/home/bwtfcom/stage.bwtf.com`) reside on the same NameHero account. For synchronizing content and files between environments, refer to the custom module documentation in [web/modules/custom/bwtf_content_sync/README.md](file:///Users/thelabadm/Documents/development/bwtf-drupal11-site/web/modules/custom/bwtf_content_sync/README.md).
 
 ---
 
