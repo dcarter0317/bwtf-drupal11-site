@@ -50,6 +50,7 @@ html {
 body {
   color: rgb(107.5, 107.5, 107.5);
   overflow-x: hidden;
+  margin: 0;
 }
 
 section {
