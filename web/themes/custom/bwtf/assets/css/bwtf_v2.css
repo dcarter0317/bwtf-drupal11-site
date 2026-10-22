@@ -300,7 +300,8 @@ img {
   }
 }
 
-#block-bwtf-socials.contextual-region div p {
+#block-bwtf-socials div:has(> a),
+#block-bwtf-socials p:has(> a) {
   display: flex;
   gap: 16px;
 }

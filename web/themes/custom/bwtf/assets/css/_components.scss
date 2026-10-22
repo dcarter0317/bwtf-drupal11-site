@@ -288,14 +288,13 @@ header {
   // }
 }
 
+// The wrapping <p> and .contextual-region only exist when logged in, so
+// target whichever element directly contains the links.
 #block-bwtf-socials {
-  &.contextual-region {
-    div {
-      p {
-        display: flex;
-        gap: 16px;
-      }
-    }
+  div:has(> a),
+  p:has(> a) {
+    display: flex;
+    gap: 16px;
   }
 }
 
