@@ -152,6 +152,7 @@ i {
 
 img {
   max-width: 100%;
+  height: auto; // width/height attrs would otherwise crop scaled images (object-fit: cover)
   display: block;
   object-fit: cover;
 }
@@ -296,6 +297,11 @@ header {
   p:has(> a) {
     display: flex;
     gap: 16px;
+
+    // Sidebar stacks below the content under the grid breakpoint.
+    @media (max-width: (variables.$bp-lg - 1)) {
+      justify-content: center;
+    }
   }
 }
 
