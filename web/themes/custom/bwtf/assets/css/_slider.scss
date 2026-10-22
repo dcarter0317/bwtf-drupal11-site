@@ -187,14 +187,14 @@ $hero-max: 360px !default; // increased for better visibility
 @media (max-width: 640px) {
   .hero,
   .hero.use-fixed-height {
-    min-height: 280px;
+    min-height: 230px;
     max-height: none;
     height: auto;
 
     .mySwiper,
     .swiper-wrapper,
     .swiper-slide {
-      min-height: 280px;
+      min-height: 230px;
       max-height: none;
       height: auto;
     }
@@ -207,7 +207,7 @@ $hero-max: 360px !default; // increased for better visibility
     }
 
     .slide-media {
-      min-height: 280px;
+      min-height: 230px;
       max-height: none;
       height: auto;
       aspect-ratio: auto;
