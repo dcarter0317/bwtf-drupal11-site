@@ -1318,21 +1318,20 @@ footer a:visited {
 }
 .hero .slide-text {
   z-index: 2;
-  /* neutralize any legacy absolute rules */
-  position: static !important;
-  inset: auto !important;
-  transform: none !important;
-  justify-self: center !important;
-  align-self: center !important;
+  position: static;
+  inset: auto;
+  transform: none;
+  justify-self: center;
+  align-self: center;
   text-align: center;
   color: #fff;
   padding: 1.25rem;
   max-inline-size: 48rem;
 }
 .hero .slide-text-title {
-  font-size: 2.25rem !important;
-  line-height: 1.1 !important;
-  margin-bottom: 0.5rem !important;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
   font-weight: 100;
 }
 .hero {
@@ -1398,84 +1397,94 @@ footer a:visited {
   object-position: center;
 }
 
-/* Mobile polish */
+/* Mobile polish
+   Selector list matches the specificity of .hero.use-fixed-height so these
+   rules win by source order instead of !important. */
 @media (max-width: 640px) {
-  .hero {
+  .hero,
+  .hero.use-fixed-height {
     min-height: 280px;
-    /* Further reduced height */
-    max-height: none !important;
-    height: auto !important;
+    max-height: none;
+    height: auto;
   }
   .hero .mySwiper,
   .hero .swiper-wrapper,
-  .hero .swiper-slide {
+  .hero .swiper-slide,
+  .hero.use-fixed-height .mySwiper,
+  .hero.use-fixed-height .swiper-wrapper,
+  .hero.use-fixed-height .swiper-slide {
     min-height: 280px;
-    /* Further reduced height */
-    max-height: none !important;
-    height: auto !important;
+    max-height: none;
+    height: auto;
   }
-  .hero .swiper-slide {
-    display: grid !important;
-    grid-template-areas: "stack" !important;
-    align-items: center !important;
-    justify-items: center !important;
+  .hero .swiper-slide,
+  .hero.use-fixed-height .swiper-slide {
+    display: grid;
+    grid-template-areas: "stack";
+    align-items: center;
+    justify-items: center;
   }
-  .hero .slide-media {
+  .hero .slide-media,
+  .hero.use-fixed-height .slide-media {
     min-height: 280px;
-    /* Further reduced height */
-    max-height: none !important;
-    height: auto !important;
-    aspect-ratio: auto !important;
+    max-height: none;
+    height: auto;
+    aspect-ratio: auto;
   }
-  .hero .slide-media img {
-    max-height: none !important;
-    height: auto !important;
-    object-fit: contain !important;
+  .hero .slide-media img,
+  .hero.use-fixed-height .slide-media img {
+    max-height: none;
+    height: auto;
+    object-fit: contain;
     width: 100%;
   }
-  .hero .slide-text {
+  .hero .slide-text,
+  .hero.use-fixed-height .slide-text {
     padding: 0.75rem 0.5rem;
     max-inline-size: 88%;
     word-wrap: break-word;
-    z-index: 2 !important;
-    grid-area: stack !important;
-    align-self: center !important;
-    /* Move back to center */
-    justify-self: center !important;
+    z-index: 2;
+    grid-area: stack;
+    align-self: center;
+    justify-self: center;
     margin-bottom: 0;
   }
-  .hero .slide-text-title {
-    font-size: 1.1rem !important;
-    line-height: 1.2 !important;
-    margin-bottom: 0.4rem !important;
+  .hero .slide-text-title,
+  .hero.use-fixed-height .slide-text-title {
+    font-size: 1.1rem;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
-  .hero .slide-text-description {
+  .hero .slide-text-description,
+  .hero.use-fixed-height .slide-text-description {
     font-size: 0.75rem;
     line-height: 1.3;
     word-wrap: break-word;
     overflow-wrap: break-word;
     margin-bottom: 0.5rem;
   }
-  .hero .slide-text .btn {
+  .hero .slide-text .btn,
+  .hero.use-fixed-height .slide-text .btn {
     font-size: 0.85rem;
     padding: 0.4rem 0.8rem;
   }
-  /* Position controls */
   .hero .swiper-button-next,
-  .hero .swiper-button-prev {
-    display: block !important;
-    z-index: 10 !important;
-    top: 50% !important;
+  .hero .swiper-button-prev,
+  .hero.use-fixed-height .swiper-button-next,
+  .hero.use-fixed-height .swiper-button-prev {
+    display: block;
+    z-index: 10;
+    top: 50%;
     transform: translateY(-50%);
   }
-  /* Position pagination at bottom */
-  .hero .swiper-pagination {
-    display: block !important;
-    z-index: 10 !important;
-    position: absolute !important;
-    bottom: 0.25rem !important;
+  .hero .swiper-pagination,
+  .hero.use-fixed-height .swiper-pagination {
+    display: block;
+    z-index: 10;
+    position: absolute;
+    bottom: 0.25rem;
   }
 }
 /* Reduced motion */
