@@ -29,10 +29,6 @@ $settings['skip_permissions_hardening'] = TRUE;
 // names. Additional host patterns can be added for custom configurations.
 $settings['trusted_host_patterns'] = ['.*'];
 
-//This disables the browser's native client-side validation popups, forcing the form to use Drupal's server-side Form API (FAPI) messages. 
-// This is recommended to avoid accessibility and usability issues.
-$settings['enable_html5_validation'] = FALSE;
-
 // Set $settings['config_sync_directory'] if not set in settings.php.
 if (empty($settings['config_sync_directory'])) {
   $settings['config_sync_directory'] = 'sites/default/files/sync';
