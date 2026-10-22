@@ -17,6 +17,7 @@ dependencies:
     - google_analytics
     - media
     - rest
+    - search
     - shortcut
     - simpleads
     - system
@@ -41,6 +42,7 @@ permissions:
   - 'restful get simpleads_views'
   - 'restful post simpleads_click'
   - 'restful post simpleads_impression'
+  - 'search content'
   - 'skip comment approval'
   - 'use text format basic_html'
   - 'view media'

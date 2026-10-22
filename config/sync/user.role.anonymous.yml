@@ -15,6 +15,7 @@ dependencies:
     - filter
     - media
     - rest
+    - search
     - simpleads
     - system
 _core:
@@ -34,5 +35,6 @@ permissions:
   - 'restful get simpleads_views'
   - 'restful post simpleads_click'
   - 'restful post simpleads_impression'
+  - 'search content'
   - 'use text format restricted_html'
   - 'view media'

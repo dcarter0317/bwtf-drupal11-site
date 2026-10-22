@@ -173,8 +173,14 @@ i {
 img {
   max-width: 100%;
   display: block;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
+}
+
+/* Header */
+@media (min-width: 1200px) {
+  header.container {
+    max-width: 600px;
+  }
 }
 
 /* Nav */
@@ -195,7 +201,7 @@ img {
   position: fixed;
   z-index: 100;
   inset: 0;
-  min-height: 100vh;
+  margin: 0;
   text-align: center;
   list-style: none;
   text-transform: uppercase;
@@ -217,7 +223,7 @@ img {
     width: 100%;
     text-transform: capitalize;
     background: initial;
-    min-height: auto;
+    min-height: 0;
     position: relative;
     inset: auto;
     padding: 0;
@@ -325,8 +331,7 @@ img {
   display: block;
   box-sizing: border-box;
   -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   touch-action: pan-y;
 }
 .simple-ads .slick-list {
@@ -524,8 +529,7 @@ img {
   border-radius: 8px 0 0 8px;
   width: 100%;
   height: 100%;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 .article-card__text {
   padding: 10px 12px;
@@ -960,9 +964,6 @@ aside .block-simpleads .simpleads iframe {
   font-size: 1.1rem;
   outline: none;
 }
-.search-form input[type=search]::-moz-placeholder {
-  color: #B8B8B8;
-}
 .search-form input[type=search]::placeholder {
   color: #B8B8B8;
 }
@@ -1052,9 +1053,6 @@ aside .block-simpleads .simpleads iframe {
   position: relative;
   width: 100%;
   height: 2rem;
-}
-.form-search::-moz-placeholder {
-  color: #B8B8B8;
 }
 .form-search::placeholder {
   color: #B8B8B8;
@@ -1244,23 +1242,27 @@ footer a:visited {
    ========================================================= */
 /* Default: hero height follows image aspect-ratio (16:9 or 21:9) */
 .hero {
-  --hero-aspect: 16/9;
+  --hero-aspect: 32/9;
   /* .ratio-21x9 overrides to 21/9 */
   --hero-overlay: rgba(0, 0, 0, .35);
   --hero-overlay-to: rgba(0, 0, 0, .55);
+  /* Full-bleed: span the viewport edge to edge, even inside a constrained parent */
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
   /* Let intrinsic ratio drive height */
   height: auto;
-  max-height: 720px;
+  max-height: 360px;
 }
 .hero .mySwiper {
   width: 100%;
   height: auto;
-  max-height: 720px;
+  max-height: 360px;
 }
 .hero .swiper-wrapper,
 .hero .swiper-slide {
   height: auto;
-  max-height: 720px;
+  max-height: 360px;
 }
 .hero {
   /* Center content via grid stacking */
@@ -1288,18 +1290,16 @@ footer a:visited {
   aspect-ratio: var(--hero-aspect);
   position: relative;
   /* so overlay can absolutely cover */
-  max-height: 720px;
+  max-height: 360px;
 }
 .hero .slide-media img {
   display: block;
   inline-size: 100%;
   block-size: 100%;
-  max-height: 720px;
-  -o-object-fit: cover;
-     object-fit: cover;
+  max-height: 360px;
+  object-fit: cover;
   /* fills entire width, may crop edges */
-  -o-object-position: top;
-     object-position: top;
+  object-position: top;
   position: relative;
   z-index: 0;
 }
@@ -1362,18 +1362,18 @@ footer a:visited {
 
 /* Choose the ratio based on your theme setting / Twig class */
 .hero.ratio-16x9 {
-  --hero-aspect: 16/9;
+  --hero-aspect: 32/9;
 }
 
 .hero.ratio-21x9 {
-  --hero-aspect: 21/9;
+  --hero-aspect: 42/9;
 }
 
 /* Optional: opt-in fixed height per page */
 .hero.use-fixed-height {
-  --hero-min: 320px;
-  --hero-ideal: 60svh;
-  --hero-max: 720px;
+  --hero-min: 160px;
+  --hero-ideal: 30svh;
+  --hero-max: 360px;
   --header-h: 0px;
   height: calc(clamp(var(--hero-min), var(--hero-ideal), var(--hero-max)) - var(--header-h));
   overflow: clip;
@@ -1393,10 +1393,8 @@ footer a:visited {
   aspect-ratio: auto;
 }
 .hero.use-fixed-height .slide-media img {
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* Mobile polish */
@@ -1431,8 +1429,7 @@ footer a:visited {
   .hero .slide-media img {
     max-height: none !important;
     height: auto !important;
-    -o-object-fit: contain !important;
-       object-fit: contain !important;
+    object-fit: contain !important;
     width: 100%;
   }
   .hero .slide-text {
@@ -1490,4 +1487,6 @@ footer a:visited {
 .swiper {
   width: 100%;
   height: 100%;
-}/*# sourceMappingURL=bwtf_v2.css.map */
+}
+
+/*# sourceMappingURL=bwtf_v2.css.map */
