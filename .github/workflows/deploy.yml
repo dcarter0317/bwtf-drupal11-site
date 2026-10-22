@@ -83,6 +83,7 @@ jobs:
             /opt/alt/php83/usr/bin/php composer.phar install --no-dev --optimize-autoloader --no-interaction
 
             vendor/bin/drush updb -y
+            vendor/bin/drush cim -y
             vendor/bin/drush cr
             vendor/bin/drush state:set system.maintenance_mode 0 --input-format=integer
             vendor/bin/drush cr
