@@ -716,7 +716,7 @@ aside h2 {
 aside {
   /* Mobile-specific centering */
 }
-@media (max-width: 640px) {
+@media (max-width: 1199px) {
   aside {
     display: flex;
     flex-direction: column;
@@ -866,6 +866,8 @@ aside .simple-ads .simpleads-custom-carousel,
 aside .block-simpleads .simpleads-custom-carousel {
   position: relative;
   width: 50%;
+  margin-left: auto;
+  margin-right: auto;
   overflow: hidden;
 }
 @media (max-width: 640px) {
@@ -1198,6 +1200,7 @@ aside .block-simpleads .simpleads iframe {
 
 /* Footer */
 footer {
+  overflow-wrap: anywhere;
   background: #2E1F64;
   color: #E3DEDE;
   text-align: center;
@@ -1206,10 +1209,6 @@ footer {
 }
 @media (max-width: 640px) {
   footer {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
     padding-left: 0;
     padding-right: 0;
   }

@@ -757,8 +757,8 @@ aside {
     text-align: initial;
   }
 
-  /* Mobile-specific centering */
-  @media (max-width: 640px) {
+  /* Mobile/tablet centering (sidebar stacks below content under $bp-lg) */
+  @media (max-width: (variables.$bp-lg - 1)) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -910,6 +910,8 @@ aside {
     .simpleads-custom-carousel {
       position: relative;
       width: 50%;
+      margin-left: auto;
+      margin-right: auto;
       overflow: hidden;
 
       @media (max-width: 640px) {
@@ -1253,11 +1255,11 @@ footer {
   padding: 20px 10px;
   width: 100%;
 
+  // Footer is a direct child of body, so plain 100% is already full-bleed.
+  // (A 100vw + negative-margin hack shifted it whenever the page overflowed.)
+  overflow-wrap: anywhere;
+
   @media (max-width: 640px) {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
     padding-left: 0;
     padding-right: 0;
 
