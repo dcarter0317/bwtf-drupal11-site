@@ -1,26 +1,37 @@
+favicon:
+  use_default: true
+features:
+  comment_user_picture: true
+  comment_user_verification: true
+  favicon: true
+  node_user_picture: true
+logo:
+  path: sites/default/files/Laser-OP-vs-Jhiaxus-Logo.webp
+  use_default: false
+slider_display: true
 slider_aspect: '16:9'
 slider_overlay_preset: overlay-solid
 slider_overlay_from: 'rgba(0,0,0,.35)'
 slider_overlay_to: 'rgba(0,0,0,.55)'
-slider_autoplay_delay: '5000'
-slide1_title: 'Toy Review: "Age of the Primes" Sideways with Crosswise & Rook'
-slide1_desc: "Sideways is a mysterious 'bot whose allegiance seemingly changes between being an Autobot or a Decepticon but in reality he is an agent of the Chaos Bringer, Unicron!"
-slide1_url: /toyreviews/generations/aotp/sideways-armada
+slider_autoplay_delay: 5000
+slide1_title: 'Toy Review: "Studio Series 86" Skywarp'
+slide1_desc: 'Skywarp is not very bright, but if directed towards enemies using his teleportation ability he can be devastating in combat!'
+slide1_url: /toyreviews/generations/studioseries/ss86-skywarp
 slide1_link_text: 'Read More'
 slide1_image:
-  - '48203'
-slide2_title: 'Toy Review: "Studio Series 86" Kranix'
-slide2_desc: 'Kranix witnessed the destruction of his home world at the hands of Unicron.  He escaped only to meet an unfortunate fate at the hands of the Quintessons!'
-slide2_url: /toyreviews/generations/studioseries/ss86-kranix
+  - 48206
+slide2_title: 'Toy Review: "Studio Series 86" Sunstreaker'
+slide2_desc: 'Sunstreaker is one of the most ruthless warriors in the Autobot army, but at the same time he is very vain and is constantly making sure his finish looks good!'
+slide2_url: /toyreviews/generations/studioseries/ss86-sunstreaker
 slide2_link_text: 'Read More'
 slide2_image:
-  - '48204'
-slide3_title: 'Toy Review: "Generations Legacy" Drillhorn'
-slide3_desc: 'Drillhorn is a veteran warrior who can be as stubborn as he is tough!'
-slide3_url: /toyreviews/generations/legacy/drillhorn
+  - 48207
+slide3_title: 'Toy Review: "Age of the Primes" Joyride with Hotwire'
+slide3_desc: 'Joyride is a terrible driver with a lust for combat that makes him dangerous to everyone around him, friend or foe!'
+slide3_url: /toyreviews/generations/aotp/joyride
 slide3_link_text: 'Read More'
 slide3_image:
-  - '48205'
+  - 48208
 slide4_title: ''
 slide4_desc: ''
 slide4_url: ''
@@ -52,14 +63,3 @@ social7_platform: ''
 social7_url: ''
 social8_platform: ''
 social8_url: ''
-features:
-  node_user_picture: 1
-  comment_user_picture: 1
-  comment_user_verification: 1
-  favicon: 1
-logo:
-  use_default: 1
-  path: sites/default/files/Laser-OP-vs-Jhiaxus-Logo.webp
-favicon:
-  use_default: 1
-slider_display: 1
