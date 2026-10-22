@@ -1,0 +1,180 @@
+# Schema for the configuration files of the BWTF theme.
+
+bwtf.settings:
+  type: theme_settings
+  label: 'BWTF theme settings'
+  mapping:
+    slider_display:
+      type: boolean
+      label: 'Show slider'
+    slider_aspect:
+      type: string
+      label: 'Slider aspect ratio'
+    slider_overlay_preset:
+      type: string
+      label: 'Slider overlay preset'
+    slider_overlay_from:
+      type: string
+      label: 'Slider overlay color (from)'
+    slider_overlay_to:
+      type: string
+      label: 'Slider overlay color (to)'
+    slider_autoplay_delay:
+      type: integer
+      label: 'Slider autoplay delay (ms)'
+    slide1_title:
+      type: string
+      label: 'Slide 1 title'
+    slide1_desc:
+      type: string
+      label: 'Slide 1 description'
+    slide1_url:
+      type: string
+      label: 'Slide 1 URL'
+    slide1_link_text:
+      type: string
+      label: 'Slide 1 link text'
+    slide1_image:
+      type: sequence
+      label: 'Slide 1 image'
+      sequence:
+        type: integer
+        label: 'File ID'
+    slide2_title:
+      type: string
+      label: 'Slide 2 title'
+    slide2_desc:
+      type: string
+      label: 'Slide 2 description'
+    slide2_url:
+      type: string
+      label: 'Slide 2 URL'
+    slide2_link_text:
+      type: string
+      label: 'Slide 2 link text'
+    slide2_image:
+      type: sequence
+      label: 'Slide 2 image'
+      sequence:
+        type: integer
+        label: 'File ID'
+    slide3_title:
+      type: string
+      label: 'Slide 3 title'
+    slide3_desc:
+      type: string
+      label: 'Slide 3 description'
+    slide3_url:
+      type: string
+      label: 'Slide 3 URL'
+    slide3_link_text:
+      type: string
+      label: 'Slide 3 link text'
+    slide3_image:
+      type: sequence
+      label: 'Slide 3 image'
+      sequence:
+        type: integer
+        label: 'File ID'
+    slide4_title:
+      type: string
+      label: 'Slide 4 title'
+    slide4_desc:
+      type: string
+      label: 'Slide 4 description'
+    slide4_url:
+      type: string
+      label: 'Slide 4 URL'
+    slide4_link_text:
+      type: string
+      label: 'Slide 4 link text'
+    slide4_image:
+      type: sequence
+      label: 'Slide 4 image'
+      sequence:
+        type: integer
+        label: 'File ID'
+    slide5_title:
+      type: string
+      label: 'Slide 5 title'
+    slide5_desc:
+      type: string
+      label: 'Slide 5 description'
+    slide5_url:
+      type: string
+      label: 'Slide 5 URL'
+    slide5_link_text:
+      type: string
+      label: 'Slide 5 link text'
+    slide5_image:
+      type: sequence
+      label: 'Slide 5 image'
+      sequence:
+        type: integer
+        label: 'File ID'
+    slide6_title:
+      type: string
+      label: 'Slide 6 title'
+    slide6_desc:
+      type: string
+      label: 'Slide 6 description'
+    slide6_url:
+      type: string
+      label: 'Slide 6 URL'
+    slide6_link_text:
+      type: string
+      label: 'Slide 6 link text'
+    slide6_image:
+      type: sequence
+      label: 'Slide 6 image'
+      sequence:
+        type: integer
+        label: 'File ID'
+    social1_platform:
+      type: string
+      label: 'Social link 1 platform'
+    social1_url:
+      type: string
+      label: 'Social link 1 URL'
+    social2_platform:
+      type: string
+      label: 'Social link 2 platform'
+    social2_url:
+      type: string
+      label: 'Social link 2 URL'
+    social3_platform:
+      type: string
+      label: 'Social link 3 platform'
+    social3_url:
+      type: string
+      label: 'Social link 3 URL'
+    social4_platform:
+      type: string
+      label: 'Social link 4 platform'
+    social4_url:
+      type: string
+      label: 'Social link 4 URL'
+    social5_platform:
+      type: string
+      label: 'Social link 5 platform'
+    social5_url:
+      type: string
+      label: 'Social link 5 URL'
+    social6_platform:
+      type: string
+      label: 'Social link 6 platform'
+    social6_url:
+      type: string
+      label: 'Social link 6 URL'
+    social7_platform:
+      type: string
+      label: 'Social link 7 platform'
+    social7_url:
+      type: string
+      label: 'Social link 7 URL'
+    social8_platform:
+      type: string
+      label: 'Social link 8 platform'
+    social8_url:
+      type: string
+      label: 'Social link 8 URL'

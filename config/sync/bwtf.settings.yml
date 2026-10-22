@@ -58,8 +58,8 @@ features:
   comment_user_verification: 1
   favicon: 1
 logo:
-  use_default: 0
-  path: sites/default/files/Laser-OP-vs-Jhiaxus-Logo_0.jpg
+  use_default: 1
+  path: sites/default/files/Laser-OP-vs-Jhiaxus-Logo.webp
 favicon:
   use_default: 1
 slider_display: 1

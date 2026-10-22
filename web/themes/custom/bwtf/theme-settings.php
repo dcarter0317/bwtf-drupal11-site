@@ -8,9 +8,16 @@ use Drupal\file\FileInterface;
 /**
  * Implements hook_form_system_theme_settings_alter().
  */
-function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface $form_state, $form_id = NULL) {
+function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface $form_state, $form_id = NULL)
+{
   // Ensure file uploads are supported.
   $form['#attributes']['enctype'] = 'multipart/form-data';
+
+  // Allow modern image formats for the logo upload (core only permits
+  // png gif jpg jpeg apng svg).
+  if (isset($form['logo']['settings']['logo_upload'])) {
+    $form['logo']['settings']['logo_upload']['#upload_validators']['FileExtension']['extensions'] = 'png gif jpg jpeg apng svg webp avif';
+  }
 
   // Managed upload directory for slider images.
   $dir = 'public://bwtf/slider/';
@@ -30,56 +37,56 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
   ];
 
   // Aspect ratio (16:9 or 21:9)
-$form['bwtf_settings']['slider_aspect'] = [
-  '#type' => 'radios',
-  '#title' => t('Slider aspect ratio'),
-  '#options' => ['16:9' => '16:9', '21:9' => '21:9'],
-  '#default_value' => \Drupal::config('bwtf.settings')->get('slider_aspect') ?: '16:9',
-  '#parents' => ['slider_aspect'],
-];
+  $form['bwtf_settings']['slider_aspect'] = [
+    '#type' => 'radios',
+    '#title' => t('Slider aspect ratio'),
+    '#options' => ['16:9' => '16:9', '21:9' => '21:9'],
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_aspect') ?: '16:9',
+    '#parents' => ['slider_aspect'],
+  ];
 
-// Overlay preset
-$form['bwtf_settings']['slider_overlay_preset'] = [
-  '#type' => 'select',
-  '#title' => t('Overlay style'),
-  '#options' => [
-    'overlay-none'     => t('None'),
-    'overlay-solid'    => t('Solid'),
-    'overlay-gradient' => t('Gradient'),
-    'overlay-multiply' => t('Multiply (blend)'),
-  ],
-  '#default_value' => \Drupal::config('bwtf.settings')->get('slider_overlay_preset') ?: 'overlay-solid',
-  '#parents' => ['slider_overlay_preset'],
-  '#description' => t('Controls the background of the overlay layer.'),
-];
+  // Overlay preset
+  $form['bwtf_settings']['slider_overlay_preset'] = [
+    '#type' => 'select',
+    '#title' => t('Overlay style'),
+    '#options' => [
+      'overlay-none' => t('None'),
+      'overlay-solid' => t('Solid'),
+      'overlay-gradient' => t('Gradient'),
+      'overlay-multiply' => t('Multiply (blend)'),
+    ],
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_overlay_preset') ?: 'overlay-solid',
+    '#parents' => ['slider_overlay_preset'],
+    '#description' => t('Controls the background of the overlay layer.'),
+  ];
 
-// Overlay colors (CSS variables)
-$form['bwtf_settings']['slider_overlay_from'] = [
-  '#type' => 'textfield',
-  '#title' => t('Overlay color (from)'),
-  '#default_value' => \Drupal::config('bwtf.settings')->get('slider_overlay_from') ?: 'rgba(0,0,0,.35)',
-  '#parents' => ['slider_overlay_from'],
-  '#description' => t('Any CSS color (e.g. rgba(0,0,0,.35) or #00000059).'),
-];
+  // Overlay colors (CSS variables)
+  $form['bwtf_settings']['slider_overlay_from'] = [
+    '#type' => 'textfield',
+    '#title' => t('Overlay color (from)'),
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_overlay_from') ?: 'rgba(0,0,0,.35)',
+    '#parents' => ['slider_overlay_from'],
+    '#description' => t('Any CSS color (e.g. rgba(0,0,0,.35) or #00000059).'),
+  ];
 
-$form['bwtf_settings']['slider_overlay_to'] = [
-  '#type' => 'textfield',
-  '#title' => t('Overlay color (to)'),
-  '#default_value' => \Drupal::config('bwtf.settings')->get('slider_overlay_to') ?: 'rgba(0,0,0,.55)',
-  '#parents' => ['slider_overlay_to'],
-  '#description' => t('Used by the gradient preset; ignored by others.'),
-];
+  $form['bwtf_settings']['slider_overlay_to'] = [
+    '#type' => 'textfield',
+    '#title' => t('Overlay color (to)'),
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_overlay_to') ?: 'rgba(0,0,0,.55)',
+    '#parents' => ['slider_overlay_to'],
+    '#description' => t('Used by the gradient preset; ignored by others.'),
+  ];
 
-// Autoplay delay (ms). 0 disables autoplay.
-$form['bwtf_settings']['slider_autoplay_delay'] = [
-  '#type' => 'number',
-  '#title' => t('Autoplay delay (ms)'),
-  '#default_value' => (int) (\Drupal::config('bwtf.settings')->get('slider_autoplay_delay') ?? 5000),
-  '#min' => 0,
-  '#step' => 100,
-  '#description' => t('Time between slides in milliseconds. Set 0 to disable autoplay.'),
-  '#parents' => ['slider_autoplay_delay'],
-];
+  // Autoplay delay (ms). 0 disables autoplay.
+  $form['bwtf_settings']['slider_autoplay_delay'] = [
+    '#type' => 'number',
+    '#title' => t('Autoplay delay (ms)'),
+    '#default_value' => (int) (\Drupal::config('bwtf.settings')->get('slider_autoplay_delay') ?? 5000),
+    '#min' => 0,
+    '#step' => 100,
+    '#description' => t('Time between slides in milliseconds. Set 0 to disable autoplay.'),
+    '#parents' => ['slider_autoplay_delay'],
+  ];
 
 
   // Show/Hide slider toggle (flatten key).
@@ -117,9 +124,9 @@ $form['bwtf_settings']['slider_autoplay_delay'] = [
 
     // Text fields (flattened keys).
     foreach ([
-      'title'     => 'Slide Title',
-      'desc'      => 'Slide Description',
-      'url'       => 'Slide URL',
+      'title' => 'Slide Title',
+      'desc' => 'Slide Description',
+      'url' => 'Slide URL',
       'link_text' => 'Slide Link Text',
     ] as $suffix => $label) {
       $key = "slide{$i}_{$suffix}";
@@ -143,7 +150,9 @@ $form['bwtf_settings']['slider_autoplay_delay'] = [
       '#title' => t('Slide @num Image', ['@num' => $i]),
       '#default_value' => $default_fids,
       '#upload_location' => $dir,
-      '#file_extensions' => 'svg webp png jpg jpeg',
+      '#upload_validators' => [
+        'FileExtension' => ['extensions' => 'svg webp avif png jpg jpeg'],
+      ],
       '#description' => t('Choose a file, click <em>Upload</em>, then Save configuration.'),
       '#parents' => ["slide{$i}_image"], // flatten to top-level
     ];
@@ -211,7 +220,8 @@ $form['bwtf_settings']['slider_autoplay_delay'] = [
 /**
  * Submit handler: make files permanent and write values to bwtf.settings.
  */
-function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_state) {
+function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_state)
+{
   $config = \Drupal::configFactory()->getEditable('bwtf.settings');
   $file_usage = \Drupal::service('file.usage');
 
@@ -228,7 +238,9 @@ function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_
 
   // Save autoplay delay.
   $delay = (int) ($form_state->getValue('slider_autoplay_delay') ?? 5000);
-  if ($delay < 0) { $delay = 0; }
+  if ($delay < 0) {
+    $delay = 0;
+  }
   $config->set('slider_autoplay_delay', $delay);
 
 
@@ -240,9 +252,9 @@ function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_
     }
 
     // Normalize managed_file value and save as an array of FIDs.
-    $raw  = $form_state->getValue("slide{$i}_image") ?? [];
+    $raw = $form_state->getValue("slide{$i}_image") ?? [];
     $fids = is_array($raw) ? array_values(array_filter($raw)) : ($raw ? [(int) $raw] : []);
-    $fid  = (int) ($fids[0] ?? 0);
+    $fid = (int) ($fids[0] ?? 0);
 
     if ($fid) {
       $file = File::load($fid);

@@ -218,6 +218,13 @@ function bwtf_theme_settings_submit_promote_files(array &$form, FormStateInterfa
  * - Attaches the slider library only when there’s content to show.
  */
 function bwtf_preprocess_page(array &$variables): void {
+  // Use the logo configured in theme settings (any format, incl. webp/avif);
+  // fall back to the bundled logo when "use the theme logo" is checked.
+  $variables['bwtf_logo'] = theme_get_setting('logo.use_default')
+    ? NULL
+    : (theme_get_setting('logo.url') ?: NULL);
+  $variables['#cache']['tags'][] = 'config:bwtf.settings';
+
 
   $cfg = \Drupal::config('bwtf.settings');
 
