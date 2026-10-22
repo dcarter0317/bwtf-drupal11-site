@@ -65,6 +65,7 @@ section {
 /* Menu */
 .menu-container {
   position: relative;
+  margin-bottom: 0;
 }
 
 .menu-btn {
@@ -187,7 +188,7 @@ img {
 .nav-container {
   position: relative;
   margin: 0;
-  padding: 5px 0;
+  padding: 0;
 }
 @media (min-width: 1200px) {
   .nav-container {
