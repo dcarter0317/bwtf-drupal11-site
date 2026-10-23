@@ -4,11 +4,33 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
+
+  @supports (overflow: clip) {
+    overflow-x: clip;
+  }
 }
 
 body {
   color: variables.$clr-text-color-primary;
+  max-width: 100%;
   overflow-x: hidden;
+
+  @supports (overflow: clip) {
+    overflow-x: clip;
+  }
+}
+
+img, video, iframe, svg {
+  max-width: 100%;
+}
+
+// Let flex/grid children shrink instead of forcing the page wider than the viewport
+.content.container > *,
+footer .container > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 section {

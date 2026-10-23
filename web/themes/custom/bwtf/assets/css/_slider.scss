@@ -13,9 +13,9 @@ $hero-max: 360px !default; // increased for better visibility
   --hero-overlay-to: rgba(0, 0, 0, .55);
 
   /* Full-bleed: span the viewport edge to edge, even inside a constrained parent */
-  width: 100vw;
-  max-width: 100vw;
-  margin-inline: calc(50% - 50vw);
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
 
   /* Let intrinsic ratio drive height */
   height: auto;

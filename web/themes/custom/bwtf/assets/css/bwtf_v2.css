@@ -45,11 +45,34 @@ button, input, select, textarea {
 /* bwtf_v2.scss (recommended order) */
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+@supports (overflow: clip) {
+  html {
+    overflow-x: clip;
+  }
 }
 
 body {
   color: rgb(107.5, 107.5, 107.5);
+  max-width: 100%;
   overflow-x: hidden;
+}
+@supports (overflow: clip) {
+  body {
+    overflow-x: clip;
+  }
+}
+
+img, video, iframe, svg {
+  max-width: 100%;
+}
+
+.content.container > *,
+footer .container > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 section {
@@ -714,7 +737,7 @@ aside h2 {
   }
 }
 aside {
-  /* Mobile-specific centering */
+  /* Mobile/tablet centering (sidebar stacks below content under $bp-lg) */
 }
 @media (max-width: 1199px) {
   aside {
@@ -1200,12 +1223,12 @@ aside .block-simpleads .simpleads iframe {
 
 /* Footer */
 footer {
-  overflow-wrap: anywhere;
   background: #2E1F64;
   color: #E3DEDE;
   text-align: center;
   padding: 20px 10px;
   width: 100%;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 640px) {
   footer {
@@ -1261,9 +1284,9 @@ footer a:visited {
   --hero-overlay: rgba(0, 0, 0, .35);
   --hero-overlay-to: rgba(0, 0, 0, .55);
   /* Full-bleed: span the viewport edge to edge, even inside a constrained parent */
-  width: 100vw;
-  max-width: 100vw;
-  margin-inline: calc(50% - 50vw);
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
   /* Let intrinsic ratio drive height */
   height: auto;
   max-height: 360px;
@@ -1511,5 +1534,3 @@ footer a:visited {
   width: 100%;
   height: 100%;
 }
-
-/*# sourceMappingURL=bwtf_v2.css.map */
