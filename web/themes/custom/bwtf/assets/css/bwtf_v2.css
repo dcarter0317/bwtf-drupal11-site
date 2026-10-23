@@ -1509,7 +1509,7 @@ footer a:visited {
   .hero .swiper-button-prev,
   .hero.use-fixed-height .swiper-button-next,
   .hero.use-fixed-height .swiper-button-prev {
-    display: block;
+    display: flex;
     z-index: 10;
     top: 50%;
     transform: translateY(-50%);
