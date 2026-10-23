@@ -12,6 +12,8 @@ use Drupal\file\FileInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\image\Entity\ImageStyle;
+
+require_once __DIR__ . '/includes/slider_aspect.inc';
 use Drupal\Core\Render\Markup;
 
 /**
@@ -214,7 +216,7 @@ function bwtf_theme_settings_submit_promote_files(array &$form, FormStateInterfa
  * Implements hook_preprocess_page().
  *
  * - Exposes `bwtf_slides` with responsive sources (img16/img21).
- * - Sets `slider_aspect` ('16:9' or '21:9') and `slider_display`.
+ * - Sets `slider_aspect` (see bwtf_slider_aspect_ratios()) and `slider_display`.
  * - Attaches the slider library only when there’s content to show.
  */
 function bwtf_preprocess_page(array &$variables): void {
@@ -231,7 +233,12 @@ function bwtf_preprocess_page(array &$variables): void {
   // Keep these flags for Twig.
   $variables['is_front']        = \Drupal::service('path.matcher')->isFrontPage();
   $variables['slider_display']  = (int) ($cfg->get('slider_display') ?? 1);
-  $variables['slider_aspect']   = $cfg->get('slider_aspect') ?: '16:9'; // choose '16:9' or '21:9'
+  $ratios = bwtf_slider_aspect_ratios();
+  $aspect = $cfg->get('slider_aspect');
+  $aspect = isset($ratios[$aspect]) ? $aspect : '16:9';
+  $variables['slider_aspect']     = $aspect;
+  $variables['slider_aspect_css'] = $ratios[$aspect]['css'];
+  $variables['slider_aspect_src'] = $ratios[$aspect]['src'];
 
   $slides = [];
 

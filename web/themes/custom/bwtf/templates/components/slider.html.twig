@@ -3,11 +3,13 @@
 {% set show_slider  = slider_display|default(0) %}
 {% set on_front     = (is_front is defined) ? is_front : true %}
 {% set aspect       = slider_aspect|default('16:9') %}
-{% set ratio_class  = aspect == '21:9' ? 'ratio-21x9' : 'ratio-16x9' %}
+{% set ratio_class  = 'ratio-' ~ aspect|replace({':': 'x'}) %}
+{% set use_21       = slider_aspect_src|default('16') == '21' %}
 
 {# Overlay: pick a preset class; optionally pass CSS vars from PHP if you like #}
 {% set overlay_class = slider_overlay_preset|default('overlay-solid') %}
 {% set overlay_parts = [] %}
+{% if slider_aspect_css is defined and slider_aspect_css %}{% set _ = overlay_parts.append('--hero-aspect: ' ~ slider_aspect_css) %}{% endif %}
 {% if slider_overlay_from is defined and slider_overlay_from %}{% set _ = overlay_parts.append('--hero-overlay: ' ~ slider_overlay_from) %}{% endif %}
 {% if slider_overlay_to   is defined and slider_overlay_to   %}{% set _ = overlay_parts.append('--hero-overlay-to: ' ~ slider_overlay_to) %}{% endif %}
 {% set overlay_style = overlay_parts|length ? overlay_parts|join('; ') ~ ';' : null %}
@@ -21,7 +23,7 @@
 
       {% for s in slides %}
         {# Prefer ratio-specific sources when available #}
-        {% set choice  = aspect == '21:9' ? s.img21|default({}) : s.img16|default({}) %}
+        {% set choice  = use_21 ? s.img21|default({}) : s.img16|default({}) %}
         {% set img_src = choice.src|default(s.image_url|default('')) %}
 
         <div class="swiper-slide">

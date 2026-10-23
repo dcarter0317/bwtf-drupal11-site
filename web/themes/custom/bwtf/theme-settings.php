@@ -5,6 +5,8 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 
+require_once __DIR__ . '/includes/slider_aspect.inc';
+
 /**
  * Implements hook_form_system_theme_settings_alter().
  */
@@ -36,11 +38,11 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
     '#open' => TRUE,
   ];
 
-  // Aspect ratio (16:9 or 21:9)
+  // Aspect ratio
   $form['bwtf_settings']['slider_aspect'] = [
     '#type' => 'radios',
     '#title' => t('Slider aspect ratio'),
-    '#options' => ['16:9' => '16:9', '21:9' => '21:9'],
+    '#options' => array_map(static fn(array $r) => $r['label'], bwtf_slider_aspect_ratios()),
     '#default_value' => \Drupal::config('bwtf.settings')->get('slider_aspect') ?: '16:9',
     '#parents' => ['slider_aspect'],
   ];

@@ -1280,7 +1280,7 @@ footer a:visited {
 /* Default: hero height follows image aspect-ratio (16:9 or 21:9) */
 .hero {
   --hero-aspect: 32/9;
-  /* .ratio-21x9 overrides to 21/9 */
+  /* Overridden inline from the theme setting */
   --hero-overlay: rgba(0, 0, 0, .35);
   --hero-overlay-to: rgba(0, 0, 0, .55);
   /* Full-bleed: span the viewport edge to edge, even inside a constrained parent */
@@ -1396,15 +1396,7 @@ footer a:visited {
   mix-blend-mode: multiply;
 }
 
-/* Choose the ratio based on your theme setting / Twig class */
-.hero.ratio-16x9 {
-  --hero-aspect: 32/9;
-}
-
-.hero.ratio-21x9 {
-  --hero-aspect: 42/9;
-}
-
+/* Ratio comes from the slider aspect ratio theme setting (inline --hero-aspect). */
 /* Optional: opt-in fixed height per page */
 .hero.use-fixed-height {
   --hero-min: 160px;
@@ -1534,3 +1526,5 @@ footer a:visited {
   width: 100%;
   height: 100%;
 }
+
+/*# sourceMappingURL=bwtf_v2.css.map */
