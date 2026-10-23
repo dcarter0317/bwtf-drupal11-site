@@ -2,6 +2,12 @@
 @use "mixins";
 @use "variables";
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
   max-width: 100%;
@@ -13,6 +19,7 @@ html {
 }
 
 body {
+  margin: 0;
   color: variables.$clr-text-color-primary;
   max-width: 100%;
   overflow-x: hidden;

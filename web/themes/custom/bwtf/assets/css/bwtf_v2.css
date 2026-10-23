@@ -43,6 +43,12 @@ button, input, select, textarea {
    ------------------------------ */
 /* Your components */
 /* bwtf_v2.scss (recommended order) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
   max-width: 100%;
@@ -55,6 +61,7 @@ html {
 }
 
 body {
+  margin: 0;
   color: rgb(107.5, 107.5, 107.5);
   max-width: 100%;
   overflow-x: hidden;
