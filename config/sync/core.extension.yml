@@ -8,6 +8,7 @@ module:
   block_content: 0
   breakpoint: 0
   bwtf_blocks: 0
+  bwtf_content_sync: 0
   bwtf_social_icons: 0
   ckeditor5: 0
   ckeditor_media_embed: 0
