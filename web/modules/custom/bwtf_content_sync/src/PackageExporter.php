@@ -162,7 +162,7 @@ class PackageExporter {
     // The homepage slider is theme config, not content, so no node change
     // ever reaches it. Its slide images are exported as file entities.
     if (empty($options['skip_theme_config'])) {
-      $config_names = isset($options['theme_config']) ? $options['theme_config'] : ['bwtf.settings'];
+      $config_names = isset($options['theme_config']) ? $options['theme_config'] : [$this->getDefaultThemeConfigName()];
       $this->exportThemeConfig($config_names);
     }
 
@@ -189,7 +189,9 @@ class PackageExporter {
       'changed_term_count' => $this->changedTermCount,
       'inventory_count' => count($inventory),
       'theme_config' => array_values(array_map(function ($record) {
-        return $record['name'];
+        return $record['source_name'] === $record['name']
+          ? $record['name']
+          : $record['source_name'] . ' -> ' . $record['name'];
       }, $this->themeConfig)),
       'include_users' => $this->includeUsers,
       'warnings' => $this->warnings,
@@ -271,10 +273,11 @@ class PackageExporter {
    *
    * Every slider key is exported on every run, regardless of the cutoff:
    * config has no changed time, and the importer skips it when staging
-   * already matches.
+   * already matches. Keys are translated to their bwtf.settings names, which
+   * is the only config the importer writes.
    *
    * @param string[] $config_names
-   *   Config object names, normally bwtf.settings.
+   *   Source config object names, normally the active theme's settings.
    */
   protected function exportThemeConfig(array $config_names) {
     $file_storage = $this->entityTypeManager->getStorage('file');
@@ -288,8 +291,9 @@ class PackageExporter {
 
       $values = [];
       foreach ($config->getRawData() as $key => $value) {
-        if (PackageUtils::isSliderConfigKey($key)) {
-          $values[$key] = $value;
+        $destination_key = PackageUtils::translateSliderKey($name, $key);
+        if ($destination_key !== NULL) {
+          $values[$destination_key] = $value;
         }
       }
       if (!$values) {
@@ -315,11 +319,23 @@ class PackageExporter {
       }
 
       $this->themeConfig[] = [
-        'name' => $name,
+        'name' => 'bwtf.settings',
+        'source_name' => $name,
         'values' => $values,
         'file_ids' => array_values(array_unique($file_ids)),
       ];
     }
+  }
+
+  /**
+   * Returns the settings config name of the source site's default theme.
+   *
+   * @return string
+   *   For example likable.settings on Drupal 8 production.
+   */
+  protected function getDefaultThemeConfigName() {
+    $theme = (string) \Drupal::config('system.theme')->get('default');
+    return ($theme !== '' ? $theme : 'bwtf') . '.settings';
   }
 
   /**

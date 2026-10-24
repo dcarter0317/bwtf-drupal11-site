@@ -47,13 +47,14 @@ $manifest = $exporter->export($since, $bundles, $output, [
   // must be left alone. Pass --include-menu-links to override.
   'skip_menu_links' => empty($options['include-menu-links']),
   'skip_changed_terms' => !empty($options['skip-changed-terms']),
-  // The homepage slider lives in theme config. Pass --skip-theme-config to
-  // leave it out, or --theme-config=name1,name2 to read other config.
+  // The homepage slider lives in theme config. By default it is read from
+  // the active theme's settings (likable.settings on production). Pass
+  // --skip-theme-config to leave it out, or --theme-config=name to read
+  // other config.
   'skip_theme_config' => !empty($options['skip-theme-config']),
-  'theme_config' => isset($options['theme-config'])
-    ? array_values(array_filter(array_map('trim', explode(',', $options['theme-config']))))
-    : ['bwtf.settings'],
-]);
+] + (isset($options['theme-config'])
+  ? ['theme_config' => array_values(array_filter(array_map('trim', explode(',', $options['theme-config']))))]
+  : []));
 
 print PHP_EOL;
 print 'BWTF content package created.' . PHP_EOL;

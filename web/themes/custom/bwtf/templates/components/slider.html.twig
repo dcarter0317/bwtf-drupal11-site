@@ -27,7 +27,7 @@
         {% set img_src = choice.src|default(s.image_url|default('')) %}
 
         <div class="swiper-slide">
-          <div class="slide-media">
+          <div class="slide-media"{% if img_src and not choice.is_svg|default(false) %} style="--slide-bg: url('{{ img_src|e('html_attr') }}');"{% endif %}>
             <div class="slide-overlay" aria-hidden="true"></div>
 
             {% if img_src %}

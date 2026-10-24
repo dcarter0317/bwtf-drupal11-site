@@ -191,6 +191,42 @@ class PackageUtils {
   }
 
   /**
+   * Translates a source theme setting key into its bwtf.settings key.
+   *
+   * Drupal 8 production runs the Likable theme, which stores the slider in
+   * likable.settings under slightly different names. Its slide images are
+   * managed file IDs, the same as BWTF's. Settings Likable lacks, such as
+   * link text, aspect ratio and overlay, are not translated, so the importer
+   * leaves their staging values alone.
+   *
+   * @param string $source_name
+   *   Source config name, such as likable.settings.
+   * @param string $key
+   *   Top-level source config key.
+   *
+   * @return string|null
+   *   The bwtf.settings key, or NULL when the key is not part of the slider.
+   */
+  public static function translateSliderKey($source_name, $key) {
+    $key = (string) $key;
+
+    if ($source_name === 'likable.settings') {
+      if ($key === 'slideshow_display') {
+        return 'slider_display';
+      }
+      if (preg_match('/^slide(\d+)_head$/', $key, $matches)) {
+        return 'slide' . $matches[1] . '_title';
+      }
+      if (preg_match('/^slide\d+_(desc|url|image)$/', $key)) {
+        return $key;
+      }
+      return NULL;
+    }
+
+    return self::isSliderConfigKey($key) ? $key : NULL;
+  }
+
+  /**
    * Determines whether a slider config key holds slide image file IDs.
    *
    * @param string $key

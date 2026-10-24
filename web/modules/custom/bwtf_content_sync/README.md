@@ -35,6 +35,14 @@ it. Every run exports the slider keys (`slider_*` and `slideN_title`, `_desc`,
 their binaries. Social links and the logo in the same config object are
 deliberately left out; they are maintained on staging.
 
+Production runs the Likable theme, so the slider is read from the source
+site's active theme settings (`likable.settings`) and translated:
+`slideshow_display` → `slider_display`, `slideN_head` → `slideN_title`;
+`slideN_desc`, `slideN_url` and `slideN_image` keep their names. Likable has no
+link text, aspect, overlay or autoplay settings, so those BWTF values stay as
+set on staging. The export log shows this as
+`Slider config: likable.settings -> bwtf.settings`.
+
 On import, slide image file IDs are remapped like any other reference, file
 usage is registered for the theme, and the result is reported as
 `config_update`, `config_unchanged` or `config_conflict`. A conflict means the
@@ -418,7 +426,7 @@ production-owned page on staging.
 --include-users
 --skip-menu-links
 --skip-theme-config
---theme-config=bwtf.settings
+--theme-config=likable.settings
 ```
 
 ## Import
