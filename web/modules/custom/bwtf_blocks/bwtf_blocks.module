@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for BWTF blocks.
+ */
+
+/**
+ * Implements hook_config_schema_info_alter().
+ *
+ * TB Megamenu's MegaMenuConfig::calculateDependencies() adds a "menu"
+ * dependency, but its schema does not declare that key, which triggers
+ * "dependencies.menu missing schema" warnings.
+ */
+function bwtf_blocks_config_schema_info_alter(array &$definitions) {
+  if (isset($definitions['tb_megamenu.menu_config.*'])) {
+    $definitions['tb_megamenu.menu_config.*']['mapping']['dependencies'] = [
+      'type' => 'mapping',
+      'label' => 'Dependencies',
+      'mapping' => [
+        'config' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+        'content' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+        'module' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+        'theme' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+        'menu' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+        'enforced' => [
+          'type' => 'mapping',
+          'mapping' => [
+            'config' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+            'content' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+            'module' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+            'theme' => ['type' => 'sequence', 'sequence' => ['type' => 'string']],
+          ],
+        ],
+      ],
+    ];
+  }
+}

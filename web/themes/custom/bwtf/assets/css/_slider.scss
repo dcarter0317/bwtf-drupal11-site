@@ -153,6 +153,19 @@ $hero-max: 460px !default; // increased for better visibility
   }
 }
 
+/* Standard view: image fills the band edge to edge (cropped to the ratio).
+   Picture in picture (the rules above) keeps the whole image centered over a
+   blurred backdrop. */
+.hero.hero--standard .slide-media {
+  &::before {
+    display: none;
+  }
+
+  img {
+    object-fit: cover;
+  }
+}
+
 /* Ratio comes from the slider aspect ratio theme setting (inline --hero-aspect). */
 
 /* Optional: opt-in fixed height per page */

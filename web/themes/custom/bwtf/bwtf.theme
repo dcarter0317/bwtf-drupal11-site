@@ -239,6 +239,8 @@ function bwtf_preprocess_page(array &$variables): void {
   $variables['slider_aspect']     = $aspect;
   $variables['slider_aspect_css'] = $ratios[$aspect]['css'];
   $variables['slider_aspect_src'] = $ratios[$aspect]['src'];
+  $style = $cfg->get('slider_style');
+  $variables['slider_style'] = isset(bwtf_slider_styles()[$style]) ? $style : 'standard';
 
   $slides = [];
 
@@ -360,6 +362,20 @@ function bwtf_preprocess_page(array &$variables): void {
   }
   // Expose social media links to all pages.
   $variables['social_links'] = bwtf_get_social_links();
+
+  // Expose an edit link for the entity being viewed (node, term, user) so
+  // editors can jump straight to the edit form from the footer.
+  $variables['edit_url'] = NULL;
+  $variables['#cache']['contexts'][] = 'user';
+  $variables['#cache']['contexts'][] = 'route';
+  foreach (['node', 'taxonomy_term', 'user'] as $entity_type) {
+    $entity = \Drupal::routeMatch()->getParameter($entity_type);
+    if ($entity instanceof \Drupal\Core\Entity\EntityInterface && $entity->access('update') && $entity->hasLinkTemplate('edit-form')) {
+      $variables['edit_url'] = $entity->toUrl('edit-form', ['query' => \Drupal::destination()->getAsArray()])->toString();
+      $variables['#cache']['tags'] = array_merge($variables['#cache']['tags'] ?? [], $entity->getCacheTags());
+      break;
+    }
+  }
 
   // Retrieve the page title dynamically.
   $request = \Drupal::request();

@@ -47,6 +47,7 @@
         "drupal/paragraphs": "^1.23",
         "drupal/pathauto": "^1.15",
         "drupal/search_api": "^1.41",
+        "drupal/tb_megamenu": "^1.10",
         "drupal/tour": "^3.0",
         "drupal/twig_tweak": "^3.4",
         "drupal/views_infinite_scroll": "^2.0",

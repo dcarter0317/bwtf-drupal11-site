@@ -1,5 +1,8 @@
 <footer>
   <div class="container">
+    {% if edit_url %}
+      <p class="edit-page-link"><a href="{{ edit_url }}">Edit this page</a></p>
+    {% endif %}
     <p>BWTF.COM is copyright of Benson Yee since 1997. HASBRO, TRANSFORMERS and all related characters are trademarks of Hasbro. , Takara Ltd. and Tomy. Direct linking of images is not allowed.
       If you wish to use any content from this site, <a href="https://www.bwtf.com/contact" target="_blank" rel="noopener">please request permission</a> before doing so.</p>
     

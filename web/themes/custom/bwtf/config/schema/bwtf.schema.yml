@@ -10,6 +10,9 @@ bwtf.settings:
     slider_aspect:
       type: string
       label: 'Slider aspect ratio'
+    slider_style:
+      type: string
+      label: 'Slider view'
     slider_overlay_preset:
       type: string
       label: 'Slider overlay preset'

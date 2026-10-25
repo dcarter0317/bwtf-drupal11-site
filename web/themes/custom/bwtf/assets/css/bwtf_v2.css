@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* bwtf_v2.scss (recommended order) */
 /*** USAGE
 @include breakpoint-min($bp-sm) {
@@ -331,6 +330,30 @@ img {
     gap: 2%;
   }
 }
+.content {
+  /* Mobile only: pull the search block out of the stacked sidebar and place it
+     above the article list (just below the slider/ad section). */
+}
+@media (max-width: 767px) {
+  .content {
+    display: flex;
+    flex-direction: column;
+  }
+  .content > aside,
+  .content > aside > div {
+    display: contents;
+  }
+  .content > aside > div > * {
+    order: 1;
+  }
+  .content > aside #block-bwtf-searchform {
+    order: -1;
+    margin: 0 auto 20px;
+    padding: 0 15px;
+    width: 100%;
+    max-width: 400px;
+  }
+}
 
 #block-bwtf-socials div:has(> a),
 #block-bwtf-socials p:has(> a) {
@@ -551,7 +574,7 @@ img {
   border: 1px solid #B8B8B8;
   border-radius: 8px;
   margin-bottom: 15px;
-  max-width: 600px;
+  max-width: 800px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
   display: grid;
   grid-template-columns: 33.33% 66.67%;
@@ -657,10 +680,12 @@ img {
 }
 @container (min-width: 500px) {
   .article-card {
-    grid-template-columns: 33.33% 66.67%;
-    min-height: 190px;
+    grid-template-columns: 160px 1fr;
+    height: auto;
+    min-height: 145px;
   }
   .article-card__media img {
+    object-fit: contain;
     border-radius: 8px 0 0 8px;
     display: block;
   }
@@ -678,8 +703,8 @@ img {
   }
   .article-card__title {
     font-size: 1.1rem;
-    margin-top: 2px;
-    margin-bottom: 4px;
+    margin-top: 0;
+    margin-bottom: 2px;
   }
   .article-card__title a {
     display: block;
@@ -687,8 +712,8 @@ img {
   .article-card__description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
     line-height: 1.35;
     overflow: hidden;
   }
@@ -701,10 +726,15 @@ img {
     text-align: center;
   }
   .article-card__footer a {
-    padding: 4px 16px;
-    font-size: 0.8rem;
-    border-radius: 8px;
-    margin-bottom: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 3px 28px 0;
+    font-size: 0.85rem;
+    line-height: 1;
+    border-radius: 6px;
+    margin-bottom: 0;
   }
 }
 
@@ -1246,6 +1276,28 @@ footer {
     padding: 0 15px;
   }
 }
+footer .container {
+  position: relative;
+}
+footer .edit-page-link {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  margin: 0;
+}
+footer .edit-page-link a {
+  display: block;
+  padding: 6px 14px;
+  line-height: 1.4;
+  background: #fff;
+  border: 2px solid #2E1F64;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2E1F64;
+}
 footer .footer-social {
   padding: 20px 20px 20px 0;
   list-style: none;
@@ -1412,6 +1464,16 @@ footer a:visited {
 .hero.overlay-multiply .slide-overlay {
   background: var(--hero-overlay);
   mix-blend-mode: multiply;
+}
+
+/* Standard view: image fills the band edge to edge (cropped to the ratio).
+   Picture in picture (the rules above) keeps the whole image centered over a
+   blurred backdrop. */
+.hero.hero--standard .slide-media::before {
+  display: none;
+}
+.hero.hero--standard .slide-media img {
+  object-fit: cover;
 }
 
 /* Ratio comes from the slider aspect ratio theme setting (inline --hero-aspect). */

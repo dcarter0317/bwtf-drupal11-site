@@ -6,6 +6,21 @@
  */
 
 /**
+ * Returns the available slider display styles.
+ *
+ * Keys are the values stored in bwtf.settings:slider_style.
+ *
+ * @return array<string, string>
+ *   Style key => label.
+ */
+function bwtf_slider_styles(): array {
+  return [
+    'standard' => 'Standard view (image fills the full width, edge to edge)',
+    'pip' => 'Picture in picture (whole image centered over a blurred full-width backdrop)',
+  ];
+}
+
+/**
  * Returns the available slider aspect ratios.
  *
  * Keys are the values stored in bwtf.settings:slider_aspect.

@@ -21,6 +21,7 @@ dependencies:
     - shortcut
     - simpleads
     - system
+    - tb_megamenu
 _core:
   default_config_hash: btW6TFHajhy7Eo6YUvdFiPh4TcPggo8GBXYctjV6zag
 id: authenticated
@@ -32,6 +33,7 @@ permissions:
   - 'access content'
   - 'access shortcuts'
   - 'access site-wide contact form'
+  - 'administer tb_megamenu'
   - 'count simpleads clicks'
   - 'count simpleads impressions'
   - 'delete own files'
