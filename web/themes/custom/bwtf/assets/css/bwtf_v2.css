@@ -1412,6 +1412,14 @@ footer a:visited {
   text-align: justify;
 }
 
+/* Global img is display:block, which ignores text-align; keep images inline inside aligned blocks (as on D8 prod) */
+.text-align-left img,
+.text-align-right img,
+.text-align-center img,
+.text-align-justify img {
+  display: inline-block;
+}
+
 /* Slider styles have been centralized in assets/css/_slider.scss */
 /* Unified slider (single source of truth) */
 /* =========================================================
