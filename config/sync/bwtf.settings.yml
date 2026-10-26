@@ -11,6 +11,7 @@ logo:
 slider_display: true
 slider_aspect: '16:9'
 slider_style: standard
+slider_valign: top
 slider_overlay_preset: overlay-solid
 slider_overlay_from: 'rgba(0,0,0,.35)'
 slider_overlay_to: 'rgba(0,0,0,.55)'

@@ -13,6 +13,9 @@ bwtf.settings:
     slider_style:
       type: string
       label: 'Slider view'
+    slider_valign:
+      type: string
+      label: 'Slider image vertical alignment'
     slider_overlay_preset:
       type: string
       label: 'Slider overlay preset'

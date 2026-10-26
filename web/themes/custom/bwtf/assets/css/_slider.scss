@@ -166,6 +166,11 @@ $hero-max: 460px !default; // increased for better visibility
   }
 }
 
+/* Vertical alignment: which part of the image stays visible when cropped. */
+.hero.hero--valign-top .slide-media img {
+  object-position: center top;
+}
+
 /* Ratio comes from the slider aspect ratio theme setting (inline --hero-aspect). */
 
 /* Optional: opt-in fixed height per page */

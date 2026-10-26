@@ -240,6 +240,8 @@ function bwtf_preprocess_page(array &$variables): void {
   $variables['slider_aspect_css'] = $ratios[$aspect]['css'];
   $variables['slider_aspect_src'] = $ratios[$aspect]['src'];
   $style = $cfg->get('slider_style');
+  $valign = $cfg->get('slider_valign');
+  $variables['slider_valign'] = isset(bwtf_slider_valigns()[$valign]) ? $valign : 'center';
   $variables['slider_style'] = isset(bwtf_slider_styles()[$style]) ? $style : 'standard';
 
   $slides = [];

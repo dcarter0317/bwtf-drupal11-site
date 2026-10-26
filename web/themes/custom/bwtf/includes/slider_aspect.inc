@@ -21,6 +21,21 @@ function bwtf_slider_styles(): array {
 }
 
 /**
+ * Returns the available slider image vertical alignments.
+ *
+ * Keys are the values stored in bwtf.settings:slider_valign.
+ *
+ * @return array<string, string>
+ *   Alignment key => label.
+ */
+function bwtf_slider_valigns(): array {
+  return [
+    'center' => 'Align center',
+    'top' => 'Align top',
+  ];
+}
+
+/**
  * Returns the available slider aspect ratios.
  *
  * Keys are the values stored in bwtf.settings:slider_aspect.

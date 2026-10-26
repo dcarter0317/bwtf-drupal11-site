@@ -56,6 +56,16 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
     '#parents' => ['slider_style'],
   ];
 
+  // Image vertical alignment
+  $form['bwtf_settings']['slider_valign'] = [
+    '#type' => 'radios',
+    '#title' => t('Image vertical alignment'),
+    '#options' => array_map('t', bwtf_slider_valigns()),
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_valign') ?: 'center',
+    '#description' => t('Which part of the image stays visible when it is taller than the banner.'),
+    '#parents' => ['slider_valign'],
+  ];
+
   // Overlay preset
   $form['bwtf_settings']['slider_overlay_preset'] = [
     '#type' => 'select',
@@ -244,6 +254,7 @@ function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_
 
   $config->set('slider_aspect', (string) ($form_state->getValue('slider_aspect') ?? '16:9'));
   $config->set('slider_style', (string) ($form_state->getValue('slider_style') ?? 'standard'));
+  $config->set('slider_valign', (string) ($form_state->getValue('slider_valign') ?? 'center'));
   $config->set('slider_overlay_preset', (string) ($form_state->getValue('slider_overlay_preset') ?? 'overlay-solid'));
   $config->set('slider_overlay_from', (string) ($form_state->getValue('slider_overlay_from') ?? 'rgba(0,0,0,.35)'));
   $config->set('slider_overlay_to', (string) ($form_state->getValue('slider_overlay_to') ?? 'rgba(0,0,0,.55)'));
