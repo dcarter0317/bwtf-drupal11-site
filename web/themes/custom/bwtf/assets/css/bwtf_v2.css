@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* bwtf_v2.scss (recommended order) */
 /*** USAGE
 @include breakpoint-min($bp-sm) {
@@ -226,7 +227,7 @@ img {
   }
 }
 
-.nav {
+.nav:not(.tb-megamenu-nav) {
   display: none;
   opacity: 0;
   position: fixed;
@@ -245,7 +246,7 @@ img {
   pointer-events: none;
 }
 @media (min-width: 1200px) {
-  .nav {
+  .nav:not(.tb-megamenu-nav) {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -261,61 +262,120 @@ img {
     pointer-events: auto;
   }
 }
-.nav li {
+.nav:not(.tb-megamenu-nav) li {
   padding: 10px 0;
 }
 @media (min-width: 768px) {
-  .nav li {
+  .nav:not(.tb-megamenu-nav) li {
     padding: 5px 10px;
   }
 }
-.nav li:not(:last-child) {
+.nav:not(.tb-megamenu-nav) li:not(:last-child) {
   border-bottom: 1px solid #FFF;
 }
 @media (min-width: 768px) {
-  .nav li:not(:last-child) {
+  .nav:not(.tb-megamenu-nav) li:not(:last-child) {
     border: none;
   }
 }
-.nav li a {
+.nav:not(.tb-megamenu-nav) li a {
   display: block;
   font-weight: 200;
   color: #FFF;
   letter-spacing: 5px;
   text-decoration: none;
 }
-.nav li a:hover, .nav li a:focus {
+.nav:not(.tb-megamenu-nav) li a:hover, .nav:not(.tb-megamenu-nav) li a:focus {
   border-bottom: 4px solid #A30000;
 }
 @media (min-width: 1200px) {
-  .nav li a {
+  .nav:not(.tb-megamenu-nav) li a {
     letter-spacing: initial;
     color: initial;
     font-weight: 200;
   }
 }
-.nav {
+.nav:not(.tb-megamenu-nav) {
   /* Active menu item - Drupal adds this class to current page link */
 }
-.nav li.is-active a,
-.nav li a.is-active,
-.nav li a[aria-current=page] {
+.nav:not(.tb-megamenu-nav) li.is-active a,
+.nav:not(.tb-megamenu-nav) li a.is-active,
+.nav:not(.tb-megamenu-nav) li a[aria-current=page] {
   color: white;
   background: #A30000;
   padding: 10px;
   border-radius: 8px;
 }
 @media (min-width: 1200px) {
-  .nav li.is-active a,
-  .nav li a.is-active,
-  .nav li a[aria-current=page] {
+  .nav:not(.tb-megamenu-nav) li.is-active a,
+  .nav:not(.tb-megamenu-nav) li a.is-active,
+  .nav:not(.tb-megamenu-nav) li a[aria-current=page] {
     background: #A30000;
     color: white;
   }
 }
-.nav.nav-open {
+.nav:not(.tb-megamenu-nav).nav-open {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* TB Mega Menu: neutral, light styling (replaces module's black navbar) */
+.tb-megamenu .tb-megamenu-nav,
+.tb-megamenu .tb-megamenu-nav > li {
+  background: transparent;
+}
+.tb-megamenu .tb-megamenu-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  float: none;
+  margin: 0;
+  padding: 5px 0;
+  list-style: none;
+}
+.tb-megamenu .tb-megamenu-nav > li {
+  float: none;
+}
+.tb-megamenu .tb-megamenu-nav > li > a {
+  display: block;
+  padding: 5px 10px;
+  color: initial;
+  font-weight: 200;
+  text-decoration: none;
+  text-shadow: none;
+  background: transparent;
+  border-bottom: 4px solid transparent;
+}
+.tb-megamenu .tb-megamenu-nav > li > a:hover, .tb-megamenu .tb-megamenu-nav > li > a:focus {
+  background: transparent;
+  color: initial;
+  border-bottom-color: #A30000;
+}
+.tb-megamenu .tb-megamenu-nav > li.active > a, .tb-megamenu .tb-megamenu-nav > li.active-trail > a, .tb-megamenu .tb-megamenu-nav > li.open > a {
+  background: #A30000;
+  color: #FFF;
+  border-radius: 8px;
+  border-bottom-color: transparent;
+}
+.tb-megamenu .dropdown-menu {
+  background: #FFF;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.tb-megamenu .dropdown-menu a {
+  color: initial;
+  font-weight: 200;
+  text-decoration: none;
+}
+.tb-megamenu .dropdown-menu a:hover, .tb-megamenu .dropdown-menu a:focus {
+  background: #f2f2f2;
+  color: #A30000;
+}
+.tb-megamenu .btn-navbar {
+  background: #A30000;
+  border: 0;
 }
 
 /* Layout */
@@ -1606,5 +1666,3 @@ footer a:visited {
   width: 100%;
   height: 100%;
 }
-
-/*# sourceMappingURL=bwtf_v2.css.map */

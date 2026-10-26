@@ -206,7 +206,7 @@ header {
   }
 }
 
-.nav {
+.nav:not(.tb-megamenu-nav) {
   display: none;
   opacity: 0;
   position: fixed;
@@ -295,6 +295,80 @@ header {
   &.nav-open {
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+/* TB Mega Menu: neutral, light styling (replaces module's black navbar) */
+.tb-megamenu {
+  .tb-megamenu-nav,
+  .tb-megamenu-nav > li {
+    background: transparent;
+  }
+
+  .tb-megamenu-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    float: none;
+    margin: 0;
+    padding: 5px 0;
+    list-style: none;
+  }
+
+  .tb-megamenu-nav > li {
+    float: none;
+
+    > a {
+      display: block;
+      padding: 5px 10px;
+      color: initial;
+      font-weight: 200;
+      text-decoration: none;
+      text-shadow: none;
+      background: transparent;
+      border-bottom: 4px solid transparent;
+
+      &:hover,
+      &:focus {
+        background: transparent;
+        color: initial;
+        border-bottom-color: variables.$clr-secondary;
+      }
+    }
+
+    &.active > a,
+    &.active-trail > a,
+    &.open > a {
+      background: variables.$clr-secondary;
+      color: variables.$clr-white;
+      border-radius: 8px;
+      border-bottom-color: transparent;
+    }
+  }
+
+  .dropdown-menu {
+    background: variables.$clr-white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+
+    a {
+      color: initial;
+      font-weight: 200;
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        background: #f2f2f2;
+        color: variables.$clr-secondary;
+      }
+    }
+  }
+
+  .btn-navbar {
+    background: variables.$clr-secondary;
+    border: 0;
   }
 }
 

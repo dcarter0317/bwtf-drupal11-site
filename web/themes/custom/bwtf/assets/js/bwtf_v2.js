@@ -7,7 +7,7 @@
   function initMenu() {
     
     const menuBtn = document.querySelector('.menu-btn');
-    const navList = document.querySelector('.nav');
+    const navList = document.querySelector('.nav:not(.tb-megamenu-nav)');
 
     if (menuBtn && navList) {
       
@@ -18,8 +18,6 @@
         return false;
       };
       
-    } else {
-      console.error('Elements not found!', { menuBtn, navList });
     }
   }
   
