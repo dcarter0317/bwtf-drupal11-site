@@ -1468,4 +1468,10 @@ footer {
   }
 }
 
+/* CKEditor 5 alignment classes (D11 stable9 no longer ships these; D8 prod did) */
+.text-align-left { text-align: left; }
+.text-align-right { text-align: right; }
+.text-align-center { text-align: center; }
+.text-align-justify { text-align: justify; }
+
 /* Slider styles have been centralized in assets/css/_slider.scss */
