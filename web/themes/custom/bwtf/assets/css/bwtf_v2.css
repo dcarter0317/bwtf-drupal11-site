@@ -320,11 +320,14 @@ img {
 }
 
 /* TB Mega Menu: neutral, light styling (replaces module's black navbar) */
-.tb-megamenu .tb-megamenu-nav,
-.tb-megamenu .tb-megamenu-nav > li {
+.tb-megamenu.tb-megamenu-main {
   background: transparent;
 }
-.tb-megamenu .tb-megamenu-nav {
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav,
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li {
+  background: transparent;
+}
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -334,10 +337,10 @@ img {
   padding: 5px 0;
   list-style: none;
 }
-.tb-megamenu .tb-megamenu-nav > li {
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li {
   float: none;
 }
-.tb-megamenu .tb-megamenu-nav > li > a {
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li > a {
   display: block;
   padding: 5px 10px;
   color: initial;
@@ -345,35 +348,36 @@ img {
   text-decoration: none;
   text-shadow: none;
   background: transparent;
+  border-right: 0;
   border-bottom: 4px solid transparent;
 }
-.tb-megamenu .tb-megamenu-nav > li > a:hover, .tb-megamenu .tb-megamenu-nav > li > a:focus {
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li > a:hover, .tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li > a:focus {
   background: transparent;
   color: initial;
   border-bottom-color: #A30000;
 }
-.tb-megamenu .tb-megamenu-nav > li.active > a, .tb-megamenu .tb-megamenu-nav > li.active-trail > a, .tb-megamenu .tb-megamenu-nav > li.open > a {
+.tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li.active > a, .tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li.active-trail > a, .tb-megamenu.tb-megamenu-main .tb-megamenu-nav > li.open > a {
   background: #A30000;
   color: #FFF;
   border-radius: 8px;
   border-bottom-color: transparent;
 }
-.tb-megamenu .dropdown-menu {
+.tb-megamenu.tb-megamenu-main .dropdown-menu {
   background: #FFF;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-.tb-megamenu .dropdown-menu a {
+.tb-megamenu.tb-megamenu-main .dropdown-menu a {
   color: initial;
   font-weight: 200;
   text-decoration: none;
 }
-.tb-megamenu .dropdown-menu a:hover, .tb-megamenu .dropdown-menu a:focus {
+.tb-megamenu.tb-megamenu-main .dropdown-menu a:hover, .tb-megamenu.tb-megamenu-main .dropdown-menu a:focus {
   background: #f2f2f2;
   color: #A30000;
 }
-.tb-megamenu .btn-navbar {
+.tb-megamenu.tb-megamenu-main .btn-navbar {
   background: #A30000;
   border: 0;
 }
@@ -1666,3 +1670,5 @@ footer a:visited {
   width: 100%;
   height: 100%;
 }
+
+/*# sourceMappingURL=bwtf_v2.css.map */

@@ -299,7 +299,9 @@ header {
 }
 
 /* TB Mega Menu: neutral, light styling (replaces module's black navbar) */
-.tb-megamenu {
+.tb-megamenu.tb-megamenu-main {
+  background: transparent;
+
   .tb-megamenu-nav,
   .tb-megamenu-nav > li {
     background: transparent;
@@ -327,6 +329,7 @@ header {
       text-decoration: none;
       text-shadow: none;
       background: transparent;
+      border-right: 0;
       border-bottom: 4px solid transparent;
 
       &:hover,
