@@ -57,6 +57,9 @@ PREFLIGHT_ONLY="${PREFLIGHT_ONLY:-0}"
 # when a staging row is newer. Set to 0 to have the run stop for review
 # instead, which is the safer setting once staging carries real edits.
 OVERWRITE_NEWER="${OVERWRITE_NEWER:-1}"
+# Menus are mirrored from production, so staging links production lacks are
+# deleted. Set to 0 to report them without deleting (adds --no-menu-prune).
+MENU_PRUNE="${MENU_PRUNE:-1}"
 # Set to 1 to skip the pre-apply staging database dump (not recommended).
 SKIP_DB_BACKUP="${SKIP_DB_BACKUP:-0}"
 
@@ -67,6 +70,7 @@ for arg in "$@"; do
     --preflight-only|--dry-run) PREFLIGHT_ONLY=1 ;;
     --overwrite-newer)          OVERWRITE_NEWER=1 ;;
     --skip-db-backup)           SKIP_DB_BACKUP=1 ;;
+    --no-menu-prune)            MENU_PRUNE=0 ;;
     --since=*)                  SINCE="${arg#*=}" ;;
     --full)                     SINCE="$BASE_SINCE" ;;
     --bundles=*)                BUNDLES="${arg#*=}" ;;
@@ -265,6 +269,7 @@ cd "$STAGE_ROOT" || die "Cannot enter $STAGE_ROOT."
 
 IMPORT_ARGS=(--package="$PACKAGE")
 [ "$OVERWRITE_NEWER" = "1" ] && IMPORT_ARGS+=(--overwrite-newer)
+[ "$MENU_PRUNE" = "0" ] && IMPORT_ARGS+=(--no-menu-prune)
 
 log "--- Step 3/5: staging preflight ---"
 $STAGE_DRUSH scr "$MODULE_REL/scripts/bwtf_content_import.php" -- \
