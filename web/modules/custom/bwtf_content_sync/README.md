@@ -59,6 +59,25 @@ inventory carries no field data, only `nid`, `uuid`, `bundle`, `title`,
 
 Referenced users are not exported by default because production and staging originated from the same site and should already share user IDs. Use `--include-users` only after reviewing the security and account implications.
 
+## Main menu sync
+
+Production is the source of truth for the main navigation. Every export writes
+`menus.json` holding the complete `main` menu tree (all nesting levels, weights,
+enabled and expanded state), regardless of the cutoff date. The importer then
+mirrors it onto staging:
+
+- links are matched by UUID, then by title path and target, so links that
+  already exist on both sites are updated rather than duplicated;
+- missing links are created under the production UUID, parents first;
+- staging links that production does not have are **deleted** (this is the one
+  deliberate exception to "nothing is ever deleted"; it applies to menus only);
+- links to nodes that do not exist on staging are skipped and reported.
+
+Options: export `--menus=main,footer` or `--skip-menus`; import
+`--no-menu-prune` to report extra staging links without deleting them. The
+dry-run and preflight list every create, update and delete before anything is
+written. This is separate from `--include-menu-links`, which stays off.
+
 ## Important limitations
 
 1. **Deletions are reported, never applied.** The importer compares

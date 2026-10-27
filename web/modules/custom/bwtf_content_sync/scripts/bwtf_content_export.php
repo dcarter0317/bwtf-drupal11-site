@@ -43,9 +43,12 @@ $manifest = $exporter->export($since, $bundles, $output, [
   'include_users' => !empty($options['include-users']),
   // Menu links are NOT exported by default. Production has a menu link for
   // many pages, and importing them repopulates the staging site's main
-  // navigation on every run. The navigation is maintained on staging and
-  // must be left alone. Pass --include-menu-links to override.
+  // navigation on every run. Pass --include-menu-links to override. The
+  // navigation itself is handled by the menu sync below, not by this.
   'skip_menu_links' => empty($options['include-menu-links']),
+  // The whole menu tree is exported on every run so staging can mirror it.
+  // Defaults to main. Pass --menus=main,footer for more, or --skip-menus.
+  'skip_menus' => !empty($options['skip-menus']),
   'skip_changed_terms' => !empty($options['skip-changed-terms']),
   // The homepage slider lives in theme config. By default it is read from
   // the active theme's settings (likable.settings on production). Pass
@@ -54,7 +57,10 @@ $manifest = $exporter->export($since, $bundles, $output, [
   'skip_theme_config' => !empty($options['skip-theme-config']),
 ] + (isset($options['theme-config'])
   ? ['theme_config' => array_values(array_filter(array_map('trim', explode(',', $options['theme-config']))))]
-  : []));
+  : [])
+  + (isset($options['menus'])
+    ? ['menus' => array_values(array_filter(array_map('trim', explode(',', $options['menus']))))]
+    : []));
 
 print PHP_EOL;
 print 'BWTF content package created.' . PHP_EOL;
@@ -65,6 +71,7 @@ print 'Bundles: ' . implode(', ', $manifest['node_bundles']) . PHP_EOL;
 print 'Changed root nodes: ' . $manifest['root_node_count'] . PHP_EOL;
 print 'Total entities, including dependencies: ' . $manifest['entity_count'] . PHP_EOL;
 print 'Menu links: ' . (empty($options['include-menu-links']) ? 'excluded (navigation left untouched)' : 'INCLUDED') . PHP_EOL;
+print 'Menus: ' . ($manifest['menus'] ? implode(', ', $manifest['menus']) . ' (' . $manifest['menu_link_count'] . ' links)' : 'not exported') . PHP_EOL;
 print 'Independently changed terms: ' . $manifest['changed_term_count'] . PHP_EOL;
 print 'Aliases: ' . $manifest['alias_count'] . PHP_EOL;
 print 'Slider config: ' . ($manifest['theme_config'] ? implode(', ', $manifest['theme_config']) : 'not exported') . PHP_EOL;

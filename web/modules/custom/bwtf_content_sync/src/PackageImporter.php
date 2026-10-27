@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\FileInterface;
+use Drupal\menu_link_content\MenuLinkContentInterface;
 use Drupal\path_alias\PathAliasInterface;
 
 /**
@@ -126,6 +127,9 @@ class PackageImporter {
       'allow_site_uuid_mismatch' => FALSE,
       'skip_validation' => FALSE,
       'fallback_owner' => NULL,
+      // Menus in a package are mirrored: destination links the source does not
+      // have are removed. Set to FALSE to report them without deleting.
+      'menu_prune' => TRUE,
     ];
     $this->idMap = [];
     $this->revisionMap = [];
@@ -139,6 +143,10 @@ class PackageImporter {
     // Packages exported before slider support have no config.json.
     $config_records = file_exists($this->packageDirectory . '/config.json')
       ? PackageUtils::readJson($this->packageDirectory . '/config.json')
+      : [];
+    // Packages exported before menu sync have no menus.json.
+    $menu_rows = file_exists($this->packageDirectory . '/menus.json')
+      ? PackageUtils::readJson($this->packageDirectory . '/menus.json')
       : [];
 
     $this->validateManifest($manifest);
@@ -170,10 +178,17 @@ class PackageImporter {
         'config_update' => 0,
         'config_unchanged' => 0,
         'config_conflict' => 0,
+        'menu_create' => 0,
+        'menu_update' => 0,
+        'menu_unchanged' => 0,
+        'menu_delete' => 0,
+        'menu_skipped' => 0,
+        'menu_error' => 0,
       ],
       'entities' => [],
       'aliases' => [],
       'config' => [],
+      'menus' => [],
       'deletions' => [],
     ];
 
@@ -206,6 +221,14 @@ class PackageImporter {
       $result = $this->processThemeConfig($config_record, $manifest);
       $report['config'][] = $result;
       $report['summary']['config_' . $result['status']]++;
+    }
+
+    // Menus run after entities so links to just-imported nodes resolve.
+    if ($menu_rows) {
+      $report['menus'] = $this->processMenus($menu_rows);
+      foreach ($report['menus'] as $result) {
+        $report['summary']['menu_' . $result['status']]++;
+      }
     }
 
     // Deletion detection is report-only and never blocks or writes.
@@ -1277,6 +1300,281 @@ class PackageImporter {
       }
     }
     return $path;
+  }
+
+  /**
+   * Mirrors the packaged menus onto this site.
+   *
+   * Links are matched by UUID first, then by title path and target, so links
+   * that exist on both sites from before the sites diverged are updated in
+   * place rather than duplicated. New links are created under the source UUID
+   * so every later run matches them exactly. Destination links the source does
+   * not have are deleted when the menu_prune option is set.
+   *
+   * @param array $rows
+   *   Rows from menus.json, parents first.
+   *
+   * @return array
+   *   One result per link, with status create, update, unchanged, delete,
+   *   skipped or error.
+   */
+  protected function processMenus(array $rows) {
+    $dry_run = !empty($this->options['dry_run']);
+    $prune = !empty($this->options['menu_prune']);
+    $storage = $this->entityTypeManager->getStorage('menu_link_content');
+    $link_manager = \Drupal::service('plugin.manager.menu.link');
+    $results = [];
+
+    $by_menu = [];
+    foreach ($rows as $row) {
+      $by_menu[$row['menu_name']][] = $row;
+    }
+
+    foreach ($by_menu as $menu_name => $source_rows) {
+      $existing = $storage->loadByProperties(['menu_name' => $menu_name]);
+      $existing_by_uuid = [];
+      foreach ($existing as $link) {
+        $existing_by_uuid[$link->uuid()] = $link;
+      }
+      $source_by_uuid = [];
+      foreach ($source_rows as $row) {
+        $source_by_uuid[$row['uuid']] = $row;
+      }
+
+      // Title path from the menu root, used to match links by position.
+      $source_path = function ($uuid) use ($source_by_uuid) {
+        $parts = [];
+        $seen = [];
+        while ($uuid !== '' && isset($source_by_uuid[$uuid]) && !isset($seen[$uuid])) {
+          $seen[$uuid] = TRUE;
+          array_unshift($parts, mb_strtolower($source_by_uuid[$uuid]['title']));
+          $uuid = $source_by_uuid[$uuid]['parent_uuid'];
+        }
+        return implode('>', $parts);
+      };
+      $existing_path = function (MenuLinkContentInterface $link) use ($existing_by_uuid) {
+        $parts = [];
+        $seen = [];
+        while ($link && !isset($seen[$link->uuid()])) {
+          $seen[$link->uuid()] = TRUE;
+          array_unshift($parts, mb_strtolower($link->getTitle()));
+          $parent = (string) $link->getParentId();
+          $link = strpos($parent, 'menu_link_content:') === 0
+            ? (isset($existing_by_uuid[substr($parent, strlen('menu_link_content:'))]) ? $existing_by_uuid[substr($parent, strlen('menu_link_content:'))] : NULL)
+            : NULL;
+        }
+        return implode('>', $parts);
+      };
+
+      // Pass 1: same UUID.
+      $matched = [];
+      $claimed = [];
+      foreach ($source_rows as $row) {
+        if (isset($existing_by_uuid[$row['uuid']])) {
+          $matched[$row['uuid']] = $existing_by_uuid[$row['uuid']];
+          $claimed[$row['uuid']] = TRUE;
+        }
+      }
+      // Pass 2: same position and target, for links with a different UUID.
+      $signatures = [];
+      foreach ($existing_by_uuid as $uuid => $link) {
+        if (!isset($claimed[$uuid])) {
+          $signatures[$existing_path($link) . '|' . $link->get('link')->uri][] = $link;
+        }
+      }
+      foreach ($source_rows as $row) {
+        if (isset($matched[$row['uuid']])) {
+          continue;
+        }
+        $signature = $source_path($row['uuid']) . '|' . $row['uri'];
+        if (!empty($signatures[$signature])) {
+          $link = array_shift($signatures[$signature]);
+          $matched[$row['uuid']] = $link;
+          $claimed[$link->uuid()] = TRUE;
+        }
+      }
+
+      // Walk the source tree parents first, so a parent's destination UUID is
+      // known before its children are written.
+      $destination_uuid = [];
+      foreach ($source_rows as $row) {
+        $label = $source_path($row['uuid']);
+        $result = [
+          'menu' => $menu_name,
+          'title' => $label,
+          'uuid' => $row['uuid'],
+          'status' => 'unchanged',
+          'changed' => [],
+          'message' => '',
+        ];
+
+        try {
+          $uri = $this->rewriteMenuUri($row['uri']);
+          if ($uri === NULL) {
+            // Keep a matched destination link rather than prune it for a
+            // target that is missing here.
+            $result['status'] = 'skipped';
+            $result['message'] = 'Target node does not exist on this site: ' . $row['uri'];
+            $results[] = $result;
+            continue;
+          }
+
+          if ($row['parent_uuid'] !== '') {
+            if (!isset($destination_uuid[$row['parent_uuid']])) {
+              $result['status'] = 'skipped';
+              $result['message'] = 'Parent link was skipped.';
+              $results[] = $result;
+              continue;
+            }
+            $parent = 'menu_link_content:' . $destination_uuid[$row['parent_uuid']];
+          }
+          else {
+            $parent = (string) $row['parent_plugin'];
+            if ($parent !== '' && !$link_manager->hasDefinition($parent)) {
+              $result['message'] = sprintf('Parent %s does not exist here; placed at the top level.', $parent);
+              $parent = '';
+            }
+          }
+
+          $desired = [
+            'title' => $row['title'],
+            'description' => $row['description'],
+            'menu_name' => $menu_name,
+            'link' => [
+              'uri' => $uri,
+              'title' => $row['link_title'],
+              'options' => $row['link_options'],
+            ],
+            'parent' => $parent,
+            'weight' => (int) $row['weight'],
+            'expanded' => (bool) $row['expanded'],
+            'enabled' => (bool) $row['enabled'],
+            'langcode' => $row['langcode'],
+          ];
+
+          if (isset($matched[$row['uuid']])) {
+            $link = $matched[$row['uuid']];
+            $destination_uuid[$row['uuid']] = $link->uuid();
+            $changed = $this->findChangedMenuFields($link, $desired);
+            if ($changed) {
+              $result['status'] = 'update';
+              $result['changed'] = $changed;
+              if (!$dry_run) {
+                foreach ($desired as $field => $value) {
+                  $link->set($field, $value);
+                }
+                $link->save();
+              }
+            }
+          }
+          else {
+            $destination_uuid[$row['uuid']] = $row['uuid'];
+            $result['status'] = 'create';
+            if (!$dry_run) {
+              $storage->create($desired + ['uuid' => $row['uuid'], 'bundle' => 'menu_link_content'])->save();
+            }
+          }
+        }
+        catch (\Exception $exception) {
+          $result['status'] = 'error';
+          $result['message'] = $exception->getMessage();
+        }
+
+        $results[] = $result;
+      }
+
+      // Destination links the source does not have.
+      foreach ($existing_by_uuid as $uuid => $link) {
+        if (isset($claimed[$uuid])) {
+          continue;
+        }
+        $result = [
+          'menu' => $menu_name,
+          'title' => $existing_path($link),
+          'uuid' => $uuid,
+          'status' => 'delete',
+          'changed' => [],
+          'message' => $prune ? '' : 'Not on the source site. Left in place because menu_prune is off.',
+        ];
+        if ($prune && !$dry_run) {
+          try {
+            $link->delete();
+          }
+          catch (\Exception $exception) {
+            $result['status'] = 'error';
+            $result['message'] = $exception->getMessage();
+          }
+        }
+        $results[] = $result;
+      }
+    }
+
+    return $results;
+  }
+
+  /**
+   * Lists the fields of a menu link that differ from the desired values.
+   *
+   * @return string[]
+   *   Field names.
+   */
+  protected function findChangedMenuFields(MenuLinkContentInterface $link, array $desired) {
+    $item = $link->get('link')->first();
+    $current_options = $item && is_array($item->options) ? $item->options : [];
+    $current = [
+      'title' => (string) $link->getTitle(),
+      'description' => (string) $link->getDescription(),
+      'menu_name' => (string) $link->getMenuName(),
+      'link' => [
+        'uri' => $item ? (string) $item->uri : '',
+        'title' => $item ? (string) $item->title : '',
+        'options' => $current_options,
+      ],
+      'parent' => (string) $link->getParentId(),
+      'weight' => (int) $link->getWeight(),
+      'expanded' => (bool) $link->isExpanded(),
+      'enabled' => (bool) $link->isEnabled(),
+      'langcode' => (string) $link->language()->getId(),
+    ];
+
+    $changed = [];
+    foreach ($desired as $field => $value) {
+      if ($field === 'link') {
+        if ($current['link']['uri'] !== (string) $value['uri'] || $current['link']['title'] !== (string) $value['title']) {
+          $changed[] = 'link';
+        }
+        elseif (PackageUtils::hashData($current['link']['options']) !== PackageUtils::hashData($value['options'])) {
+          $changed[] = 'link_options';
+        }
+      }
+      elseif ($current[$field] !== $value) {
+        $changed[] = $field;
+      }
+    }
+
+    return $changed;
+  }
+
+  /**
+   * Points a packaged menu link target at this site's node, if it has one.
+   *
+   * @return string|null
+   *   The URI to store, or NULL when the target node does not exist here.
+   */
+  protected function rewriteMenuUri($uri) {
+    if (!preg_match('#^entity:node/(\d+)$#', (string) $uri, $matches)) {
+      return $uri;
+    }
+
+    $key = 'node:' . $matches[1];
+    if (isset($this->idMap[$key])) {
+      return 'entity:node/' . $this->idMap[$key];
+    }
+    if ($this->entityTypeManager->getStorage('node')->load($matches[1])) {
+      return $uri;
+    }
+
+    return NULL;
   }
 
   /**

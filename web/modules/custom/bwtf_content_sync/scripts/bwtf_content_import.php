@@ -27,6 +27,9 @@ $shared_options = [
   'allow_site_uuid_mismatch' => !empty($options['allow-site-uuid-mismatch']),
   'skip_validation' => !empty($options['skip-validation']),
   'fallback_owner' => isset($options['fallback-owner']) ? $options['fallback-owner'] : NULL,
+  // Menus in the package are mirrored, so links staging has and production
+  // lacks are deleted. --no-menu-prune reports them without deleting.
+  'menu_prune' => empty($options['no-menu-prune']),
 ];
 
 $make_importer = function () {
@@ -105,6 +108,33 @@ $print_config = function (array $report) {
   }
 };
 
+/**
+ * Prints the menu sync section.
+ */
+$print_menus = function (array $report) {
+  $results = isset($report['menus']) ? $report['menus'] : [];
+  if (!$results) {
+    return;
+  }
+
+  print PHP_EOL . 'Menus (production is the source of truth):' . PHP_EOL;
+  foreach (['create', 'update', 'delete', 'unchanged', 'skipped', 'error'] as $status) {
+    print sprintf('  %-10s %d', $status . ':', $report['summary']['menu_' . $status]) . PHP_EOL;
+  }
+  foreach ($results as $result) {
+    if ($result['status'] === 'unchanged') {
+      continue;
+    }
+    print sprintf(
+      '  %-8s %-8s %s%s',
+      $result['status'],
+      $result['menu'],
+      mb_substr($result['title'], 0, 60),
+      $result['changed'] ? ' [' . implode(', ', $result['changed']) . ']' : ''
+    ) . ($result['message'] ? ' - ' . $result['message'] : '') . PHP_EOL;
+  }
+};
+
 // Every apply run performs a complete preflight before writing anything.
 $preflight_options = $shared_options + ['dry_run' => TRUE];
 $preflight = $make_importer()->import($package, $preflight_options);
@@ -119,9 +149,10 @@ foreach ($preflight['summary'] as $status => $count) {
 }
 
 $print_config($preflight);
+$print_menus($preflight);
 $print_deletions($preflight);
 
-$blocking = $preflight['summary']['conflict'] + $preflight['summary']['error'] + $preflight['summary']['alias_conflict'] + $preflight['summary']['config_conflict'];
+$blocking = $preflight['summary']['conflict'] + $preflight['summary']['error'] + $preflight['summary']['alias_conflict'] + $preflight['summary']['config_conflict'] + $preflight['summary']['menu_error'];
 if ($blocking > 0) {
   throw new RuntimeException(sprintf(
     'Preflight found %d blocking conflict/error result(s). Nothing was imported. Review the report.',
@@ -147,9 +178,10 @@ foreach ($report['summary'] as $status => $count) {
 }
 
 $print_config($report);
+$print_menus($report);
 $print_deletions($report);
 
-$failures = $report['summary']['conflict'] + $report['summary']['error'] + $report['summary']['alias_conflict'] + $report['summary']['config_conflict'];
+$failures = $report['summary']['conflict'] + $report['summary']['error'] + $report['summary']['alias_conflict'] + $report['summary']['config_conflict'] + $report['summary']['menu_error'];
 if ($failures > 0) {
   throw new RuntimeException(sprintf(
     'The apply run completed with %d conflict/error result(s). Review the report and restore the backup if necessary.',

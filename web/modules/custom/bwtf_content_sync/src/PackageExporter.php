@@ -91,6 +91,13 @@ class PackageExporter {
   protected $themeConfig = [];
 
   /**
+   * Exported menu link rows, in tree order.
+   *
+   * @var array
+   */
+  protected $menuLinks = [];
+
+  /**
    * Constructs the exporter.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, FileSystemInterface $file_system) {
@@ -121,6 +128,7 @@ class PackageExporter {
     $this->warnings = [];
     $this->changedTermCount = 0;
     $this->themeConfig = [];
+    $this->menuLinks = [];
     $this->outputDirectory = rtrim($output_directory, '/');
     $this->includeUsers = !empty($options['include_users']);
 
@@ -166,6 +174,14 @@ class PackageExporter {
       $this->exportThemeConfig($config_names);
     }
 
+    // Menus are exported whole on every run, regardless of the cutoff, because
+    // the importer mirrors them: anything missing from this list is removed
+    // from the destination menu.
+    if (empty($options['skip_menus'])) {
+      $menu_names = isset($options['menus']) ? $options['menus'] : ['main'];
+      $this->exportMenus($menu_names);
+    }
+
     // The inventory lists every node that currently exists on the source site,
     // regardless of the cutoff. The importer uses it to report destination
     // nodes that no longer exist on the source. It never deletes anything.
@@ -193,6 +209,10 @@ class PackageExporter {
           ? $record['name']
           : $record['source_name'] . ' -> ' . $record['name'];
       }, $this->themeConfig)),
+      'menus' => array_values(array_unique(array_map(function ($row) {
+        return $row['menu_name'];
+      }, $this->menuLinks))),
+      'menu_link_count' => count($this->menuLinks),
       'include_users' => $this->includeUsers,
       'warnings' => $this->warnings,
     ];
@@ -201,6 +221,7 @@ class PackageExporter {
     PackageUtils::writeJson($this->outputDirectory . '/inventory.json', $inventory);
     PackageUtils::writeJson($this->outputDirectory . '/aliases.json', $this->aliases);
     PackageUtils::writeJson($this->outputDirectory . '/config.json', $this->themeConfig);
+    PackageUtils::writeJson($this->outputDirectory . '/menus.json', $this->menuLinks);
     PackageUtils::writeJson($this->outputDirectory . '/manifest.json', $manifest);
 
     return $manifest;
@@ -760,6 +781,94 @@ class PackageExporter {
           'langcode' => isset($row->langcode) ? $row->langcode : 'und',
           'status' => 1,
         ];
+      }
+    }
+  }
+
+  /**
+   * Exports every custom menu link of the given menus, whole.
+   *
+   * Unlike exportMenuLinksForNode() this is not tied to changed nodes: the
+   * importer mirrors these menus, so the complete tree is always needed. Rows
+   * are ordered parents first and carry the parent as a source UUID.
+   *
+   * @param string[] $menu_names
+   *   Menu machine names, for example main.
+   */
+  protected function exportMenus(array $menu_names) {
+    if (!$this->entityTypeManager->hasDefinition('menu_link_content')) {
+      $this->warnings[] = 'The menu_link_content entity type does not exist, so menus were not exported.';
+      return;
+    }
+
+    $storage = $this->entityTypeManager->getStorage('menu_link_content');
+    foreach ($menu_names as $menu_name) {
+      $links = $storage->loadByProperties(['menu_name' => $menu_name]);
+      if (!$links) {
+        $this->warnings[] = sprintf('Menu %s has no custom links on the source site.', $menu_name);
+        continue;
+      }
+
+      $rows = [];
+      foreach ($links as $link) {
+        $item = $link->get('link')->first();
+        $values = $item ? $item->getValue() : [];
+        $parent = (string) $link->getParentId();
+        $parent_uuid = '';
+        $parent_plugin = '';
+        if (strpos($parent, 'menu_link_content:') === 0) {
+          $parent_uuid = substr($parent, strlen('menu_link_content:'));
+        }
+        else {
+          // A static link provided by a module or route, such as
+          // standard.front_page. It exists on both sites under the same ID.
+          $parent_plugin = $parent;
+        }
+
+        $rows[$link->uuid()] = [
+          'uuid' => (string) $link->uuid(),
+          'id' => (string) $link->id(),
+          'menu_name' => (string) $menu_name,
+          'title' => (string) $link->getTitle(),
+          'description' => (string) $link->getDescription(),
+          'uri' => isset($values['uri']) ? (string) $values['uri'] : '',
+          'link_title' => isset($values['title']) ? (string) $values['title'] : '',
+          'link_options' => isset($values['options']) && is_array($values['options']) ? $values['options'] : [],
+          'parent_uuid' => $parent_uuid,
+          'parent_plugin' => $parent_plugin,
+          'weight' => (int) $link->getWeight(),
+          'expanded' => (bool) $link->isExpanded(),
+          'enabled' => (bool) $link->isEnabled(),
+          'langcode' => (string) $link->language()->getId(),
+        ];
+      }
+
+      // Order parents first so the importer can create a tree in one pass.
+      $ordered = [];
+      $visit = function ($uuid, array $trail) use (&$visit, &$ordered, $rows) {
+        if (isset($ordered[$uuid]) || isset($trail[$uuid])) {
+          return;
+        }
+        $trail[$uuid] = TRUE;
+        $parent_uuid = $rows[$uuid]['parent_uuid'];
+        if ($parent_uuid !== '' && isset($rows[$parent_uuid])) {
+          $visit($parent_uuid, $trail);
+        }
+        $ordered[$uuid] = $rows[$uuid];
+      };
+      uasort($rows, function ($a, $b) {
+        return [$a['weight'], $a['title']] <=> [$b['weight'], $b['title']];
+      });
+      foreach (array_keys($rows) as $uuid) {
+        $visit($uuid, []);
+      }
+
+      foreach ($ordered as $row) {
+        if ($row['parent_uuid'] !== '' && !isset($rows[$row['parent_uuid']])) {
+          $this->warnings[] = sprintf('Menu link "%s" in %s points at a parent that does not exist; it is exported at the top level.', $row['title'], $menu_name);
+          $row['parent_uuid'] = '';
+        }
+        $this->menuLinks[] = $row;
       }
     }
   }
