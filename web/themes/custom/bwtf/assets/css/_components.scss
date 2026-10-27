@@ -373,6 +373,23 @@ header {
     background: variables.$clr-secondary;
     border: 0;
   }
+
+  /* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead
+     of one tall list. Shorter ones stay a single column. */
+  @include mixins.breakpoint-min(variables.$bp-lg) {
+    .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) {
+      width: min(780px, 92vw);
+
+      .mega-nav {
+        column-count: 3;
+        column-gap: 20px;
+
+        > li {
+          break-inside: avoid;
+        }
+      }
+    }
+  }
 }
 
 /* Layout */

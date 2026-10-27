@@ -382,6 +382,20 @@ img {
   background: #A30000;
   border: 0;
 }
+/* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead
+   of one tall list. Shorter ones stay a single column. */
+@media (min-width: 1200px) {
+  .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) {
+    width: min(780px, 92vw);
+  }
+  .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) .mega-nav {
+    column-count: 3;
+    column-gap: 20px;
+  }
+  .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) .mega-nav > li {
+    break-inside: avoid;
+  }
+}
 
 /* Layout */
 .top-ad-section {

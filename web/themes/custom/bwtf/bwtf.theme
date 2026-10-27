@@ -468,3 +468,54 @@ function bwtf_form_search_block_form_alter(array &$form, \Drupal\Core\Form\FormS
     unset($form['actions']['submit']);
   }
 }
+
+/**
+ * Number of menu levels the TB Mega Menu shows in the header.
+ *
+ * The main menu holds the full production tree, thousands of article links,
+ * and the sync keeps it complete. The header only shows the top-level
+ * sections and one dropdown of sub-sections.
+ */
+const BWTF_MEGAMENU_MAX_LEVELS = 4;
+
+/**
+ * Implements hook_preprocess_tb_megamenu().
+ *
+ * TB Mega Menu has no depth setting and renders every nested link. Drop the
+ * submenu from every item at the last level so deeper links are never output.
+ */
+function bwtf_preprocess_tb_megamenu(array &$variables): void {
+  if (($variables['section'] ?? '') !== 'frontend' || empty($variables['content']['#items'])) {
+    return;
+  }
+
+  bwtf_megamenu_prune(
+    $variables['content']['#items'],
+    $variables['content']['#menu_config'],
+    1
+  );
+}
+
+/**
+ * Removes submenu config from menu items at the maximum level.
+ *
+ * @param \Drupal\Core\Menu\MenuLinkTreeElement[] $items
+ *   Menu tree elements at the current level.
+ * @param array $menu_config
+ *   TB Mega Menu config keyed by menu link plugin ID.
+ * @param int $level
+ *   Level of $items, where 1 is the top level.
+ */
+function bwtf_megamenu_prune(array $items, array &$menu_config, int $level): void {
+  foreach ($items as $id => $item) {
+    if ($level >= BWTF_MEGAMENU_MAX_LEVELS) {
+      if (isset($menu_config[$id])) {
+        $menu_config[$id]['rows_content'] = [];
+      }
+      continue;
+    }
+    if ($item->subtree) {
+      bwtf_megamenu_prune($item->subtree, $menu_config, $level + 1);
+    }
+  }
+}
