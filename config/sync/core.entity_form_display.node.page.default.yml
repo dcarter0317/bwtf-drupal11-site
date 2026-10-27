@@ -10,10 +10,10 @@ dependencies:
     - field.field.node.page.field_lightbox_gallery
     - field.field.node.page.field_site_section
     - field.field.node.page.field_tags
-    - image.style.media_library
     - node.type.page
   module:
     - datetime
+    - entity_browser
     - image
     - media_library
     - path
@@ -42,12 +42,17 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_facebook_hero_image:
-    type: image_image
+    type: entity_browser_file
     weight: 2
     region: content
     settings:
-      progress_indicator: throbber
+      entity_browser: image_files_modal
+      view_mode: default
       preview_image_style: thumbnail
+      field_widget_edit: true
+      field_widget_remove: true
+      field_widget_replace: false
+      open: true
     third_party_settings: {  }
   field_hero_image:
     type: media_library_widget
@@ -57,12 +62,17 @@ content:
       media_types: {  }
     third_party_settings: {  }
   field_lightbox_gallery:
-    type: image_image
+    type: entity_browser_file
     weight: 6
     region: content
     settings:
-      progress_indicator: throbber
-      preview_image_style: media_library
+      entity_browser: image_files_modal
+      view_mode: default
+      preview_image_style: thumbnail
+      field_widget_edit: true
+      field_widget_remove: true
+      field_widget_replace: false
+      open: true
     third_party_settings: {  }
   field_site_section:
     type: options_select

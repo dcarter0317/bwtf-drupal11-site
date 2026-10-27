@@ -242,6 +242,8 @@ function bwtf_preprocess_page(array &$variables): void {
   $style = $cfg->get('slider_style');
   $valign = $cfg->get('slider_valign');
   $variables['slider_valign'] = isset(bwtf_slider_valigns()[$valign]) ? $valign : 'center';
+  $height = $cfg->get('slider_height');
+  $variables['slider_height'] = isset(bwtf_slider_heights()[$height]) ? $height : 'medium';
   $variables['slider_style'] = isset(bwtf_slider_styles()[$style]) ? $style : 'standard';
 
   $slides = [];

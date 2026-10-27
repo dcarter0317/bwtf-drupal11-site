@@ -1,7 +1,7 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\File\FileSystemInterface;
+use Drupal\media\Entity\Media;
 use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 
@@ -12,6 +12,24 @@ require_once __DIR__ . '/includes/slider_aspect.inc';
  */
 function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface $form_state, $form_id = NULL)
 {
+  // Logo and favicon can also be picked from the media library; the chosen
+  // file's URI is copied into the core path field before core validates it.
+  foreach (['logo' => t('Logo'), 'favicon' => t('Favicon')] as $type => $label) {
+    if (isset($form[$type]['settings'])) {
+      $form[$type]['settings']["{$type}_media"] = [
+        '#type' => 'media_library',
+        '#allowed_bundles' => ['image'],
+        '#title' => t('Choose @label from media library', ['@label' => strtolower((string) $label)]),
+        '#cardinality' => 1,
+        '#description' => t('Overrides the path above when an image is selected.'),
+        '#weight' => -1,
+      ];
+    }
+  }
+  if (!in_array('bwtf_theme_settings_form_validate', $form['#validate'] ?? [], TRUE)) {
+    $form['#validate'][] = 'bwtf_theme_settings_form_validate';
+  }
+
   // Ensure file uploads are supported.
   $form['#attributes']['enctype'] = 'multipart/form-data';
 
@@ -20,13 +38,6 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
   if (isset($form['logo']['settings']['logo_upload'])) {
     $form['logo']['settings']['logo_upload']['#upload_validators']['FileExtension']['extensions'] = 'png gif jpg jpeg apng svg webp avif';
   }
-
-  // Managed upload directory for slider images.
-  $dir = 'public://bwtf/slider/';
-  \Drupal::service('file_system')->prepareDirectory(
-    $dir,
-    FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS
-  );
 
   // Read current config.
   $config = \Drupal::config('bwtf.settings');
@@ -38,21 +49,13 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
     '#open' => TRUE,
   ];
 
-  // Aspect ratio
-  $form['bwtf_settings']['slider_aspect'] = [
-    '#type' => 'radios',
-    '#title' => t('Slider aspect ratio'),
-    '#options' => array_map(static fn(array $r) => $r['label'], bwtf_slider_aspect_ratios()),
-    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_aspect') ?: '16:9',
-    '#parents' => ['slider_aspect'],
-  ];
-
   // Display style
   $form['bwtf_settings']['slider_style'] = [
     '#type' => 'radios',
     '#title' => t('Slider view'),
     '#options' => array_map('t', bwtf_slider_styles()),
     '#default_value' => \Drupal::config('bwtf.settings')->get('slider_style') ?: 'standard',
+    '#description' => t('<em>Standard view</em> fills the banner edge to edge and crops the image to fit. <em>Picture in picture</em> shows the whole image, centered, over a blurred copy of itself.'),
     '#parents' => ['slider_style'],
   ];
 
@@ -62,8 +65,28 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
     '#title' => t('Image vertical alignment'),
     '#options' => array_map('t', bwtf_slider_valigns()),
     '#default_value' => \Drupal::config('bwtf.settings')->get('slider_valign') ?: 'center',
-    '#description' => t('Which part of the image stays visible when it is taller than the banner.'),
+    '#description' => t('Which part of the image stays visible when the banner crops it. Applies to both views; has no visible effect when the image fits the banner exactly.'),
     '#parents' => ['slider_valign'],
+  ];
+
+  // Banner height
+  $form['bwtf_settings']['slider_height'] = [
+    '#type' => 'radios',
+    '#title' => t('Slider height'),
+    '#options' => array_map('t', bwtf_slider_heights()),
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_height') ?: 'medium',
+    '#description' => t('The tallest the banner can get on desktop, relative to the screen height: about 26% (Compact), 34% (Medium) or 44% (Tall). A shorter banner leaves more page content visible without scrolling. The image is cropped, not squished.'),
+    '#parents' => ['slider_height'],
+  ];
+
+  // Aspect ratio
+  $form['bwtf_settings']['slider_aspect'] = [
+    '#type' => 'radios',
+    '#title' => t('Slider aspect ratio'),
+    '#options' => array_map(static fn(array $r) => $r['label'], bwtf_slider_aspect_ratios()),
+    '#default_value' => \Drupal::config('bwtf.settings')->get('slider_aspect') ?: '16:9',
+    '#description' => t('The shape of the banner. The banner never grows taller than the Slider height setting, so on large desktop screens a tall ratio (4:3, 2:1) looks the same as a wide one. The ratio matters most on tablets and smaller windows, and it is not applied on phones. It also picks the image crop: 21:9, 3:1 and 4:1 use the ultrawide crop, the others use the 16:9 crop.'),
+    '#parents' => ['slider_aspect'],
   ];
 
   // Overlay preset
@@ -121,7 +144,7 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
   ];
 
   $form['bwtf_settings']['intro'] = [
-    '#markup' => t('Customize each slide below. Remember to click <em>Upload</em> next to each image before saving.'),
+    '#markup' => t('Customize each slide below. Images come from the media library, so an image is only ever stored once.'),
   ];
 
   // Slides container.
@@ -159,28 +182,22 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
       ];
     }
 
-    // managed_file needs an array of FIDs (or NULL).
+    // Pick from the media library instead of uploading a new copy each time.
     $stored = $config->get("slide{$i}_image");
-    if (is_scalar($stored) && $stored) {
-      $stored = [(int) $stored];
-    }
-    $default_fids = is_array($stored) ? array_values(array_filter($stored)) : NULL;
+    $current_fid = is_array($stored) ? (int) (reset($stored) ?: 0) : (int) ($stored ?: 0);
 
-    $form['bwtf_settings']['slides'][$container]["slide{$i}_image"] = [
-      '#type' => 'managed_file',
+    $form['bwtf_settings']['slides'][$container]["slide{$i}_media"] = [
+      '#type' => 'media_library',
+      '#allowed_bundles' => ['image'],
       '#title' => t('Slide @num Image', ['@num' => $i]),
-      '#default_value' => $default_fids,
-      '#upload_location' => $dir,
-      '#upload_validators' => [
-        'FileExtension' => ['extensions' => 'svg webp avif png jpg jpeg'],
-      ],
-      '#description' => t('Choose a file, click <em>Upload</em>, then Save configuration.'),
-      '#parents' => ["slide{$i}_image"], // flatten to top-level
+      '#default_value' => $current_fid ? bwtf_settings_media_id_for_fid($current_fid) : NULL,
+      '#cardinality' => 1,
+      '#description' => t('Select an image already in the library, or upload a new one once and reuse it anywhere.'),
     ];
   }
 
   $form['bwtf_settings']['note'] = [
-    '#markup' => t('<strong>Image tips:</strong> Upload images at least 1440 px wide so they stay sharp on large screens. In <em>Standard view</em>, the image is cropped to fit the aspect ratio you chose, so keep faces and key details near the center. <em>Picture in picture</em> shows the whole image without cropping.'),
+    '#markup' => t('<strong>Image tips:</strong> Images should be at least 1440 px wide so they stay sharp on large screens. In <em>Standard view</em>, the image is cropped to fit the aspect ratio you chose, so keep faces and key details near the center. <em>Picture in picture</em> shows the whole image without cropping.'),
   ];
 
   // Social Media Settings.
@@ -239,6 +256,101 @@ function bwtf_form_system_theme_settings_alter(array &$form, FormStateInterface 
 }
 
 /**
+ * Validate handler: stash media selections and apply logo/favicon picks.
+ *
+ * Runs before core's validation. Media element values are removed from the
+ * form values so core does not write them into the theme config.
+ */
+function bwtf_theme_settings_form_validate(array &$form, FormStateInterface $form_state)
+{
+  if ($form_state->get('bwtf_slide_media') !== NULL) {
+    return;
+  }
+  $slides = [];
+  for ($i = 1; $i <= 6; $i++) {
+    $slides[$i] = bwtf_settings_first_id($form_state->getValue("slide{$i}_media"));
+    $form_state->unsetValue("slide{$i}_media");
+  }
+  $form_state->set('bwtf_slide_media', $slides);
+
+  foreach (['logo', 'favicon'] as $type) {
+    $mid = bwtf_settings_first_id($form_state->getValue("{$type}_media"));
+    $form_state->unsetValue("{$type}_media");
+    if ($mid && ($fid = bwtf_settings_fid_for_media($mid)) && ($file = File::load($fid))) {
+      $form_state->setValue("{$type}_path", $file->getFileUri());
+      $form_state->setValue("default_{$type}", 0);
+      if ($type === 'favicon') {
+        $form_state->setValue('toggle_favicon', 1);
+      }
+    }
+  }
+}
+
+/**
+ * Normalizes a media_library element value to a single media ID.
+ */
+function bwtf_settings_first_id($value): ?int
+{
+  if (is_array($value)) {
+    $value = $value['media_library_selection'] ?? reset($value);
+  }
+  $ids = array_filter(explode(',', (string) $value), 'is_numeric');
+  return $ids ? (int) reset($ids) : NULL;
+}
+
+/**
+ * Returns the file ID behind a media item, or 0.
+ */
+function bwtf_settings_fid_for_media(?int $mid): int
+{
+  $media = $mid ? Media::load($mid) : NULL;
+  if (!$media) {
+    return 0;
+  }
+  return (int) ($media->getSource()->getSourceFieldValue($media) ?: 0);
+}
+
+/**
+ * Finds the image media item wrapping a file, creating one if needed.
+ *
+ * Slides saved before the media library existed only have a file ID; this
+ * brings them into the library so they show as selected and can be reused.
+ */
+function bwtf_settings_media_id_for_fid(int $fid): ?int
+{
+  $storage = \Drupal::entityTypeManager()->getStorage('media');
+  $ids = $storage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('bundle', 'image')
+    ->condition('field_media_image.target_id', $fid)
+    ->range(0, 1)
+    ->execute();
+  if ($ids) {
+    return (int) reset($ids);
+  }
+
+  $file = File::load($fid);
+  if (!$file instanceof FileInterface) {
+    return NULL;
+  }
+  try {
+    $media = Media::create([
+      'bundle' => 'image',
+      'name' => $file->getFilename(),
+      'uid' => \Drupal::currentUser()->id(),
+      'status' => 1,
+      'field_media_image' => ['target_id' => $fid, 'alt' => $file->getFilename()],
+    ]);
+    $media->save();
+    return (int) $media->id();
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('bwtf')->warning('Could not add file @fid to the media library: @msg', ['@fid' => $fid, '@msg' => $e->getMessage()]);
+    return NULL;
+  }
+}
+
+/**
  * Submit handler: make files permanent and write values to bwtf.settings.
  */
 function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_state)
@@ -255,6 +367,7 @@ function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_
   $config->set('slider_aspect', (string) ($form_state->getValue('slider_aspect') ?? '16:9'));
   $config->set('slider_style', (string) ($form_state->getValue('slider_style') ?? 'standard'));
   $config->set('slider_valign', (string) ($form_state->getValue('slider_valign') ?? 'center'));
+  $config->set('slider_height', (string) ($form_state->getValue('slider_height') ?? 'medium'));
   $config->set('slider_overlay_preset', (string) ($form_state->getValue('slider_overlay_preset') ?? 'overlay-solid'));
   $config->set('slider_overlay_from', (string) ($form_state->getValue('slider_overlay_from') ?? 'rgba(0,0,0,.35)'));
   $config->set('slider_overlay_to', (string) ($form_state->getValue('slider_overlay_to') ?? 'rgba(0,0,0,.55)'));
@@ -274,22 +387,15 @@ function bwtf_theme_settings_form_submit(array &$form, FormStateInterface $form_
       $config->set($key, (string) ($form_state->getValue($key) ?? ''));
     }
 
-    // Normalize managed_file value and save as an array of FIDs.
-    $raw = $form_state->getValue("slide{$i}_image") ?? [];
-    $fids = is_array($raw) ? array_values(array_filter($raw)) : ($raw ? [(int) $raw] : []);
-    $fid = (int) ($fids[0] ?? 0);
+    // Resolve the selected media item to its underlying file ID.
+    $media_ids = $form_state->get('bwtf_slide_media') ?? [];
+    $fid = bwtf_settings_fid_for_media($media_ids[$i] ?? NULL);
 
-    if ($fid) {
-      $file = File::load($fid);
-      if ($file instanceof FileInterface) {
-        if ($file->isTemporary()) {
-          $file->setPermanent();
-          $file->save();
-        }
-        // Record usage so file_cleanup doesn't delete it.
-        // module = 'bwtf', type = 'config', id = 'bwtf.settings'
-        $file_usage->add($file, 'bwtf', 'config', 'bwtf.settings');
-      }
+    $old = $config->get("slide{$i}_image");
+    $old_fid = is_array($old) ? (int) (reset($old) ?: 0) : (int) ($old ?: 0);
+    if ($old_fid && $old_fid !== $fid && ($old_file = File::load($old_fid))) {
+      // Media owns the file now; drop the legacy config usage.
+      $file_usage->delete($old_file, 'bwtf', 'config', 'bwtf.settings');
     }
 
     $config->set("slide{$i}_image", $fid ? [$fid] : []);

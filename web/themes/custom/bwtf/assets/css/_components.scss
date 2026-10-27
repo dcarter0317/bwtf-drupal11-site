@@ -190,7 +190,7 @@ img {
 header {
   &.container {
     @include mixins.breakpoint-min(variables.$bp-lg) {
-      max-width: 600px;
+      max-width: 400px;
     }
   }
 }

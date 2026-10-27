@@ -6,6 +6,7 @@ dependencies:
     - field.field.user.user.user_picture
     - image.style.thumbnail
   module:
+    - entity_browser
     - image
     - user
 _core:
@@ -28,11 +29,16 @@ content:
     weight: 6
     region: content
   user_picture:
-    type: image_image
+    type: entity_browser_file
     weight: -1
     region: content
     settings:
-      progress_indicator: throbber
+      entity_browser: image_files_modal
+      view_mode: default
       preview_image_style: thumbnail
+      field_widget_edit: true
+      field_widget_remove: true
+      field_widget_replace: false
+      open: true
     third_party_settings: {  }
 hidden: {  }

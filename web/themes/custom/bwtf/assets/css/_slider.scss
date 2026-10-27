@@ -8,6 +8,8 @@ $hero-max: 460px !default; // increased for better visibility
 /* Default: hero height follows image aspect-ratio (16:9 or 21:9) */
 .hero {
   --hero-aspect: 24/9;
+  /* Height cap: scales with the viewport so more content stays above the fold. */
+  --hero-max-h: clamp(220px, 34svh, 360px);
   /* Overridden inline from the theme setting */
   --hero-overlay: rgba(0, 0, 0, .35);
   --hero-overlay-to: rgba(0, 0, 0, .55);
@@ -19,18 +21,18 @@ $hero-max: 460px !default; // increased for better visibility
 
   /* Let intrinsic ratio drive height */
   height: auto;
-  max-height: 460px; // increased for better visibility
+  max-height: var(--hero-max-h);
 
   .mySwiper {
     width: 100%;
     height: auto;
-    max-height: 460px;
+    max-height: var(--hero-max-h);
   }
 
   .swiper-wrapper,
   .swiper-slide {
     height: auto;
-    max-height: 460px;
+    max-height: var(--hero-max-h);
   }
 
   /* Center content via grid stacking */
@@ -57,7 +59,7 @@ $hero-max: 460px !default; // increased for better visibility
     aspect-ratio: var(--hero-aspect);
     position: relative;
     /* so overlay can absolutely cover */
-    max-height: 460px; // increased for better visibility
+    max-height: var(--hero-max-h);
     overflow: hidden;
     background: #111;
 
@@ -75,7 +77,7 @@ $hero-max: 460px !default; // increased for better visibility
       display: block;
       inline-size: 100%;
       block-size: 100%;
-      max-height: 460px;
+      max-height: var(--hero-max-h);
       /* show the whole photo (square/portrait safe), never cropped or stretched */
       object-fit: contain;
       object-position: center;
@@ -122,6 +124,9 @@ $hero-max: 460px !default; // increased for better visibility
   .swiper-button-next,
   .swiper-button-prev {
     top: 50%;
+    /* Swiper's default negative margin-top already offsets by half the button
+       height; combined with translateY(-50%) it sat ~22px too high. */
+    margin-top: 0;
     transform: translateY(-50%);
     color: #fff;
   }
@@ -164,6 +169,19 @@ $hero-max: 460px !default; // increased for better visibility
   img {
     object-fit: cover;
   }
+}
+
+/* Banner height presets (the theme setting picks one). */
+.hero.hero--height-compact {
+  --hero-max-h: clamp(180px, 26svh, 280px);
+}
+
+.hero.hero--height-medium {
+  --hero-max-h: clamp(220px, 34svh, 360px);
+}
+
+.hero.hero--height-tall {
+  --hero-max-h: clamp(280px, 44svh, 460px);
 }
 
 /* Vertical alignment: which part of the image stays visible when cropped. */
@@ -280,6 +298,7 @@ $hero-max: 460px !default; // increased for better visibility
       display: flex;
       z-index: 10;
       top: 50%;
+      margin-top: 0;
       transform: translateY(-50%);
     }
 

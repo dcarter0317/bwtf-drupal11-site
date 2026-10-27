@@ -6,6 +6,7 @@
 {% set ratio_class  = 'ratio-' ~ aspect|replace({':': 'x'}) %}
 {% set style_class  = 'hero--' ~ slider_style|default('standard') %}
 {% set valign_class = 'hero--valign-' ~ slider_valign|default('center') %}
+{% set height_class = 'hero--height-' ~ slider_height|default('medium') %}
 {% set use_21       = slider_aspect_src|default('16') == '21' %}
 
 {# Overlay: pick a preset class; optionally pass CSS vars from PHP if you like #}
@@ -17,7 +18,7 @@
 {% set overlay_style = overlay_parts|length ? overlay_parts|join('; ') ~ ';' : null %}
 
 {% if on_front and show_slider and slides|length > 0 %}
-<section class="hero {{ style_class }} {{ valign_class }} {{ ratio_class }} {{ overlay_class }}"
+<section class="hero {{ style_class }} {{ valign_class }} {{ height_class }} {{ ratio_class }} {{ overlay_class }}"
          {% if overlay_style %}style="{{ overlay_style|e('html_attr') }}"{% endif %}
          role="region" aria-label="Homepage slider">
   <div class="swiper mySwiper">

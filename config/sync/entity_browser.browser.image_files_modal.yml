@@ -1,0 +1,41 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.image_files_browser
+  module:
+    - views
+name: image_files_modal
+label: 'Image files (modal)'
+display: modal
+display_configuration:
+  width: '1000'
+  height: '600'
+  link_text: 'Select images'
+  auto_open: true
+  use_admin_theme: true
+selection_display: no_display
+selection_display_configuration: {  }
+widget_selector: tabs
+widget_selector_configuration: {  }
+widgets:
+  0b6f3c1e-5d0f-4d63-9b40-6a1d2f3a7c11:
+    id: view
+    uuid: 0b6f3c1e-5d0f-4d63-9b40-6a1d2f3a7c11
+    label: 'Choose existing image'
+    weight: -10
+    settings:
+      submit_text: 'Select images'
+      auto_select: false
+      view: image_files_browser
+      view_display: entity_browser_1
+  7c2e91aa-3b84-4f0e-a5d7-91c4e8b6d022:
+    id: upload
+    uuid: 7c2e91aa-3b84-4f0e-a5d7-91c4e8b6d022
+    label: 'Upload new image'
+    weight: -9
+    settings:
+      submit_text: 'Select images'
+      upload_location: 'public://[date:custom:Y]-[date:custom:m]'
+      multiple: true
+      extensions: 'png gif jpg jpeg webp avif'

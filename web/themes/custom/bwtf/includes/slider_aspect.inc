@@ -36,6 +36,23 @@ function bwtf_slider_valigns(): array {
 }
 
 /**
+ * Returns the available slider banner heights.
+ *
+ * Keys are the values stored in bwtf.settings:slider_height. The matching
+ * max-height values live in _slider.scss (.hero--height-*).
+ *
+ * @return array<string, string>
+ *   Height key => label.
+ */
+function bwtf_slider_heights(): array {
+  return [
+    'compact' => 'Compact (shortest, most content above the fold)',
+    'medium' => 'Medium',
+    'tall' => 'Tall (largest banner)',
+  ];
+}
+
+/**
  * Returns the available slider aspect ratios.
  *
  * Keys are the values stored in bwtf.settings:slider_aspect.

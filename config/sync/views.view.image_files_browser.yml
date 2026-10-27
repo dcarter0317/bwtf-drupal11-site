@@ -1,0 +1,320 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_browser
+    - file
+    - user
+id: image_files_browser
+label: 'Image files browser'
+module: views
+description: 'Lists already-uploaded image files so they can be reused instead of uploading duplicates.'
+tag: ''
+base_table: file_managed
+base_field: fid
+display:
+  default:
+    display_plugin: default
+    id: default
+    display_title: Default
+    position: 0
+    display_options:
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: none
+        options: {  }
+      query:
+        type: views_query
+        options:
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_comment: ''
+          query_tags: {  }
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      pager:
+        type: full
+        options:
+          items_per_page: 12
+          offset: 0
+          id: 0
+          total_pages: null
+          tags:
+            previous: '‹ previous'
+            next: 'next ›'
+            first: '« first'
+            last: 'last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      style:
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          override: true
+          sticky: false
+          caption: ''
+          summary: ''
+          description: ''
+          columns:
+            entity_browser_select: entity_browser_select
+            uri: uri
+            filename: filename
+            created: created
+          info:
+            entity_browser_select:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            uri:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            filename:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            created:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          default: '-1'
+          empty_table: false
+      row:
+        type: fields
+      fields:
+        entity_browser_select:
+          id: entity_browser_select
+          table: file_managed
+          field: entity_browser_select
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          entity_type: file
+          plugin_id: entity_browser_select
+          use_field_cardinality: false
+        uri:
+          id: uri
+          table: file_managed
+          field: uri
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Preview
+          exclude: false
+          alter:
+            alter_text: true
+            text: '<img src="{{ uri }}" alt="" loading="lazy" width="96" style="height:auto;max-height:96px;object-fit:contain">'
+            make_link: false
+            absolute: false
+            strip_tags: false
+            trim: false
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: file_uri
+          settings:
+            file_download_path: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: file
+          entity_field: uri
+          plugin_id: field
+        filename:
+          id: filename
+          table: file_managed
+          field: filename
+          entity_type: file
+          entity_field: filename
+          label: Filename
+          alter:
+            alter_text: false
+          hide_empty: false
+          empty_zero: false
+          link_to_file: false
+          plugin_id: file
+          relationship: none
+          group_type: group
+          admin_label: ''
+          exclude: false
+          element_label_colon: false
+        created:
+          id: created
+          table: file_managed
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: Uploaded
+          exclude: false
+          alter:
+            alter_text: false
+          element_label_colon: false
+          date_format: short
+          custom_date_format: ''
+          timezone: ''
+          entity_type: file
+          entity_field: created
+          plugin_id: date
+      filters:
+        status:
+          id: status
+          table: file_managed
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          entity_type: file
+          entity_field: status
+          plugin_id: boolean
+        filemime:
+          id: filemime
+          table: file_managed
+          field: filemime
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: starts
+          value: image/
+          group: 1
+          exposed: false
+          entity_type: file
+          entity_field: filemime
+          plugin_id: string
+        filename:
+          id: filename
+          table: file_managed
+          field: filename
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: filename_op
+            label: Filename
+            description: ''
+            use_operator: false
+            operator: filename_op
+            identifier: filename
+            required: false
+            remember: false
+            multiple: false
+          is_grouped: false
+          entity_type: file
+          entity_field: filename
+          plugin_id: string
+      sorts:
+        created:
+          id: created
+          table: file_managed
+          field: created
+          order: DESC
+          entity_type: file
+          entity_field: created
+          plugin_id: date
+          relationship: none
+          group_type: group
+          admin_label: ''
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+      title: 'Choose an existing image'
+      header: {  }
+      footer: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'No matching images.'
+          plugin_id: text_custom
+      relationships: {  }
+      arguments: {  }
+      display_extenders: {  }
+    cache_metadata:
+      max-age: 0
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - 'url.query_args.pagers:0'
+        - user.permissions
+      tags: {  }
+  entity_browser_1:
+    display_plugin: entity_browser
+    id: entity_browser_1
+    display_title: 'Entity browser'
+    position: 1
+    display_options:
+      display_extenders: {  }
+    cache_metadata:
+      max-age: 0
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - 'url.query_args.pagers:0'
+        - user.permissions
+      tags: {  }

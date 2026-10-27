@@ -205,13 +205,14 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 /* Header */
 @media (min-width: 1200px) {
   header.container {
-    max-width: 600px;
+    max-width: 400px;
   }
 }
 
@@ -457,7 +458,8 @@ img {
   display: block;
   box-sizing: border-box;
   -webkit-user-select: none;
-  user-select: none;
+  -moz-user-select: none;
+       user-select: none;
   touch-action: pan-y;
 }
 .simple-ads .slick-list {
@@ -655,7 +657,8 @@ img {
   border-radius: 8px 0 0 8px;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .article-card__text {
   padding: 10px 12px;
@@ -749,7 +752,8 @@ img {
     min-height: 145px;
   }
   .article-card__media img {
-    object-fit: contain;
+    -o-object-fit: contain;
+       object-fit: contain;
     border-radius: 8px 0 0 8px;
     display: block;
   }
@@ -1099,6 +1103,9 @@ aside .block-simpleads .simpleads iframe {
   font-size: 1.1rem;
   outline: none;
 }
+.search-form input[type=search]::-moz-placeholder {
+  color: #B8B8B8;
+}
 .search-form input[type=search]::placeholder {
   color: #B8B8B8;
 }
@@ -1188,6 +1195,9 @@ aside .block-simpleads .simpleads iframe {
   position: relative;
   width: 100%;
   height: 2rem;
+}
+.form-search::-moz-placeholder {
+  color: #B8B8B8;
 }
 .form-search::placeholder {
   color: #B8B8B8;
@@ -1428,6 +1438,8 @@ footer a:visited {
 /* Default: hero height follows image aspect-ratio (16:9 or 21:9) */
 .hero {
   --hero-aspect: 24/9;
+  /* Height cap: scales with the viewport so more content stays above the fold. */
+  --hero-max-h: clamp(220px, 34svh, 360px);
   /* Overridden inline from the theme setting */
   --hero-overlay: rgba(0, 0, 0, .35);
   --hero-overlay-to: rgba(0, 0, 0, .55);
@@ -1437,17 +1449,17 @@ footer a:visited {
   margin-inline: 0;
   /* Let intrinsic ratio drive height */
   height: auto;
-  max-height: 460px;
+  max-height: var(--hero-max-h);
 }
 .hero .mySwiper {
   width: 100%;
   height: auto;
-  max-height: 460px;
+  max-height: var(--hero-max-h);
 }
 .hero .swiper-wrapper,
 .hero .swiper-slide {
   height: auto;
-  max-height: 460px;
+  max-height: var(--hero-max-h);
 }
 .hero {
   /* Center content via grid stacking */
@@ -1475,7 +1487,7 @@ footer a:visited {
   aspect-ratio: var(--hero-aspect);
   position: relative;
   /* so overlay can absolutely cover */
-  max-height: 460px;
+  max-height: var(--hero-max-h);
   overflow: hidden;
   background: #111;
   /* Blurred copy of the image fills the full-bleed band behind the photo */
@@ -1492,10 +1504,12 @@ footer a:visited {
   display: block;
   inline-size: 100%;
   block-size: 100%;
-  max-height: 460px;
+  max-height: var(--hero-max-h);
   /* show the whole photo (square/portrait safe), never cropped or stretched */
-  object-fit: contain;
-  object-position: center;
+  -o-object-fit: contain;
+     object-fit: contain;
+  -o-object-position: center;
+     object-position: center;
   position: relative;
   z-index: 0;
 }
@@ -1535,6 +1549,9 @@ footer a:visited {
 .hero .swiper-button-next,
 .hero .swiper-button-prev {
   top: 50%;
+  /* Swiper's default negative margin-top already offsets by half the button
+     height; combined with translateY(-50%) it sat ~22px too high. */
+  margin-top: 0;
   transform: translateY(-50%);
   color: #fff;
 }
@@ -1562,12 +1579,27 @@ footer a:visited {
   display: none;
 }
 .hero.hero--standard .slide-media img {
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+/* Banner height presets (the theme setting picks one). */
+.hero.hero--height-compact {
+  --hero-max-h: clamp(180px, 26svh, 280px);
+}
+
+.hero.hero--height-medium {
+  --hero-max-h: clamp(220px, 34svh, 360px);
+}
+
+.hero.hero--height-tall {
+  --hero-max-h: clamp(280px, 44svh, 460px);
 }
 
 /* Vertical alignment: which part of the image stays visible when cropped. */
 .hero.hero--valign-top .slide-media img {
-  object-position: center top;
+  -o-object-position: center top;
+     object-position: center top;
 }
 
 /* Ratio comes from the slider aspect ratio theme setting (inline --hero-aspect). */
@@ -1595,8 +1627,10 @@ footer a:visited {
   aspect-ratio: auto;
 }
 .hero.use-fixed-height .slide-media img {
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
 }
 
 /* Mobile polish
@@ -1637,7 +1671,8 @@ footer a:visited {
   .hero.use-fixed-height .slide-media img {
     max-height: none;
     height: auto;
-    object-fit: contain;
+    -o-object-fit: contain;
+       object-fit: contain;
     width: 100%;
   }
   .hero .slide-text,
@@ -1679,6 +1714,7 @@ footer a:visited {
     display: flex;
     z-index: 10;
     top: 50%;
+    margin-top: 0;
     transform: translateY(-50%);
   }
   .hero .swiper-pagination,
@@ -1699,6 +1735,4 @@ footer a:visited {
 .swiper {
   width: 100%;
   height: 100%;
-}
-
-/*# sourceMappingURL=bwtf_v2.css.map */
+}/*# sourceMappingURL=bwtf_v2.css.map */
