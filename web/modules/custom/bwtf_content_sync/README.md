@@ -66,7 +66,8 @@ Production is the source of truth for the main navigation. Every export writes
 enabled and expanded state), regardless of the cutoff date. The importer then
 mirrors it onto staging:
 
-- links are matched by UUID, then by title path and target, so links that
+- links are matched by UUID, then by title path and target, then by title
+  path alone, so links that
   already exist on both sites are updated rather than duplicated;
 - missing links are created under the production UUID, parents first;
 - staging links that production does not have are **deleted** (this is the one

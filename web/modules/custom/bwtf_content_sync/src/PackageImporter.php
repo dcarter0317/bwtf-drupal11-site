@@ -1305,7 +1305,8 @@ class PackageImporter {
   /**
    * Mirrors the packaged menus onto this site.
    *
-   * Links are matched by UUID first, then by title path and target, so links
+   * Links are matched by UUID first, then by title path and target, then by
+   * title path alone, so links
    * that exist on both sites from before the sites diverged are updated in
    * place rather than duplicated. New links are created under the source UUID
    * so every later run matches them exactly. Destination links the source does
@@ -1391,6 +1392,29 @@ class PackageImporter {
           $link = array_shift($signatures[$signature]);
           $matched[$row['uuid']] = $link;
           $claimed[$link->uuid()] = TRUE;
+        }
+      }
+
+      // Pass 3: same position only, for links whose target differs, such as a
+      // section heading that pointed somewhere else on staging. Updating these
+      // in place keeps their ID and UUID instead of deleting and re-creating.
+      $paths = [];
+      foreach ($existing_by_uuid as $uuid => $link) {
+        if (!isset($claimed[$uuid])) {
+          $paths[$existing_path($link)][] = $link;
+        }
+      }
+      foreach ($source_rows as $row) {
+        if (isset($matched[$row['uuid']])) {
+          continue;
+        }
+        $path = $source_path($row['uuid']);
+        if (!empty($paths[$path])) {
+          $link = array_shift($paths[$path]);
+          if (!isset($claimed[$link->uuid()])) {
+            $matched[$row['uuid']] = $link;
+            $claimed[$link->uuid()] = TRUE;
+          }
         }
       }
 
