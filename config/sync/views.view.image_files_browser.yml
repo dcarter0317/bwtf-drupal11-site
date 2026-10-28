@@ -1,3 +1,4 @@
+uuid: 1b1d5c72-1004-4c1b-b1e6-e33bd942da42
 langcode: en
 status: true
 dependencies:
@@ -14,102 +15,12 @@ base_table: file_managed
 base_field: fid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Default
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access content'
-      cache:
-        type: none
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: full
-        options:
-          items_per_page: 12
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: '‹ previous'
-            next: 'next ›'
-            first: '« first'
-            last: 'last »'
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      style:
-        type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          override: true
-          sticky: false
-          caption: ''
-          summary: ''
-          description: ''
-          columns:
-            entity_browser_select: entity_browser_select
-            uri: uri
-            filename: filename
-            created: created
-          info:
-            entity_browser_select:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            uri:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            filename:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            created:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          default: '-1'
-          empty_table: false
-      row:
-        type: fields
+      title: 'Choose an existing image'
       fields:
         entity_browser_select:
           id: entity_browser_select
@@ -118,10 +29,10 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: ''
-          exclude: false
           entity_type: file
           plugin_id: entity_browser_select
+          label: ''
+          exclude: false
           use_field_cardinality: false
         uri:
           id: uri
@@ -130,6 +41,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: uri
+          plugin_id: field
           label: Preview
           exclude: false
           alter:
@@ -166,27 +80,24 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: file
-          entity_field: uri
-          plugin_id: field
         filename:
           id: filename
           table: file_managed
           field: filename
-          entity_type: file
-          entity_field: filename
-          label: Filename
-          alter:
-            alter_text: false
-          hide_empty: false
-          empty_zero: false
-          link_to_file: false
-          plugin_id: file
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: filename
+          plugin_id: file
+          label: Filename
           exclude: false
+          alter:
+            alter_text: false
           element_label_colon: false
+          hide_empty: false
+          empty_zero: false
+          link_to_file: false
         created:
           id: created
           table: file_managed
@@ -194,6 +105,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: created
+          plugin_id: date
           label: Uploaded
           exclude: false
           alter:
@@ -202,9 +116,73 @@ display:
           date_format: short
           custom_date_format: ''
           timezone: ''
+      pager:
+        type: full
+        options:
+          offset: 0
+          items_per_page: 12
+          total_pages: null
+          id: 0
+          tags:
+            next: 'next ›'
+            previous: '‹ previous'
+            first: '« first'
+            last: 'last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: none
+        options: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: true
+          content: 'No matching images.'
+          tokenize: false
+      sorts:
+        created:
+          id: created
+          table: file_managed
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
           entity_type: file
           entity_field: created
           plugin_id: date
+          order: DESC
+          expose:
+            label: ''
+          exposed: false
+          granularity: second
+      arguments: {  }
       filters:
         status:
           id: status
@@ -213,13 +191,13 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: status
+          plugin_id: boolean
           operator: '='
           value: '1'
           group: 1
           exposed: false
-          entity_type: file
-          entity_field: status
-          plugin_id: boolean
         filemime:
           id: filemime
           table: file_managed
@@ -227,13 +205,13 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: filemime
+          plugin_id: string
           operator: starts
           value: image/
           group: 1
           exposed: false
-          entity_type: file
-          entity_field: filemime
-          plugin_id: string
         filename:
           id: filename
           table: file_managed
@@ -241,6 +219,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: filename
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -256,42 +237,62 @@ display:
             remember: false
             multiple: false
           is_grouped: false
-          entity_type: file
-          entity_field: filename
-          plugin_id: string
-      sorts:
-        created:
-          id: created
-          table: file_managed
-          field: created
-          order: DESC
-          entity_type: file
-          entity_field: created
-          plugin_id: date
-          relationship: none
-          group_type: group
-          admin_label: ''
-          exposed: false
-          expose:
-            label: ''
-          granularity: second
-      title: 'Choose an existing image'
+      style:
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            entity_browser_select: entity_browser_select
+            uri: uri
+            filename: filename
+            created: created
+          default: '-1'
+          info:
+            entity_browser_select:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            uri:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            filename:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            created:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
+      row:
+        type: fields
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
+      relationships: {  }
       header: {  }
       footer: {  }
-      empty:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content: 'No matching images.'
-          plugin_id: text_custom
-      relationships: {  }
-      arguments: {  }
       display_extenders: {  }
     cache_metadata:
       max-age: 0
@@ -303,9 +304,9 @@ display:
         - user.permissions
       tags: {  }
   entity_browser_1:
-    display_plugin: entity_browser
     id: entity_browser_1
     display_title: 'Entity browser'
+    display_plugin: entity_browser
     position: 1
     display_options:
       display_extenders: {  }

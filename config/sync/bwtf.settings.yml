@@ -9,7 +9,7 @@ logo:
   path: sites/default/files/Laser-OP-vs-Jhiaxus-Logo.webp
   use_default: false
 slider_display: true
-slider_aspect: '16:9'
+slider_aspect: '3:1'
 slider_style: standard
 slider_valign: top
 slider_height: medium
@@ -35,10 +35,10 @@ slide3_url: /toyreviews/generations/aotp/joyride
 slide3_link_text: 'Read More'
 slide3_image:
   - 990003
-slide4_title: ''
-slide4_desc: ''
-slide4_url: ''
-slide4_link_text: ''
+slide4_title: 'Slider 1440x1080 '
+slide4_desc: 'this is a 1440x1080 image'
+slide4_url: '<front>'
+slide4_link_text: 'Read More'
 slide4_image: {  }
 slide5_title: ''
 slide5_desc: ''
@@ -66,3 +66,11 @@ social7_platform: ''
 social7_url: ''
 social8_platform: ''
 social8_url: ''
+logo_media: null
+favicon_media: null
+slide1_media: '125'
+slide2_media: '126'
+slide3_media: '127'
+slide4_media: '128'
+slide5_media: null
+slide6_media: null
