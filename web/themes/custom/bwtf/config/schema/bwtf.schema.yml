@@ -31,6 +31,12 @@ bwtf.settings:
     slider_autoplay_delay:
       type: integer
       label: 'Slider autoplay delay (ms)'
+    logo_media:
+      type: string
+      label: 'Logo media'
+    favicon_media:
+      type: string
+      label: 'Favicon media'
     slide1_title:
       type: string
       label: 'Slide 1 title'
@@ -43,6 +49,9 @@ bwtf.settings:
     slide1_link_text:
       type: string
       label: 'Slide 1 link text'
+    slide1_media:
+      type: string
+      label: 'Slide 1 media'
     slide1_image:
       type: sequence
       label: 'Slide 1 image'
@@ -61,6 +70,9 @@ bwtf.settings:
     slide2_link_text:
       type: string
       label: 'Slide 2 link text'
+    slide2_media:
+      type: string
+      label: 'Slide 2 media'
     slide2_image:
       type: sequence
       label: 'Slide 2 image'
@@ -79,6 +91,9 @@ bwtf.settings:
     slide3_link_text:
       type: string
       label: 'Slide 3 link text'
+    slide3_media:
+      type: string
+      label: 'Slide 3 media'
     slide3_image:
       type: sequence
       label: 'Slide 3 image'
@@ -97,6 +112,9 @@ bwtf.settings:
     slide4_link_text:
       type: string
       label: 'Slide 4 link text'
+    slide4_media:
+      type: string
+      label: 'Slide 4 media'
     slide4_image:
       type: sequence
       label: 'Slide 4 image'
@@ -115,6 +133,9 @@ bwtf.settings:
     slide5_link_text:
       type: string
       label: 'Slide 5 link text'
+    slide5_media:
+      type: string
+      label: 'Slide 5 media'
     slide5_image:
       type: sequence
       label: 'Slide 5 image'
@@ -133,6 +154,9 @@ bwtf.settings:
     slide6_link_text:
       type: string
       label: 'Slide 6 link text'
+    slide6_media:
+      type: string
+      label: 'Slide 6 media'
     slide6_image:
       type: sequence
       label: 'Slide 6 image'
