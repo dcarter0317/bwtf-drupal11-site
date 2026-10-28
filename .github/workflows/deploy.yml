@@ -86,8 +86,29 @@ jobs:
 
             /opt/alt/php83/usr/bin/php composer.phar install --no-dev --optimize-autoloader --no-interaction
 
+            # Keep anything that would be lost when config is imported. First
+            # back up stage config and log what differs from the repository,
+            # which shows edits made in the admin UI and never exported.
+            BACKUPS=/home/bwtfcom/backups
+            CONFIG_BACKUP=$BACKUPS/config-pre-deploy-$(date +%Y%m%d-%H%M%S)
+            SLIDER_FILE=$BACKUPS/slider-pre-deploy.json
+            mkdir -p $BACKUPS
+            vendor/bin/drush config:status --state=Different || true
+            vendor/bin/drush config:export --destination=$CONFIG_BACKUP -y || true
+            ls -dt $BACKUPS/config-pre-deploy-* | tail -n +6 | xargs -r rm -rf
+
+            # The content sync writes the production slider into
+            # bwtf.settings; save it so cim does not put the repo copy back.
+            rm -f $SLIDER_FILE
+            vendor/bin/drush scr web/modules/custom/bwtf_content_sync/scripts/bwtf_preserve_config.php -- --save=$SLIDER_FILE || echo "Slider save failed; slider will not be restored"
+
             vendor/bin/drush updb -y
             vendor/bin/drush cim -y
+
+            if [ -f $SLIDER_FILE ]; then
+              vendor/bin/drush scr web/modules/custom/bwtf_content_sync/scripts/bwtf_preserve_config.php -- --restore=$SLIDER_FILE
+            fi
+
             vendor/bin/drush cr
             vendor/bin/drush state:set system.maintenance_mode 0 --input-format=integer
             vendor/bin/drush cr
