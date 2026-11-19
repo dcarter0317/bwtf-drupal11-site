@@ -205,8 +205,7 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 /* Header */
@@ -390,7 +389,14 @@ img {
 .tb-megamenu.tb-megamenu-main .nav li.dropdown.open.active > .dropdown-toggle,
 .tb-megamenu.tb-megamenu-main .nav > li.dropdown.open.active > a:hover,
 .tb-megamenu.tb-megamenu-main .nav > li.dropdown.open.active > span.tb-megamenu-no-link:hover {
-  border-color: rgba(0, 0, 0, 0.2);
+  background-color: #A30000;
+  border: none;
+}
+.tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.active > a:hover,
+.tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.active > a:focus,
+.tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.active > span.tb-megamenu-no-link:hover,
+.tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.active > span.tb-megamenu-no-link:focus {
+  background-color: #A30000;
 }
 .tb-megamenu.tb-megamenu-main {
   /* Mobile: light grey dropdown panel, hamburger on the right with evenly
@@ -438,14 +444,11 @@ img {
     width: min(780px, 92vw);
   }
   .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) .mega-nav {
-    -moz-column-count: 3;
-         column-count: 3;
-    -moz-column-gap: 20px;
-         column-gap: 20px;
+    column-count: 3;
+    column-gap: 20px;
   }
   .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) .mega-nav > li {
-    -moz-column-break-inside: avoid;
-         break-inside: avoid;
+    break-inside: avoid;
   }
 }
 
@@ -524,8 +527,7 @@ img {
   display: block;
   box-sizing: border-box;
   -webkit-user-select: none;
-  -moz-user-select: none;
-       user-select: none;
+  user-select: none;
   touch-action: pan-y;
 }
 .simple-ads .slick-list {
@@ -723,8 +725,7 @@ img {
   border-radius: 8px 0 0 8px;
   width: 100%;
   height: 100%;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 .article-card__text {
   padding: 10px 12px;
@@ -818,8 +819,7 @@ img {
     min-height: 145px;
   }
   .article-card__media img {
-    -o-object-fit: contain;
-       object-fit: contain;
+    object-fit: contain;
     border-radius: 8px 0 0 8px;
     display: block;
   }
@@ -1169,9 +1169,6 @@ aside .block-simpleads .simpleads iframe {
   font-size: 1.1rem;
   outline: none;
 }
-.search-form input[type=search]::-moz-placeholder {
-  color: #B8B8B8;
-}
 .search-form input[type=search]::placeholder {
   color: #B8B8B8;
 }
@@ -1261,9 +1258,6 @@ aside .block-simpleads .simpleads iframe {
   position: relative;
   width: 100%;
   height: 2rem;
-}
-.form-search::-moz-placeholder {
-  color: #B8B8B8;
 }
 .form-search::placeholder {
   color: #B8B8B8;
@@ -1572,10 +1566,8 @@ footer a:visited {
   block-size: 100%;
   max-height: var(--hero-max-h);
   /* show the whole photo (square/portrait safe), never cropped or stretched */
-  -o-object-fit: contain;
-     object-fit: contain;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: contain;
+  object-position: center;
   position: relative;
   z-index: 0;
 }
@@ -1645,8 +1637,7 @@ footer a:visited {
   display: none;
 }
 .hero.hero--standard .slide-media img {
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 /* Banner height presets (the theme setting picks one). */
@@ -1664,8 +1655,7 @@ footer a:visited {
 
 /* Vertical alignment: which part of the image stays visible when cropped. */
 .hero.hero--valign-top .slide-media img {
-  -o-object-position: center top;
-     object-position: center top;
+  object-position: center top;
 }
 
 /* Ratio comes from the slider aspect ratio theme setting (inline --hero-aspect). */
@@ -1693,10 +1683,8 @@ footer a:visited {
   aspect-ratio: auto;
 }
 .hero.use-fixed-height .slide-media img {
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* Mobile polish
@@ -1737,8 +1725,7 @@ footer a:visited {
   .hero.use-fixed-height .slide-media img {
     max-height: none;
     height: auto;
-    -o-object-fit: contain;
-       object-fit: contain;
+    object-fit: contain;
     width: 100%;
   }
   .hero .slide-text,
@@ -1801,4 +1788,6 @@ footer a:visited {
 .swiper {
   width: 100%;
   height: 100%;
-}/*# sourceMappingURL=bwtf_v2.css.map */
+}
+
+/*# sourceMappingURL=bwtf_v2.css.map */

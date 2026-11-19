@@ -380,7 +380,15 @@ header {
   .nav li.dropdown.open.active > .dropdown-toggle,
   .nav > li.dropdown.open.active > a:hover,
   .nav > li.dropdown.open.active > span.tb-megamenu-no-link:hover {
-    border-color: rgba(0, 0, 0, .2);
+    background-color: variables.$clr-secondary;
+    border: none;
+  }
+
+  .nav-collapse .nav > li.active > a:hover,
+  .nav-collapse .nav > li.active > a:focus,
+  .nav-collapse .nav > li.active > span.tb-megamenu-no-link:hover,
+  .nav-collapse .nav > li.active > span.tb-megamenu-no-link:focus {
+    background-color: variables.$clr-secondary;
   }
 
   /* Mobile: light grey dropdown panel, hamburger on the right with evenly
