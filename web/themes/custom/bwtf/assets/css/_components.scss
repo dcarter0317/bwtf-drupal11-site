@@ -453,6 +453,18 @@ header {
 
 .top-ad-section {
   margin-bottom: 30px;
+
+  // Mobile: banner image fills 95% of the screen, centered, never overflowing
+  @media (max-width: 640px) {
+    img {
+      display: block;
+      width: 95%;
+      max-width: 95%;
+      height: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
 }
 
 
@@ -1126,7 +1138,7 @@ aside {
       overflow: hidden;
 
       @media (max-width: 640px) {
-        width: 90%;
+        width: 95%;
       }
 
       .carousel-slides {
@@ -1200,6 +1212,35 @@ aside {
         max-width: 100%;
         height: auto;
         border-radius: 8px;
+      }
+
+      // Mobile: ad images fill 95% of the screen, centered, never overflowing
+      @media (max-width: 640px) {
+        picture,
+        a {
+          display: block;
+          width: 95%;
+          max-width: 95%;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        img {
+          display: block;
+          width: 100%;
+          max-width: 100%;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        // The carousel is already sized to 95%; don't shrink it a second time
+        .simpleads-custom-carousel {
+          picture,
+          a {
+            width: 100%;
+            max-width: 100%;
+          }
+        }
       }
 
       iframe {

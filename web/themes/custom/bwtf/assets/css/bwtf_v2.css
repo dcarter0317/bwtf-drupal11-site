@@ -456,6 +456,16 @@ img {
 .top-ad-section {
   margin-bottom: 30px;
 }
+@media (max-width: 640px) {
+  .top-ad-section img {
+    display: block;
+    width: 95%;
+    max-width: 95%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 
 @media (min-width: 1200px) {
   .content {
@@ -1067,7 +1077,7 @@ aside .block-simpleads .simpleads-custom-carousel {
 @media (max-width: 640px) {
   aside .simple-ads .simpleads-custom-carousel,
   aside .block-simpleads .simpleads-custom-carousel {
-    width: 90%;
+    width: 95%;
   }
 }
 aside .simple-ads .simpleads-custom-carousel .carousel-slides,
@@ -1145,6 +1155,33 @@ aside .block-simpleads .simpleads img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
+}
+@media (max-width: 640px) {
+  aside .simple-ads .simpleads picture,
+  aside .simple-ads .simpleads a,
+  aside .block-simpleads .simpleads picture,
+  aside .block-simpleads .simpleads a {
+    display: block;
+    width: 95%;
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  aside .simple-ads .simpleads img,
+  aside .block-simpleads .simpleads img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  aside .simple-ads .simpleads .simpleads-custom-carousel picture,
+  aside .simple-ads .simpleads .simpleads-custom-carousel a,
+  aside .block-simpleads .simpleads .simpleads-custom-carousel picture,
+  aside .block-simpleads .simpleads .simpleads-custom-carousel a {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 aside .simple-ads .simpleads iframe,
 aside .block-simpleads .simpleads iframe {
