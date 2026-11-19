@@ -1596,3 +1596,22 @@ footer {
 .text-align-justify img { display: inline-block; }
 
 /* Slider styles have been centralized in assets/css/_slider.scss */
+/* Mobile interior pages (not the front page): text column is 95% of the screen, centered */
+@media (max-width: 640px) {
+  main[role="main"] {
+    width: 95%;
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Mobile homepage: article cards are 95% of the screen, centered */
+@media (max-width: 640px) {
+  main > .article-cards {
+    width: 95%;
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
