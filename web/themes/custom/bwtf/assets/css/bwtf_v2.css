@@ -434,6 +434,29 @@ img {
     color: #222;
     border-color: #d9d9d9;
   }
+  .tb-megamenu.tb-megamenu-main {
+    /* Selected (active) and focused links: light text on the red highlight */
+  }
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.active > a,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.active-trail > a,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li.open > a,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li > a:focus,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li > a:active,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .dropdown-menu li.active > a,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .dropdown-menu a:focus,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .dropdown-menu a:active {
+    color: #efefef;
+  }
+  .tb-megamenu.tb-megamenu-main {
+    /* Focused/pressed links need the red background so the light text stays legible */
+  }
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li > a:focus,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li > a:active,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .dropdown-menu a:focus,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .dropdown-menu a:active {
+    background: #A30000;
+    border-radius: 8px;
+  }
 }
 .tb-megamenu.tb-megamenu-main {
   /* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead

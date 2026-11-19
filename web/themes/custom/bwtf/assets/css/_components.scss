@@ -429,6 +429,27 @@ header {
       color: #222;
       border-color: #d9d9d9;
     }
+
+    /* Selected (active) and focused links: light text on the red highlight */
+    .nav-collapse .nav > li.active > a,
+    .nav-collapse .nav > li.active-trail > a,
+    .nav-collapse .nav > li.open > a,
+    .nav-collapse .nav > li > a:focus,
+    .nav-collapse .nav > li > a:active,
+    .nav-collapse .dropdown-menu li.active > a,
+    .nav-collapse .dropdown-menu a:focus,
+    .nav-collapse .dropdown-menu a:active {
+      color: #efefef;
+    }
+
+    /* Focused/pressed links need the red background so the light text stays legible */
+    .nav-collapse .nav > li > a:focus,
+    .nav-collapse .nav > li > a:active,
+    .nav-collapse .dropdown-menu a:focus,
+    .nav-collapse .dropdown-menu a:active {
+      background: variables.$clr-secondary;
+      border-radius: 8px;
+    }
   }
 
   /* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead
