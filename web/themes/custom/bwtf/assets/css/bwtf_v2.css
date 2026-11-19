@@ -382,18 +382,70 @@ img {
   background: #A30000;
   border: 0;
 }
-/* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead
-   of one tall list. Shorter ones stay a single column. */
+.tb-megamenu.tb-megamenu-main {
+  /* Active dropdown item: border is translucent black over its #e54e4b background
+     (module default is #444). */
+}
+.tb-megamenu.tb-megamenu-main .nav li.dropdown.active > .dropdown-toggle,
+.tb-megamenu.tb-megamenu-main .nav li.dropdown.open.active > .dropdown-toggle,
+.tb-megamenu.tb-megamenu-main .nav > li.dropdown.open.active > a:hover,
+.tb-megamenu.tb-megamenu-main .nav > li.dropdown.open.active > span.tb-megamenu-no-link:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.tb-megamenu.tb-megamenu-main {
+  /* Mobile: light grey dropdown panel, hamburger on the right with evenly
+     aligned bars (drawn in CSS instead of the offset font glyph). */
+}
+@media (max-width: 979px) {
+  .tb-megamenu.tb-megamenu-main .btn-navbar {
+    float: right;
+    width: 40px;
+    height: 36px;
+    padding: 0;
+    margin: 0 10px 10px 0;
+    position: relative;
+  }
+  .tb-megamenu.tb-megamenu-main .btn-navbar > i {
+    display: none;
+  }
+  .tb-megamenu.tb-megamenu-main .btn-navbar::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 2px;
+    margin: -1px 0 0 -11px;
+    background: #FFF;
+    box-shadow: 0 -7px 0 #FFF, 0 7px 0 #FFF;
+  }
+  .tb-megamenu.tb-megamenu-main .nav-collapse,
+  .tb-megamenu.tb-megamenu-main .nav-collapse.collapse {
+    background: #efefef;
+  }
+  .tb-megamenu.tb-megamenu-main .nav-collapse .nav > li > a,
+  .tb-megamenu.tb-megamenu-main .nav-collapse .dropdown-menu a {
+    color: #222;
+    border-color: #d9d9d9;
+  }
+}
+.tb-megamenu.tb-megamenu-main {
+  /* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead
+     of one tall list. Shorter ones stay a single column. */
+}
 @media (min-width: 1200px) {
   .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) {
     width: min(780px, 92vw);
   }
   .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) .mega-nav {
-    column-count: 3;
-    column-gap: 20px;
+    -moz-column-count: 3;
+         column-count: 3;
+    -moz-column-gap: 20px;
+         column-gap: 20px;
   }
   .tb-megamenu.tb-megamenu-main .mega > .mega-dropdown-menu:has(.mega-nav > li:nth-child(13)) .mega-nav > li {
-    break-inside: avoid;
+    -moz-column-break-inside: avoid;
+         break-inside: avoid;
   }
 }
 

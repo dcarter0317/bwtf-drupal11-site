@@ -374,6 +374,55 @@ header {
     border: 0;
   }
 
+  /* Active dropdown item: border is translucent black over its #e54e4b background
+     (module default is #444). */
+  .nav li.dropdown.active > .dropdown-toggle,
+  .nav li.dropdown.open.active > .dropdown-toggle,
+  .nav > li.dropdown.open.active > a:hover,
+  .nav > li.dropdown.open.active > span.tb-megamenu-no-link:hover {
+    border-color: rgba(0, 0, 0, .2);
+  }
+
+  /* Mobile: light grey dropdown panel, hamburger on the right with evenly
+     aligned bars (drawn in CSS instead of the offset font glyph). */
+  @media (max-width: 979px) {
+    .btn-navbar {
+      float: right;
+      width: 40px;
+      height: 36px;
+      padding: 0;
+      margin: 0 10px 10px 0;
+      position: relative;
+
+      > i {
+        display: none;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 22px;
+        height: 2px;
+        margin: -1px 0 0 -11px;
+        background: variables.$clr-white;
+        box-shadow: 0 -7px 0 variables.$clr-white, 0 7px 0 variables.$clr-white;
+      }
+    }
+
+    .nav-collapse,
+    .nav-collapse.collapse {
+      background: #efefef;
+    }
+
+    .nav-collapse .nav > li > a,
+    .nav-collapse .dropdown-menu a {
+      color: #222;
+      border-color: #d9d9d9;
+    }
+  }
+
   /* Long dropdowns (13+ links, such as Toy Reviews) flow into columns instead
      of one tall list. Shorter ones stay a single column. */
   @include mixins.breakpoint-min(variables.$bp-lg) {
