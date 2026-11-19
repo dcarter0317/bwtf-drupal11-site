@@ -95,5 +95,6 @@ module:
 theme:
   claro: 0
   olivero: 0
+  stark: 0
   bwtf: 0
 profile: standard
