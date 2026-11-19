@@ -508,6 +508,11 @@ function bwtf_preprocess_tb_megamenu(array &$variables): void {
  */
 function bwtf_megamenu_prune(array $items, array &$menu_config, int $level): void {
   foreach ($items as $id => $item) {
+    // The stored mega menu layout can list the same link many times (for
+    // example Generation One repeated under Toy Reviews). Show each once.
+    if (!empty($menu_config[$id]['rows_content'])) {
+      bwtf_megamenu_dedupe_rows($menu_config[$id]['rows_content']);
+    }
     if ($level >= BWTF_MEGAMENU_MAX_LEVELS) {
       if (isset($menu_config[$id])) {
         $menu_config[$id]['rows_content'] = [];
@@ -516,6 +521,27 @@ function bwtf_megamenu_prune(array $items, array &$menu_config, int $level): voi
     }
     if ($item->subtree) {
       bwtf_megamenu_prune($item->subtree, $menu_config, $level + 1);
+    }
+  }
+}
+
+/**
+ * Removes repeated menu links from a mega menu item's stored layout.
+ *
+ * @param array $rows
+ *   The item's rows_content: rows of columns, each holding col_content links.
+ */
+function bwtf_megamenu_dedupe_rows(array &$rows): void {
+  $seen = [];
+  foreach ($rows as $r => $row) {
+    foreach ($row as $c => $col) {
+      foreach ($col['col_content'] ?? [] as $i => $entry) {
+        $key = ($entry['type'] ?? '') . ':' . ($entry['plugin_id'] ?? '');
+        if (isset($seen[$key])) {
+          unset($rows[$r][$c]['col_content'][$i]);
+        }
+        $seen[$key] = TRUE;
+      }
     }
   }
 }
