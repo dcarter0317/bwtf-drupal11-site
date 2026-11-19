@@ -112,4 +112,11 @@ jobs:
             vendor/bin/drush cr
             vendor/bin/drush state:set system.maintenance_mode 0 --input-format=integer
             vendor/bin/drush cr
+
+            # Re-protect settings files so the Drupal status report does not
+            # warn. The next deploy unlocks them again at the top of this script.
+            for f in web/sites/default/settings.php web/sites/default/settings.local.php; do
+              [ -f "$f" ] && chmod 444 "$f"
+            done
+            chmod 555 web/sites/default
           '
